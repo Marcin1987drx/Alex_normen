@@ -1,0 +1,925 @@
+# 🎯 VG-NORMEN WISSENSSYSTEM - VOLLSTÄNDIGE IMPLEMENTIERUNGSANLEITUNG
+
+## FÜR: Claude Opus 4. 5 in GitHub Codespace
+
+---
+
+# TEIL 0: PROJEKTÜBERSICHT
+
+## 0.1 Was bauen wir? 
+
+Eine **offline-fähige Webanwendung** (HTML/CSS/JavaScript) für einen 66-jährigen Quality-Experten mit 40 Jahren Erfahrung in der Automotive-Branche. 
+
+**ZWEI HAUPTBEREICHE:**
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                                                                         │
+│                    VG-NORMEN WISSENSSYSTEM                              │
+│                                                                         │
+│  ┌─────────────────────────────┐   ┌─────────────────────────────────┐ │
+│  │                             │   │                                 │ │
+│  │   📚 WISSENSBASIS           │   │   📁 MEINE DOKUMENTE            │ │
+│  │                             │   │                                 │ │
+│  │   • Verifizierte VG-Normen  │   │   • Benutzer lädt Dateien hoch  │ │
+│  │   • Technische Tabellen     │   │   • Automatische Analyse        │ │
+│  │   • Infokarten              │   │   • Schlüsselwort-Extraktion    │ │
+│  │   • Druckbare Formulare     │   │   • Pseudo-Zusammenfassung      │ │
+│  │   • Gut/Schlecht Bilder     │   │   • Verknüpfung zur Wissensbasis│ │
+│  │                             │   │                                 │ │
+│  │   STATISCH                  │   │   DYNAMISCH                     │ │
+│  │   (vorbereitete Daten)      │   │   (wächst mit Benutzer)         │ │
+│  │                             │   │                                 │ │
+│  └─────────────────────────────┘   └─────────────────────────────────┘ │
+│                                                                         │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  🔍 GLOBALE SUCHE - durchsucht BEIDE Bereiche gleichzeitig     │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  ⭐ FAVORITEN - aus beiden Bereichen, vom Benutzer ausgewählt  │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+## 0.2 Zielbenutzer-Profil
+
+```
+👤 BENUTZER:
+━━━━━━━━━━━━
+• 66 Jahre alt
+• 40 Jahre Erfahrung in Quality Automotive
+• EXPERTE in VG-Normen, Kabelkonfektion, Qualitätsprüfung
+• Weiß WAS er sucht, aber nicht WIE man mit modernen Tools sucht
+• Gewohnt an: Ordner, Tabellen, Checklisten, Papier
+• NICHT gewohnt an: AI, komplexe Suche, viele Klicks
+
+💭 WIE ER DENKT:
+━━━━━━━━━━━━━━━━
+"Ich brauche die Spezifikation für Kabel bei 150°C"
+"Was sind die Akzeptanzkriterien für Crimp?"
+"Gib mir das Formular für Eingangskontrolle"
+"Zeig mir ein Bild von gutem vs.  schlechtem Crimp"
+
+📋 WAS ER BRAUCHT:
+━━━━━━━━━━━━━━━━━━
+• SCHNELL Information finden
+• KLARE Zusammenfassung (nicht 50 Seiten Norm lesen)
+• BILDER (gut vs. schlecht Beispiele)
+• TABELLEN (konkrete Werte)
+• FORMULARE zum Ausdrucken
+• SICHERHEIT dass die Information korrekt ist
+```
+
+## 0.3 Technische Anforderungen
+
+```
+MUSS:
+━━━━━
+✅ 100% OFFLINE funktionieren (kein Server, kein Internet)
+✅ In jedem modernen Browser laufen (Chrome, Edge, Firefox)
+✅ Durch einfaches Öffnen von index.html starten
+✅ LocalStorage für Benutzerdaten verwenden
+✅ 100% DEUTSCHE Benutzeroberfläche
+✅ Große Schrift, große Buttons (für 66-Jährigen)
+✅ PDF/DOCX Text-Extraktion (pdf. js, mammoth. js)
+
+DARF NICHT:
+━━━━━━━━━━━
+❌ Server oder Backend benötigen
+❌ Internet-Verbindung erfordern
+❌ Komplizierte Installation haben
+❌ Kleine Schrift oder winzige Buttons haben
+❌ Englische UI-Texte zeigen
+```
+
+---
+
+# TEIL 1: PROJEKTSTRUKTUR
+
+## 1.1 Verzeichnisstruktur
+
+Erstelle EXAKT diese Struktur:
+
+```
+📁 vg-normen-wissenssystem/
+│
+├── index.html                          ← Haupteinstiegspunkt
+├── style.css                           ← Alle Styles
+├── app.js                              ← Hauptanwendungslogik
+│
+├── 📁 js/                              ← JavaScript-Module
+│   ├── config.js                       ← Konfiguration und Konstanten
+│   ├── search-engine.js                ← Suchlogik
+│   ├── document-analyzer.js            ← Analyse neuer Dokumente
+│   ├── pdf-extractor.js                ← PDF-Textextraktion
+│   ├── docx-extractor.js               ← DOCX-Textextraktion
+│   ├── favorites. js                    ← Favoritenverwaltung
+│   ├── print. js                        ← Druckfunktionen
+│   ├── storage.js                      ← LocalStorage-Wrapper
+│   ├── ui. js                           ← UI-Hilfsfunktionen
+│   └── utils.js                        ← Utility-Funktionen
+│
+├── 📁 wissensbasis/                    ← Vorbereitete Wissensdatenbank
+│   ├── index.json                      ← Hauptindex aller Inhalte
+│   ├── karten.json                     ← Infokarten (100+)
+│   ├── tabellen. json                   ← Technische Tabellen (30+)
+│   ├── keywords.json                   ← Schlüsselwörter (500+)
+│   ├── synonyme.json                   ← Synonyme (200+ Paare)
+│   └── relationen.json                 ← Themenverknüpfungen
+│
+├── 📁 dokumente/                       ← Quelldokumente (Markdown)
+│   ├── VG95218.md                      ← Leitungen
+│   ├── VG96927. md                      ← Kabelgarnituren
+│   ├── VG95319.md                      ← Steckverbinder
+│   ├── VG95343.md                      ← Schrumpfschläuche
+│   ├── VG96936.md                      ← Abschirmung
+│   ├── Produktionsverfahren.md         ← Crimpen, Löten, etc. 
+│   ├── Qualitaetskontrolle. md          ← Prüfverfahren
+│   ├── AQL_ISO2859.md                  ← Stichprobenprüfung
+│   ├── Formulare.md                    ← Alle Formulare
+│   └── Referenzen.md                   ← Quellen und Links
+│
+├── 📁 formulare/                       ← Druckbare Formulare
+│   ├── F01_Wareneingang_Leitungen.html
+│   ├── F02_Wareneingang_Steckverbinder.html
+│   ├── F07_Crimp_Pruefprotokoll.html
+│   ├── F08_Elektrisches_Pruefprotokoll. html
+│   ├── F09_Endpruefprotokoll. html
+│   ├── F10_AQL_Pruefprotokoll. html
+│   ├── F11_Fehlersammelkarte.html
+│   ├── F12_Sonderfreigabe.html
+│   ├── F13_Pruefmittelkarte.html
+│   ├── F14_Werkerselbstpruefung.html
+│   └── F15_Lieferantenueberwachung.html
+│
+├── 📁 bilder/                          ← Bilder und Grafiken
+│   ├── 📁 crimp/
+│   │   ├── crimp_gut_bellmouth.svg
+│   │   ├── crimp_schlecht_kein_bellmouth.svg
+│   │   ├── crimp_gut_litze_sichtbar.svg
+│   │   └── crimp_schlecht_litze_fehlt.svg
+│   ├── 📁 kabel/
+│   │   ├── kabel_aufbau_system25.svg
+│   │   └── kabel_aufbau_system100.svg
+│   ├── 📁 schrumpf/
+│   │   ├── schrumpf_gut. svg
+│   │   └── schrumpf_schlecht_blasen.svg
+│   └── 📁 icons/
+│       ├── icon_wissensbasis.svg
+│       ├── icon_dokumente.svg
+│       ├── icon_suche.svg
+│       ├── icon_favorit.svg
+│       ├── icon_drucken.svg
+│       └── icon_upload.svg
+│
+├── 📁 user_documents/                  ← Benutzer-Dokumente (anfangs leer)
+│   └── . gitkeep
+│
+└── 📁 libs/                            ← Externe Bibliotheken (offline)
+    ├── pdf.min.js                      ← PDF. js Hauptbibliothek
+    ├── pdf.worker.min.js               ← PDF.js Worker
+    └── mammoth.browser.min.js          ← Mammoth.js für DOCX
+```
+
+---
+
+# TEIL 2: DESIGN SYSTEM
+
+## 2. 1 Farben
+
+```css
+:root {
+  /* Hauptfarben */
+  --color-primary: #1565C0;           /* Blau - Hauptaktionen */
+  --color-primary-dark: #0D47A1;      /* Dunkelblau - Hover */
+  --color-primary-light: #42A5F5;     /* Hellblau - Hintergründe */
+  
+  /* Sekundärfarben */
+  --color-success: #2E7D32;           /* Grün - Erfolg, Gut */
+  --color-warning: #F57C00;           /* Orange - Warnung */
+  --color-error: #C62828;             /* Rot - Fehler, Schlecht */
+  --color-info: #0288D1;              /* Hellblau - Information */
+  
+  /* Neutrale Farben */
+  --color-background: #F5F5F5;        /* Hintergrund */
+  --color-surface: #FFFFFF;           /* Karten, Panels */
+  --color-surface-dark: #EEEEEE;      /* Hover auf Karten */
+  --color-border: #E0E0E0;            /* Rahmen */
+  
+  /* Textfarben */
+  --color-text-primary: #212121;      /* Haupttext */
+  --color-text-secondary: #616161;    /* Sekundärtext */
+  --color-text-disabled: #9E9E9E;     /* Deaktivierter Text */
+  --color-text-on-primary: #FFFFFF;   /* Text auf Primärfarbe */
+  
+  /* Kategoriefarben */
+  --color-cat-kabel: #1565C0;         /* Blau */
+  --color-cat-stecker: #6A1B9A;       /* Lila */
+  --color-cat-crimp: #00695C;         /* Teal */
+  --color-cat-schrumpf: #E65100;      /* Orange */
+  --color-cat-pruefung: #2E7D32;      /* Grün */
+  --color-cat-schirmung: #37474F;     /* Grau-Blau */
+  --color-cat-formular: #4527A0;      /* Indigo */
+  --color-cat-tabelle: #00838F;       /* Cyan */
+}
+```
+
+## 2.2 Typografie
+
+```css
+:root {
+  /* Schriftfamilie */
+  --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  
+  /* Schriftgrößen - GROSS für 66-Jährigen!  */
+  --font-size-xs: 14px;               /* Kleinste erlaubte Größe */
+  --font-size-sm: 16px;               /* Klein */
+  --font-size-base: 18px;             /* Standard-Text */
+  --font-size-lg: 20px;               /* Groß */
+  --font-size-xl: 24px;               /* Überschriften */
+  --font-size-2xl: 28px;              /* Große Überschriften */
+  --font-size-3xl: 32px;              /* Seitenüberschriften */
+  --font-size-4xl: 40px;              /* Haupttitel */
+  
+  /* Zeilenhöhen */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1. 75;
+  
+  /* Schriftstärken */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+}
+```
+
+## 2.3 Abstände und Größen
+
+```css
+:root {
+  /* Abstände */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+  
+  /* Abrundungen */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+  
+  /* Schatten */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+  --shadow-xl: 0 20px 25px rgba(0,0,0,0.15);
+  
+  /* Button-Mindestgrößen - GROSS!  */
+  --button-min-height: 48px;          /* Mindesthöhe */
+  --button-min-width: 120px;          /* Mindestbreite */
+  --button-padding: 12px 24px;        /* Innenabstand */
+  
+  /* Klickbare Bereiche - GROSS! */
+  --touch-target-min: 44px;           /* Mindestgröße für Klickziele */
+}
+```
+
+## 2.4 Komponenten-Styles
+
+### Buttons
+
+```css
+/* Primärer Button */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  padding: var(--button-padding);
+  min-height: var(--button-min-height);
+  min-width: var(--button-min-width);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  transition: background-color 0. 2s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.btn-primary:focus {
+  outline: 3px solid var(--color-primary-light);
+  outline-offset: 2px;
+}
+
+/* Sekundärer Button */
+. btn-secondary {
+  background-color: var(--color-surface);
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+  /* Rest wie btn-primary */
+}
+
+/* Icon-Button (z.B. Favorit, Drucken) */
+.btn-icon {
+  background: transparent;
+  border: none;
+  padding: var(--spacing-sm);
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon:hover {
+  background-color: var(--color-surface-dark);
+}
+```
+
+### Karten
+
+```css
+. card {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-border);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.card-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.card-content {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-secondary);
+}
+
+. card-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
+}
+```
+
+### Suchfeld
+
+```css
+. search-container {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+}
+
+.search-input {
+  width: 100%;
+  padding: var(--spacing-md) var(--spacing-lg);
+  padding-left: 56px; /* Platz für Icon */
+  font-size: var(--font-size-lg);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  transition: border-color 0.2s ease;
+}
+
+. search-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.2);
+}
+
+. search-input::placeholder {
+  color: var(--color-text-disabled);
+}
+
+. search-icon {
+  position: absolute;
+  left: var(--spacing-md);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  color: var(--color-text-secondary);
+}
+
+.search-button {
+  position: absolute;
+  right: var(--spacing-sm);
+  top: 50%;
+  transform: translateY(-50%);
+}
+```
+
+---
+
+# TEIL 3: WIREFRAMES (Alle Bildschirme)
+
+## 3.1 Startbildschirm
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  ╔═══════════════════════════════════════════════════════════════════════════╗ │
+│  ║                                                                           ║ │
+│  ║                    VG-NORMEN WISSENSSYSTEM                                ║ │
+│  ║                                                                           ║ │
+│  ╚═══════════════════════════════════════════════════════════════════════════╝ │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                                                                         │   │
+│  │   🔍  │  Überall suchen...                               │   SUCHEN  │   │   │
+│  │                                                                         │   │
+│  │   Beispiele: "kabel 150°C"  •  "crimp größe 16"  •  "prüfprotokoll"    │   │
+│  │                                                                         │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+│  ═══════════════════════════════════════════════════════════════════════════   │
+│                                                                                 │
+│  ┌───────────────────────────────────┐   ┌───────────────────────────────────┐ │
+│  │                                   │   │                                   │ │
+│  │            📚                     │   │            📁                     │ │
+│  │                                   │   │                                   │ │
+│  │        WISSENSBASIS               │   │      MEINE DOKUMENTE              │ │
+│  │                                   │   │                                   │ │
+│  │   Verifizierte VG-Normen          │   │   Ihre eigenen Dateien            │ │
+│  │   Tabellen & Formulare            │   │   PDFs, Bilder, Notizen           │ │
+│  │   Anleitungen & Bilder            │   │                                   │ │
+│  │                                   │   │   ┌───────────────────────────┐   │ │
+│  │   ────────────────────────        │   │   │  + DOKUMENTE HINZUFÜGEN  │   │ │
+│  │                                   │   │   └───────────────────────────┘   │ │
+│  │   📊 11 Normen                    │   │                                   │ │
+│  │   📋 15 Formulare                 │   │   📄 0 Dokumente                  │ │
+│  │   📷 47 Bilder                    │   │                                   │ │
+│  │   📄 156 Themen                   │   │                                   │ │
+│  │                                   │   │                                   │ │
+│  │   ┌───────────────────────────┐   │   │   ┌───────────────────────────┐   │ │
+│  │   │        ÖFFNEN             │   │   │   │        ÖFFNEN             │   │ │
+│  │   └───────────────────────────┘   │   │   └───────────────────────────┘   │ │
+│  │                                   │   │                                   │ │
+│  └───────────────────────────────────┘   └───────────────────────────────────┘ │
+│                                                                                 │
+│  ═══════════════════════════════════════════════════════════════════════════   │
+│                              ⭐ FAVORITEN                                       │
+│  ═══════════════════════════════════════════════════════════════════════════   │
+│                                                                                 │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌───────────┐ │
+│  │     📋      │ │     📊      │ │     📷      │ │     📄      │ │           │ │
+│  │             │ │             │ │             │ │             │ │     +     │ │
+│  │ Endprüf-    │ │  Kabel-     │ │  Crimp-     │ │ VG 95218    │ │           │ │
+│  │ protokoll   │ │  tabelle    │ │ kriterien   │ │ Übersicht   │ │ Hinzufügen│ │
+│  │             │ │             │ │             │ │             │ │           │ │
+│  │ [Wissensb.] │ │ [Wissensb.] │ │ [Wissensb.] │ │ [Wissensb.] │ │           │ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ └───────────┘ │
+│                                                                                 │
+│  ═══════════════════════════════════════════════════════════════════════════   │
+│                          THEMENBEREICHE                                         │
+│  ═══════════════════════════════════════════════════════════════════════════   │
+│                                                                                 │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐               │
+│  │     📏      │ │     🔌      │ │     🔧      │ │     🔥      │               │
+│  │   KABEL     │ │   STECKER   │ │   CRIMPEN   │ │  SCHRUMPFEN │               │
+│  │  VG 95218   │ │  VG 95319   │ │  IPC-A-620  │ │  VG 95343   │               │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘               │
+│                                                                                 │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐               │
+│  │     ✅      │ │     🛡️      │ │     📋      │ │     📊      │               │
+│  │   PRÜFUNG   │ │ ABSCHIRMUNG │ │  FORMULARE  │ │  TABELLEN   │               │
+│  │  VG 96927   │ │  VG 96936   │ │    Alle     │ │    Alle     │               │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘               │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+## 3. 2 Wissensbasis - Kategorieübersicht
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  ┌──────────┐                                                                   │
+│  │ ← ZURÜCK │                    📚 WISSENSBASIS                               │
+│  └──────────┘                                                                   │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │   🔍  │  In Wissensbasis suchen...                      │   SUCHEN  │   │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+│  ═══════════════════════════════════════════════════════════════════════════   │
+│                             KATEGORIEN                                          │
+│  ═══════════════════════════════════════════════════════════════════════════   │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                                                                         │   │
+│  │   📏  KABEL & LEITUNGEN                                          [→]   │   │
+│  │       VG 95218 - Temperatursysteme, Abmessungen, Widerstände           │   │
+│  │       23 Themen  •  5 Tabellen  •  3 Bilder                            │   │
+│  │                                                                         │   │
+│  ├─────────────────────────────────────────────────────────────────────────┤   │
+│  │                                                                         │   │
+│  │   🔌  STECKVERBINDER & KONTAKTE                                  [→]   │   │
+│  │       VG 95319 - Kontaktgrößen, Ströme, Crimpspezifikationen           │   │
+│  │       31 Themen  •  8 Tabellen  •  6 Bilder                            │   │
+│  │                                                                         │   │
+│  ├─────────────────────────────────────────────────────────────────────────┤   │
+│  │                                                                         │   │
+│  │   🔧  CRIMPEN                                                    [→]   │   │
+│  │       IPC/WHMA-A-620 - Anleitung, Akzeptanzkriterien, Bilder           │   │
+│  │       18 Themen  •  4 Tabellen  •  12 Bilder                           │   │
+│  │                                                                         │   │
+│  ├─────────────────────────────────────────────────────────────────────────┤   │
+│  │                                                                         │   │
+│  │   🔥  SCHRUMPFSCHLÄUCHE                                          [→]   │   │
+│  │       VG 95343 - Typen A-H, Temperaturen, Anwendung                    │   │
+│  │       14 Themen  •  3 Tabellen  •  4 Bilder                            │   │
+│  │                                                                         │   │
+│  ├─────────────────────────────────────────────────────────────────────────┤   │
+│  │                                                                         │   │
+│  │   ✅  PRÜFUNG & QUALITÄT                                         [→]   │   │
+│  │       VG 96927 - Elektrische Prüfung, AQL, Protokolle                  │   │
+│  │       28 Themen  •  6 Tabellen  •  2 Bilder                            │   │
+│  │                                                                         │   │
+│  ├─────────────────────────────────────────────────────────────────────────┤   │
+│  │                                                                         │   │
+│  │   🛡️  ABSCHIRMUNG                                                [→]   │   │
+│  │       VG 96936 - Metallgeflechte, EMI, Montage                         │   │
+│  │       12 Themen  •  3 Tabellen  •  5 Bilder                            │   │
+│  │                                                                         │   │
+│  ├─────────────────────────────────────────────────────────────────────────┤   │
+│  │                                                                         │   │
+│  │   📋  FORMULARE                                                  [→]   │   │
+│  │       Alle 15 druckbaren Formulare                                     │   │
+│  │       15 Formulare  •  Sofort druckbar                                 │   │
+│  │                                                                         │   │
+│  ├─────────────────────────────────────────────────────────────────────────┤   │
+│  │                                                                         │   │
+│  │   📊  TABELLEN                                                   [→]   │   │
+│  │       Alle technischen Tabellen auf einen Blick                        │   │
+│  │       32 Tabellen  •  Sofort druckbar                                  │   │
+│  │                                                                         │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+## 3.3 Wissensbasis - Themenliste einer Kategorie
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  ┌──────────┐                                                                   │
+│  │ ← ZURÜCK │              🔧 CRIMPEN - IPC/WHMA-A-620                         │
+│  └──────────┘                                                                   │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │   🔍  │  In Crimpen suchen...                           │   SUCHEN  │   │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+│  ═══════════════════════════════════════════════════════════════════════════   │
+│                              THEMEN (18)                                        │
+│  ═══════════════════════════════════════════════════════════════════════════   │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                                                                         │   │
+│  │   📄  Crimp-Übersicht                                     [⭐]   [→]   │   │
+│  │       Grundlagen des Crimpens, Werkzeuge, Klassen                      │   │
+│  │       🏷️ crimp, werkzeug, klasse, grundlagen                           │   │
+│  │                                                                         │   │
+│  ├─────────────────────────────────────────────────────────────────────────┤   │
+│  │                                                                         │   │
+│  │   📊  Kontakt Größe 22 - Spezifikation                    [⭐]   [→]   │   │
+│  │       Kabel 0.25-0.50mm², max.  5A, Zugkraft 22N                        │   │
+│  │       🏷️ kontakt, 22, 0.25, 0.5, 5A, strom                             │   │
+│  │                                                                         │   │
+│  ├─────────────────────────────────────────────────────────────────────────┤   │
+│  │                                                                         │   │
+│  │   📊  Kontakt Größe 20 - Spezifikation                    [⭐]   [→]   │   │
+│  │       Kabel 0.5-0.75mm², max. 7. 5A, Zugkraft 31N                       │   │
+│  │       🏷️ kontakt, 20, 0.5, 0.75, 7.5A, strom                           │   │
+│  │                                                                         │   │
+│  ├─────────────────────────────────────────────────────────────────────────┤   │
+│  │                                                                         │   │
+│  │   📊  Kontakt Größe 16 - Spezifikation          ⭐ FAVORIT [⭐]   [→]   │   │
+│  │       Kabel 1.0-1. 5mm², max.  13A, Zugkraft 45N                         │   │
+│  │       🏷️ kontakt, 16, 1.0, 1.5, 13A, strom                             │   │
+│  │                                                                         │   │
+│  ├─────────────────────────────────────────────────────────────────────────┤   │
+│  │                                                                         │   │
+│  │   📊  Kontakt Größe 12 - Spezifikation                    [⭐]   [→]   │   │
+│  │       Kabel 2.5-4.0mm², max. 23A, Zugkraft 80N                         │   │
+│  │       🏷️ kontakt, 12, 2. 5, 4. 0, 23A, strom                             │   │
+│  │                                                                         │   │
+│  ├─────────────────────────────────────────────────────────────────────────┤   │
+│  │                                                                         │   │
+│  │   📷  Akzeptanzkriterien - Bellmouth                      [⭐]   [→]   │   │
+│  │       Gut/Schlecht Bilder, Anforderungen Klasse 3                      │   │
+│  │       🏷️ bellmouth, akzeptanz, gut, schlecht, klasse3                  │   │
+│  │                                                                         │   │
+│  ├─────────────────────────────────────────────────────────────────────────┤   │
+│  │                                                                         │   │
+│  │   📷  Akzeptanzkriterien - Inspektionsloch                [⭐]   [→]   │   │
+│  │       Litze sichtbar, Anforderungen Klasse 3                           │   │
+│  │       🏷️ inspektionsloch, litze, sichtbar, klasse3                     │   │
+│  │                                                                         │   │
+│  ├─────────────────────────────────────────────────────────────────────────┤   │
+│  │                                                                         │   │
+│  │   📄  Schritt-für-Schritt Anleitung                       [⭐]   [→]   │   │
+│  │       Vollständige Crimp-Anleitung mit Bildern                         │   │
+│  │       🏷️ anleitung, schritt, werkzeug, vorbereitung                    │   │
+│  │                                                                         │   │
+│  ├─────────────────────────────────────────────────────────────────────────┤   │
+│  │                                                                         │   │
+│  │   📊  Mindestzugkräfte - Übersicht                        [⭐]   [→]   │   │
+│  │       Alle Kontaktgrößen mit Mindestzugkraft                           │   │
+│  │       🏷️ zugkraft, newton, prüfung, tabelle                            │   │
+│  │                                                                         │   │
+│  ├─────────────────────────────────────────────────────────────────────────┤   │
+│  │                                                                         │   │
+│  │   📋  Formular F-07: Crimp-Prüfprotokoll            [🖨️ DRUCKEN] [→]   │   │
+│  │       Prüfprotokoll für Crimp-Verbindungen                             │   │
+│  │       🏷️ formular, prüfprotokoll, crimp, protokoll                     │   │
+│  │                                                                         │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+│  [Seite 1 von 2]                                    [  <  ]  [ 1 ]  [  >  ]    │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+## 3. 4 Infokarte - Detailansicht
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  ┌──────────┐                                       ┌─────────┐ ┌───────────┐  │
+│  │ ← ZURÜCK │                                       │ ⭐ FAV.  │ │ 🖨️ DRUCKEN│  │
+│  └──────────┘                                       └─────────┘ └───────────┘  │
+│                                                                                 │
+│  ═══════════════════════════════════════════════════════════════════════════   │
+│      🔧  KONTAKT GRÖßE 16 - CRIMPSPEZIFIKATION                                 │
+│  ═══════════════════════════════════════════════════════════════════════════   │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                                                                         │   │
+│  │   📋 ZUSAMMENFASSUNG                                                    │   │
+│  │   ─────────────────────────────────────────────────────────────────     │   │
+│  │                                                                         │   │
+│  │   Kontakt Größe 16 wird für Kabel 1,0-1,5 mm² verwendet.                │   │
+│  │   Maximale Strombelastung: 13A.                                          │   │
+│  │   Entspricht AWG 16, 18 oder 20.                                         │   │
+│  │                                                                         │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                                                                         │   │
+│  │   📊 TECHNISCHE DATEN                                                   │   │
+│  │   ─────────────────────────────────────────────────────────────────     │   │
+│  │                                                                         │   │
+│  │   ┌─────────────────────────┬───────────────────────────────────────┐   │   │
+│  │   │ Parameter               │ Wert                                  │   │   │
+│  │   ├─────────────────────────┼───────────────────────────────────────┤   │   │
+│  │   │ Kabelquerschnitt        │ 1,0 - 1,5 mm²                         │   │   │
+│  │   │ AWG-Äquivalent          │ AWG 16, 18, 20                        │   │   │
+│  │   │ Strombelastung          │ max. 13 A                             │   │   │
+│  │   │ Abisolierlänge          │ 4,5 mm                                │   │   │
+│  │   │ Min. Zugkraft           │ 45 N                                  │   │   │
+│  │   │ Crimpwerkzeug           │ DMC M22520/2-01                       │   │   │
+│  │   │ Crimpwiderstand         │ ≤ 3,0 mΩ                              │   │   │
+│  │   │ Temperaturbereich       │ -65°C bis +175°C                      │   │   │
+│  │   └─────────────────────────┴───────────────────────────────────────┘   │   │
+│  │                                                                         │   │
+│  │                                              [🖨️ NUR TABELLE DRUCKEN]  │   │
+│  │                                                                         │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                                                                         │   │
+│  │   ⚠️ WICHTIGE HINWEISE                                                 │   │
+│  │   ─────────────────────────────────────────────────────────────────     │   │
+│  │                                                                         │   │
+│  │   ❌  NIEMALS Litze verzinnen vor dem Crimpen!                         │   │
+│  │                                                                         │   │
+│  │   ⚠️  Bellmouth muss an BEIDEN Seiten sichtbar sein                    │   │
+│  │                                                                         │   │
+│  │   ⚠️  Litze muss im Inspektionsloch sichtbar sein                      │   │
+│  │                                                                         │   │
+│  │   ❌  Isolierung darf NICHT im Crimpbereich sein                       │   │
+│  │                                                                         │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                                                                         │   │
+│  │   📷 BILDER                                                             │   │
+│  │   ─────────────────────────────────────────────────────────────────     │   │
+│  │                                                                         │   │
+│  │   ┌─────────────────────────┐   ┌─────────────────────────────────┐     │   │
+│  │   │                         │   │                                 │     │   │
+│  │   │        [BILD]           │   │           [BILD]                │     │   │
+│  │   │                         │   │                                 │     │   │
+│  │   │    ✅ GUT               │   │       ❌ SCHLECHT               │     │   │
+│  │   │    Bellmouth sichtbar   │   │       Kein Bellmouth            │     │   │
+│  │   │                         │   │                                 │     │   │
+│  │   │    [VERGRÖßERN]         │   │       [VERGRÖßERN]              │     │   │
+│  │   │                         │   │                                 │     │   │
+│  │   └─────────────────────────┘   └─────────────────────────────────┘     │   │
+│  │                                                                         │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                                                                         │   │
+│  │   🔗 VERWANDTE THEMEN                                                   │   │
+│  │   ─────────────────────────────────────────────────────────────────     │   │
+│  │                                                                         │   │
+│  │   📊 Kontakt Größe 12 (größer)                                   [→]   │   │
+│  │   📊 Kontakt Größe 20 (kleiner)                                  [→]   │   │
+│  │   📄 Crimp-Anleitung Schritt-für-Schritt                         [→]   │   │
+│  │   📷 Akzeptanzkriterien Bellmouth                                [→]   │   │
+│  │   📋 Formular F-07: Crimp-Prüfprotokoll                          [→]   │   │
+│  │                                                                         │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                                                                         │   │
+│  │   📚 QUELLE                                                             │   │
+│  │   ─────────────────────────────────────────────────────────────────     │   │
+│  │                                                                         │   │
+│  │   VG 95319-1009, IPC/WHMA-A-620E Klasse 3                              │   │
+│  │   Verifiziert: Dezember 2024                                           │   │
+│  │                                                                         │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+## 3.5 Meine Dokumente - Übersicht
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  ┌──────────┐                                                                   │
+│  │ ← ZURÜCK │                  📁 MEINE DOKUMENTE                              │
+│  └──────────┘                                                                   │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │   🔍  │  In meinen Dokumenten suchen...                 │   SUCHEN  │   │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                                                                         │   │
+│  │                     ╔═══════════════════════════════════╗               │   │
+│  │                     ║                                   ║               │   │
+│  │                     ║        📄  📷  📁                ║               │   │
+│  │                     ║                                   ║               │   │
+│  │                     ║    Dateien hierher ziehen         ║               │   │
+│  │                     ║                                   ║               │   │
+│  │                     ║    oder                           ║               │   │
+│  │                     ║                                   ║               │   │
+│  │                     ║    [ DATEIEN AUSWÄHLEN ]          ║               │   │
+│  │                     ║                                   ║               │   │
+│  │                     ║    PDF, DOCX, TXT, MD, JPG, PNG   ║               │   │
+│  │                     ║                                   ║               │   │
+│  │                     ╚═══════════════════════════════════╝               │   │
+│  │                                                                         │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+│  ═══════════════════════════════════════════════════════════════════════════   │
+│                       IHRE DOKUMENTE (3)                                        │
+│  ═══════════════════════════════════════════════════════════════════════════   │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                                                                         │   │
+│  │   📄  VG 12345 - Neue Steckverbindernorm                                │   │
+│  │   ─────────────────────────────────────────────────────────────────     │   │
+│  │   PDF  •  47 Seiten  •  Hinzugefügt: 04.12.2024                        │   │
+│  │                                                                         │   │
+│  │   📋 Zusammenfassung:                                                   │   │
+│  │   Diese Norm definiert Anforderungen für Hochtemperatur-               │   │
+│  │   Steckverbinder bis 200°C...                                            │   │
+│  │                                                                         │   │
+│  │   🏷️ steckverbinder • hochtemperatur • 200°C • kontakt • prüfung      │   │
+│  │                                                                         │   │
+│  │   🔗 Verbindungen: VG 95319, System 200                                │   │
+│  │                                                                         │   │
+│  │   [👀 ÖFFNEN]    [✏️ BEARBEITEN]    [⭐]    [🗑️ LÖSCHEN]               │   │
+│  │                                                                         │   │
+│  ├─────────────────────────────────────────────────────────────────────────┤   │
+│  │                                                                         │   │
+│  │   📄  Lieferantenaudit_Amphenol_2024. pdf                                │   │
+│  │   ─────────────────────────────────────────────────────────────────     │   │
+│  │   PDF  •  23 Seiten  •  Hinzugefügt: 02.12.2024                        │   │
+│  │                                                                         │   │
+│  │   📋 Zusammenfassung:                                                   │   │
+│  │   Auditbericht für Amphenol-Air LB, Standort München.                   │   │
+│  │   Bewertung: A-Lieferant...                                              │   │
+│  │                                                                         │   │
+│  │   🏷️ audit • lieferant • amphenol • qualität • bewertung              │   │
+│  │                                                                         │   │
+│  │   🔗 Verbindungen: Lieferantenbewertung, Formular F-15                 │   │
+│  │                                                                         │   │
+│  │   [👀 ÖFFNEN]    [✏️ BEARBEITEN]    [⭐]    [🗑️ LÖSCHEN]               │   │
+│  │                                                                         │   │
+│  ├─────────────────────────────────────────────────────────────────────────┤   │
+│  │                                                                         │   │
+│  │   📷  Crimp_Fehler_Beispiel.jpg                                         │   │
+│  │   ─────────────────────────────────────────────────────────────────     │   │
+│  │   Bild  •  1. 2 MB  •  Hinzugefügt: 01.12.2024                          │   │
+│  │                                                                         │   │
+│  │   🏷️ crimp • fehler • beispiel (aus Dateiname)                        │   │
+│  │                                                                         │   │
+│  │   🔗 Verbindungen: Crimp-Akzeptanzkriterien                            │   │
+│  │                                                                         │   │
+│  │   [👀 ANSEHEN]   [✏️ BEARBEITEN]    [⭐]    [🗑️ LÖSCHEN]               │   │
+│  │                                                                         │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+## 3. 6 Meine Dokumente - Upload mit Fortschrittsanzeige
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  ┌──────────┐                  📁 MEINE DOKUMENTE                              │
+│  │ ← ZURÜCK │                                                                   │
+│  └──────────┘                                                                   │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                                                                         │   │
+│  │   🔄 ANALYSE LÄUFT...                                                   │   │
+│  │                                                                         │   │
+│  │   ─────────────────────────────────────────────────────────────────     │   │
+│  │                                                                         │   │
+│  │   Datei: VG_12345_Neue_Steckernorm.pdf                                  │   │
+│  │   Größe: 2.4 MB  •  Seiten: 47                                         │   │
+│  │                                                                         │   │
+│  │   ┌─────────────────────────────────────────────────────────────────┐   │   │
+│  │   │                                                                 │   │   │
+│  │   │   ████████████████████████████░░░░░░░░░░░░░░░░░░░░░   62%      │   │   │
+│  │   │                                                                 │   │   │
+│  │   └─────────────────────────────────────────────────────────────────┘   │   │
+│  │                                                                         │   │
+│  │   ─────────────────────────────────────────────────────────────────     │   │
+│  │                                                                         │   │
+│  │   ✅  Text extrahieren...                              abgeschlossen   │   │
+│  │   ✅  Struktur analysieren...                          abgeschlossen   │   │
+│  │   ✅  Tabellen erkennen...                             abgeschlossen   │   │
+│  │   🔄  Schlüsselwörter identifizieren...                läuft...        │   │
+│  │   ⏳  Zusammenfassung erstellen...                      wartend        │   │
+│  │   ⏳  Verbindungen zur Wissensbasis suchen...           wartend        │   │
+│  │                                                                         │   │
+│  │   ─────────────────────────────────────────────────────────────────     │   │
+│  │                                                                         │   │
+│  │   ⏱️  Geschätzte Restzeit: ~15 Sekunden                                │   │
+│  │                                                                         │   │
+│  │                                              [ ABBRECHEN ]              │   │
+│  │                                                                         │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+## 3.7 Meine Dokumente - Analyse abgeschlossen
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  ┌──────────┐                  📁 MEINE DOKUMENTE                              │
+│  │ ← ZURÜCK │                                                                   │
+│  └──────────┘                                                                   │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                                                                         │   │
+│  │   ✅ ANALYSE ABGESCHLOSSEN!                                              │   │
+│  │                                                                         │   │
+│  │   ═══════════════════════════════════════════════════════════════════   │   │
+│  │                                                                         │   │
+│  │   📄 VG 12345 - Neue
