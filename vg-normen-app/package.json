@@ -42,7 +42,6 @@
           "arch": ["x64"]
         }
       ],
-      "icon": "build/icon.ico",
       "artifactName": "${productName}-Setup-${version}.${ext}"
     },
     "nsis": {
@@ -50,8 +49,6 @@
       "allowToChangeInstallationDirectory": true,
       "installerLanguages": ["de"],
       "language": "1031",
-      "installerIcon": "build/icon.ico",
-      "uninstallerIcon": "build/icon.ico",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "VG-Normen"
