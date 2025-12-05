@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
+  <title>VG-Normen Wissenssystem</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="font-normal">
+  
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- HEADER -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <header class="header">
+    <div class="header-left">
+      <button id="btnBack" class="btn-icon" onclick="goBack()" title="Zurück" style="display: none;">
+        <span class="icon">←</span>
+      </button>
+      <h1 class="header-title" onclick="navigateTo('home')">
+        <span class="logo">📚</span>
+        VG-Normen Wissenssystem
+      </h1>
+    </div>
+    <div class="header-center">
+      <div class="search-container">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-input" 
+               placeholder="Überall suchen... (z.B. 'Crimp Kontakt 16')"
+               onkeyup="handleSearchKeyup(event)">
+        <button id="btnVoiceSearch" class="btn-icon voice-btn" onclick="startVoiceSearch()" title="Sprachsuche">
+          <span class="icon">🎤</span>
+        </button>
+        <button class="btn-primary search-btn" onclick="performSearch()">SUCHEN</button>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="offline-indicator">
+        <span class="status-dot"></span>
+        <span>Offline OK</span>
+      </div>
+      <button class="btn-icon" onclick="printPage()" title="Drucken">
+        <span class="icon">🖨️</span>
+      </button>
+      <button class="btn-icon" onclick="showSettings()" title="Einstellungen">
+        <span class="icon">⚙️</span>
+      </button>
+      <button class="btn-icon help-btn" onclick="showHelp()" title="Hilfe">
+        <span class="icon">?</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- BREADCRUMBS -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <nav id="breadcrumbs" class="breadcrumbs">
+    <ol>
+      <li><a href="#" onclick="navigateTo('home')">🏠 Start</a></li>
+    </ol>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- MAIN CONTENT -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <main class="main-content">
+    
+    <!-- HOME PAGE -->
+    <section id="page-home" class="page active">
+      
+      <!-- Quick Access -->
+      <div class="section">
+        <h2 class="section-title">⚡ Schnellzugriff</h2>
+        <div class="quick-access-grid">
+          <div class="quick-access-card" onclick="navigateTo('formulare')">
+            <span class="icon">📋</span>
+            <span class="title">FORMULARE</span>
+            <span class="subtitle">Druckbare Vorlagen</span>
+            <span class="count" id="countFormulare">15 Stück</span>
+          </div>
+          <div class="quick-access-card" onclick="navigateTo('tabellen')">
+            <span class="icon">📊</span>
+            <span class="title">TABELLEN</span>
+            <span class="subtitle">Technische Daten</span>
+            <span class="count" id="countTabellen">32 Tabellen</span>
+          </div>
+          <div class="quick-access-card" onclick="navigateTo('wissensbasis', 'crimpen')">
+            <span class="icon">🔧</span>
+            <span class="title">CRIMP-WERTE</span>
+            <span class="subtitle">Alle Kontaktgrößen</span>
+            <span class="count">IPC-A-620</span>
+          </div>
+          <div class="quick-access-card" onclick="navigateTo('bilder')">
+            <span class="icon">📷</span>
+            <span class="title">GUT/SCHLECHT</span>
+            <span class="subtitle">Vergleichsbilder</span>
+            <span class="count" id="countBilder">47 Bilder</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Areas -->
+      <div class="section">
+        <h2 class="section-title">📂 Hauptbereiche</h2>
+        <div class="main-areas-grid">
+          <div class="main-area-card" onclick="navigateTo('wissensbasis')">
+            <div class="card-icon">📚</div>
+            <div class="card-content">
+              <h3>WISSENSBASIS</h3>
+              <p>Verifizierte VG-Normen, Tabellen, Formulare und Anleitungen</p>
+              <div class="card-stats">
+                <span>📊 11 Normen</span>
+                <span>📋 15 Formulare</span>
+                <span>📷 47 Bilder</span>
+              </div>
+            </div>
+            <button class="btn-primary">ÖFFNEN →</button>
+          </div>
+          <div class="main-area-card" onclick="navigateTo('meine-dokumente')">
+            <div class="card-icon">📁</div>
+            <div class="card-content">
+              <h3>MEINE DOKUMENTE</h3>
+              <p>Ihre eigenen Dateien - PDFs, Bilder, Notizen</p>
+              <div class="card-stats">
+                <span id="userDocsCount">📄 0 Dokumente</span>
+              </div>
+            </div>
+            <button class="btn-secondary">ÖFFNEN →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Favorites -->
+      <div class="section">
+        <h2 class="section-title">⭐ Favoriten</h2>
+        <div id="favoritesContainer" class="favorites-grid">
+          <div class="empty-state">
+            <span class="icon">⭐</span>
+            <p>Noch keine Favoriten. Markieren Sie wichtige Themen mit dem Stern-Symbol!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- History -->
+      <div class="section">
+        <h2 class="section-title">🕐 Zuletzt angesehen</h2>
+        <div id="historyContainer" class="history-list">
+          <div class="empty-state">
+            <span class="icon">🕐</span>
+            <p>Noch keine Historie. Ihre zuletzt angesehenen Themen erscheinen hier.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categories -->
+      <div class="section">
+        <h2 class="section-title">📑 Themenbereiche</h2>
+        <div class="categories-grid">
+          <div class="category-card" onclick="navigateTo('wissensbasis', 'kabel')" style="--cat-color: var(--color-cat-kabel)">
+            <span class="icon">📏</span>
+            <span class="title">KABEL</span>
+            <span class="subtitle">VG 95218</span>
+          </div>
+          <div class="category-card" onclick="navigateTo('wissensbasis', 'stecker')" style="--cat-color: var(--color-cat-stecker)">
+            <span class="icon">🔌</span>
+            <span class="title">STECKER</span>
+            <span class="subtitle">VG 95319</span>
+          </div>
+          <div class="category-card" onclick="navigateTo('wissensbasis', 'crimpen')" style="--cat-color: var(--color-cat-crimp)">
+            <span class="icon">🔧</span>
+            <span class="title">CRIMPEN</span>
+            <span class="subtitle">IPC-A-620</span>
+          </div>
+          <div class="category-card" onclick="navigateTo('wissensbasis', 'schrumpfen')" style="--cat-color: var(--color-cat-schrumpf)">
+            <span class="icon">🔥</span>
+            <span class="title">SCHRUMPFEN</span>
+            <span class="subtitle">VG 95343</span>
+          </div>
+          <div class="category-card" onclick="navigateTo('wissensbasis', 'pruefung')" style="--cat-color: var(--color-cat-pruefung)">
+            <span class="icon">✅</span>
+            <span class="title">PRÜFUNG</span>
+            <span class="subtitle">VG 96927</span>
+          </div>
+          <div class="category-card" onclick="navigateTo('wissensbasis', 'schirmung')" style="--cat-color: var(--color-cat-schirmung)">
+            <span class="icon">🛡️</span>
+            <span class="title">SCHIRMUNG</span>
+            <span class="subtitle">VG 96936</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- WISSENSBASIS PAGE -->
+    <section id="page-wissensbasis" class="page">
+      <div class="page-header">
+        <h2>📚 Wissensbasis</h2>
+        <p>Verifizierte VG-Normen und technische Dokumentation</p>
+      </div>
+      <div id="wissensbasisContent" class="cards-list">
+        <!-- Wird dynamisch gefüllt -->
+      </div>
+    </section>
+
+    <!-- CATEGORY PAGE -->
+    <section id="page-category" class="page">
+      <div class="page-header">
+        <h2 id="categoryTitle">Kategorie</h2>
+        <p id="categoryDescription">Beschreibung</p>
+      </div>
+      <div id="categoryContent" class="cards-list">
+        <!-- Wird dynamisch gefüllt -->
+      </div>
+    </section>
+
+    <!-- DETAIL PAGE -->
+    <section id="page-detail" class="page">
+      <div class="detail-header">
+        <h2 id="detailTitle">Titel</h2>
+        <div class="detail-actions">
+          <button class="btn-icon" id="btnFavorite" onclick="toggleFavorite()" title="Als Favorit markieren">
+            <span class="icon">☆</span>
+          </button>
+          <button class="btn-secondary" onclick="printPage()">
+            <span class="icon">🖨️</span> DRUCKEN
+          </button>
+        </div>
+      </div>
+      <div id="detailContent" class="detail-content">
+        <!-- Wird dynamisch gefüllt -->
+      </div>
+      <div id="relatedTopics" class="related-section">
+        <h3>🔗 Verwandte Themen</h3>
+        <div id="relatedList" class="related-list"></div>
+      </div>
+    </section>
+
+    <!-- FORMULARE PAGE -->
+    <section id="page-formulare" class="page">
+      <div class="page-header">
+        <h2>📋 Formulare</h2>
+        <p>Druckbare Vorlagen für Prüfung und Dokumentation</p>
+      </div>
+      <div id="formulareContent" class="cards-list">
+        <!-- Wird dynamisch gefüllt -->
+      </div>
+    </section>
+
+    <!-- TABELLEN PAGE -->
+    <section id="page-tabellen" class="page">
+      <div class="page-header">
+        <h2>📊 Technische Tabellen</h2>
+        <p>Alle Spezifikationen auf einen Blick</p>
+      </div>
+      <div id="tabellenContent" class="cards-list">
+        <!-- Wird dynamisch gefüllt -->
+      </div>
+    </section>
+
+    <!-- BILDER PAGE -->
+    <section id="page-bilder" class="page">
+      <div class="page-header">
+        <h2>📷 Gut/Schlecht Vergleichsbilder</h2>
+        <p>Visuelle Akzeptanzkriterien</p>
+      </div>
+      <div id="bilderContent" class="images-grid">
+        <!-- Wird dynamisch gefüllt -->
+      </div>
+    </section>
+
+    <!-- MEINE DOKUMENTE PAGE -->
+    <section id="page-meine-dokumente" class="page">
+      <div class="page-header">
+        <h2>📁 Meine Dokumente</h2>
+        <p>Ihre eigenen Dateien und Notizen</p>
+      </div>
+      
+      <div class="documents-actions">
+        <div class="action-card" onclick="openDocumentsFolder()">
+          <span class="icon">📂</span>
+          <span class="title">ORDNER ÖFFNEN</span>
+          <span class="subtitle">Im Windows Explorer anzeigen</span>
+        </div>
+        <div class="action-card" onclick="scanDocuments()">
+          <span class="icon">🔄</span>
+          <span class="title">NEUE DATEIEN LADEN</span>
+          <span class="subtitle">Ordner nach neuen Dateien scannen</span>
+        </div>
+        <div class="action-card" onclick="addDocuments()">
+          <span class="icon">➕</span>
+          <span class="title">DATEIEN HINZUFÜGEN</span>
+          <span class="subtitle">Neue Dateien auswählen</span>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <h4>💡 Tipp: Dateinamen richtig benennen!</h4>
+        <p>
+          <strong>✅ Gut:</strong> <code>Crimp_Fehler_Kontakt16.jpg</code><br>
+          <strong>❌ Schlecht:</strong> <code>IMG_4523.jpg</code>
+        </p>
+        <p>Aussagekräftige Namen helfen beim Suchen!</p>
+      </div>
+
+      <div id="userDocumentsContent" class="documents-list">
+        <div class="empty-state">
+          <span class="icon">📁</span>
+          <p>Noch keine Dokumente. Klicken Sie auf "DATEIEN HINZUFÜGEN" oder kopieren Sie Dateien in den Dokumenten-Ordner.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEARCH RESULTS PAGE -->
+    <section id="page-search" class="page">
+      <div class="page-header">
+        <h2>🔍 Suchergebnisse</h2>
+        <p id="searchResultsInfo">Suche nach: ...</p>
+      </div>
+      <div id="searchResults" class="cards-list">
+        <!-- Wird dynamisch gefüllt -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- MODALS -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Settings Modal -->
+  <div id="modalSettings" class="modal">
+    <div class="modal-content modal-medium">
+      <div class="modal-header">
+        <h3>⚙️ Einstellungen</h3>
+        <button class="btn-icon" onclick="closeModal('modalSettings')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="setting-group">
+          <label>📏 Schriftgröße</label>
+          <div class="setting-options">
+            <button class="setting-btn" onclick="setFontSize('normal')" data-size="normal">
+              <span style="font-size: 16px;">Aa</span>
+              <span>Normal</span>
+            </button>
+            <button class="setting-btn" onclick="setFontSize('gross')" data-size="gross">
+              <span style="font-size: 20px;">Aa</span>
+              <span>GROSS</span>
+            </button>
+            <button class="setting-btn" onclick="setFontSize('sehr-gross')" data-size="sehr-gross">
+              <span style="font-size: 24px;">Aa</span>
+              <span>SEHR GROSS</span>
+            </button>
+          </div>
+        </div>
+        <div class="setting-group">
+          <label>🎨 Kontrast</label>
+          <div class="setting-options">
+            <button class="setting-btn" onclick="setHighContrast(false)" data-contrast="normal">
+              <span>◐</span>
+              <span>Normal</span>
+            </button>
+            <button class="setting-btn" onclick="setHighContrast(true)" data-contrast="high">
+              <span>●</span>
+              <span>Hoher Kontrast</span>
+            </button>
+          </div>
+        </div>
+        <hr>
+        <div class="setting-group">
+          <label>💾 Datensicherung</label>
+          <div class="setting-actions">
+            <button class="btn-secondary" onclick="createBackup()">
+              <span>💾</span> Backup erstellen
+            </button>
+            <button class="btn-secondary" onclick="loadBackup()">
+              <span>📥</span> Backup laden
+            </button>
+          </div>
+          <p class="setting-hint" id="lastBackupInfo">Letzte Sicherung: Noch nie</p>
+        </div>
+        <hr>
+        <div class="setting-group">
+          <label>🗑️ Daten löschen</label>
+          <div class="setting-actions">
+            <button class="btn-secondary" onclick="clearHistory()">Verlauf löschen</button>
+            <button class="btn-danger" onclick="clearAllData()">Alle Daten zurücksetzen</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help Modal -->
+  <div id="modalHelp" class="modal">
+    <div class="modal-content modal-medium">
+      <div class="modal-header">
+        <h3>❓ Hilfe</h3>
+        <button class="btn-icon" onclick="closeModal('modalHelp')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="helpContent">
+          <h4>📖 Was können Sie hier tun?</h4>
+          <ul>
+            <li>Durchsuchen Sie alle VG-Normen</li>
+            <li>Nutzen Sie die Suche oben für schnelles Finden</li>
+            <li>Klicken Sie auf 🎤 für Sprachsuche</li>
+            <li>Markieren Sie wichtige Themen als Favorit (⭐)</li>
+            <li>Drucken Sie Formulare und Tabellen (🖨️)</li>
+          </ul>
+          <hr>
+          <h4>⌨️ Tastenkürzel</h4>
+          <table class="shortcuts-table">
+            <tr><td><kbd>Strg</kbd> + <kbd>F</kbd></td><td>Suche öffnen</td></tr>
+            <tr><td><kbd>Strg</kbd> + <kbd>P</kbd></td><td>Drucken</td></tr>
+            <tr><td><kbd>Strg</kbd> + <kbd>H</kbd></td><td>Startseite</td></tr>
+            <tr><td><kbd>Escape</kbd></td><td>Zurück / Schließen</td></tr>
+            <tr><td><kbd>+</kbd> / <kbd>-</kbd></td><td>Schrift größer/kleiner</td></tr>
+          </table>
+          <hr>
+          <h4>💡 Tipp</h4>
+          <p>Nutzen Sie die Sprachsuche (🎤) - einfach reinsprechen wie auf dem iPhone!</p>
+        </div>
+        <button class="btn-primary" onclick="closeModal('modalHelp')" style="width: 100%; margin-top: 20px;">
+          VERSTANDEN
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Voice Search Modal -->
+  <div id="modalVoice" class="modal">
+    <div class="modal-content modal-small voice-modal">
+      <div class="voice-icon pulse">🎤</div>
+      <div class="voice-status">Ich höre zu...</div>
+      <div id="voiceTranscript" class="voice-transcript"></div>
+      <button class="btn-secondary" onclick="stopVoiceSearch()">ABBRECHEN</button>
+    </div>
+  </div>
+
+  <!-- Document Rename Modal -->
+  <div id="modalRename" class="modal">
+    <div class="modal-content modal-small">
+      <div class="modal-header">
+        <h3>✏️ Datei umbenennen</h3>
+        <button class="btn-icon" onclick="closeModal('modalRename')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p id="renameOriginalName">Originaldatei: ...</p>
+        <div class="form-group">
+          <label>Neuer Name:</label>
+          <input type="text" id="renameInput" class="form-input">
+        </div>
+        <div class="modal-actions">
+          <button class="btn-secondary" onclick="closeModal('modalRename')">Abbrechen</button>
+          <button class="btn-primary" onclick="confirmRename()">Umbenennen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- SCRIPTS -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/search-engine.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>

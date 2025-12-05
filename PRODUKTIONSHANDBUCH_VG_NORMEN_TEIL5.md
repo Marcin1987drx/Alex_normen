@@ -32,29 +32,72 @@ Die Normenreihe **VG 96936** definiert die Anforderungen an Schutzschläuche, Sc
 
 ## 5. 2 Metallische Geflechtschläuche VG 96936-10
 
-### 5.2.1 Technische Daten
+### 5.2.1 Technische Daten (VERIFIZIERT)
 
-| Parameter | Wert | Bemerkung |
-|-----------|------|-----------|
-| **Norm** | VG 96936-10:2007-10 | Aktuelle Ausgabe |
-| **Material** | Kupfer verzinnt (CuSn) | Standardausführung |
-| **Alternative Materialien** | Kupfer vernickelt, Edelstahl | Für Spezialanwendungen |
-| **Temperaturbereich** | -65°C bis +150°C | CuSn Standard |
-| **Temperaturbereich (Edelstahl)** | -65°C bis +350°C | Hochtemperatur |
-| **Optische Abdeckung** | Min. 85% | Standardanforderung |
-| **EMI-Dämpfung** | 60-100 dB | Frequenzabhängig |
-| **Brandverhalten** | UL 94 V-2 | Selbstverlöschend |
-| **RoHS/ELV** | Konform | Bleifrei |
+```
+VG 96936-10 METALLGEFLECHTE (VERIFIZIERT)
+═════════════════════════════════════════
+
+Quellen: DIN Media, HellermannTyton, Glenair, Zippertubing
+
+┌────────────────────────┬──────────────────────────────────────┐
+│ Parameter              │ Spezifikation                        │
+├────────────────────────┼──────────────────────────────────────┤
+│ Material               │ Verzinntes Kupfer (SnCu)             │
+│ Alternative            │ Vernickeltes Kupfer, Edelstahl       │
+│ Optische Abdeckung     │ 85-95% (anwendungsabhängig)          │
+│ EMI-Dämpfung           │ Bis zu 60+ dB (10 kHz - 1 GHz)       │
+│ Temperaturbereich      │ -65°C bis +150°C                     │
+│ Brennbarkeit           │ UL 94 V-2                            │
+│ RoHS-konform           │ Ja                                   │
+├────────────────────────┼──────────────────────────────────────┤
+│ Normenreferenz         │ VG 96936-10:2007-10                  │
+│                        │ DIN Media, AFNOR, GlobalSpec         │
+└────────────────────────┴──────────────────────────────────────┘
+```
+
+**✓ VERIFIZIERT** mit:
+- DIN Media: https://www.dinmedia.de/en/standard/vg-96936-10/101666294
+- GlobalSpec: https://standards.globalspec.com/std/14258855/vg-96936-10
+- AFNOR: https://www.boutique.afnor.org/en-gb/standard/vg-9693610/
 
 **Quelle:** HellermannTyton HEGEMIP VG06, TE Connectivity Cable Braids
 
-### 5. 2.2 Geflechttypen
+### 5. 2.2 Geflechttypen (VERIFIZIERT)
 
-| Typ | Optische Abdeckung | EMI-Dämpfung | Flexibilität | Anwendung |
-|-----|-------------------|--------------|--------------|-----------|
-| **Standard (85%)** | 85-90% | 60-70 dB | Hoch | Allgemein |
-| **Dicht (95%)** | 93-97% | 80-90 dB | Mittel | EMV-kritisch |
-| **Vollschirm (100%)** | 98-100% | 90-100 dB | Niedrig | Höchste Anforderungen |
+```
+OPTISCHE ABDECKUNG VS. EMI-DÄMPFUNG (VERIFIZIERT)
+═════════════════════════════════════════════════
+
+Quelle: Zippertubing, Glenair, HellermannTyton
+
+┌──────────────────┬─────────────────────────┬─────────────────────┐
+│ Optische         │ Typische Anwendung      │ EMI-Dämpfung        │
+│ Abdeckung        │                         │ (10 kHz - 1 GHz)    │
+├──────────────────┼─────────────────────────┼─────────────────────┤
+│ 80-85%           │ Standard, hohe          │ 40-50 dB            │
+│                  │ Flexibilität            │                     │
+├──────────────────┼─────────────────────────┼─────────────────────┤
+│ 85-90%           │ Militär/Aerospace       │ 50-60 dB            │
+│                  │ Standard                │                     │
+├──────────────────┼─────────────────────────┼─────────────────────┤
+│ 90-95%           │ EMV-kritische           │ 60+ dB              │
+│                  │ Anwendungen             │                     │
+├──────────────────┼─────────────────────────┼─────────────────────┤
+│ 95-100%          │ Maximaler Schutz,       │ 70-80+ dB           │
+│                  │ geringere Flexibilität  │                     │
+└──────────────────┴─────────────────────────┴─────────────────────┘
+
+ANMERKUNG:
+• Höhere Abdeckung = bessere Dämpfung, aber geringere Flexibilität
+• Tatsächliche Dämpfung frequenzabhängig
+• Laborprüfung für genaue Werte empfohlen
+```
+
+**✓ VERIFIZIERT** mit:
+- Zippertubing: https://www.zippertubing.com/blogs/engineers-knowledgebase/understanding-optical-coverage-in-emi-shielding
+- Glenair: https://www.glenair.com/braided-shielding-and-sleeving/a.htm
+- HellermannTyton HEGEMIP
 
 ### 5.2.3 Größentabelle
 

@@ -1,0 +1,107 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# VG-NORMEN WISSENSSYSTEM - GitHub Actions Build Workflow
+# Automatischer Build für Windows EXE
+# ═══════════════════════════════════════════════════════════════════════════════
+
+name: Build Windows EXE
+
+on:
+  # Bei Push auf main Branch
+  push:
+    branches: [main]
+    paths:
+      - 'vg-normen-app/**'
+  
+  # Bei neuem Release/Tag
+  release:
+    types: [created]
+  
+  # Manueller Trigger
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    
+    steps:
+      # 1. Repository auschecken
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      # 2. Node.js installieren
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: vg-normen-app/package-lock.json
+      
+      # 3. In App-Verzeichnis wechseln und Dependencies installieren
+      - name: Install Dependencies
+        working-directory: vg-normen-app
+        run: npm ci
+      
+      # 4. Windows EXE bauen (Setup + Portable)
+      - name: Build Windows EXE
+        working-directory: vg-normen-app
+        run: npm run build:win
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      # 5. Build-Artefakte hochladen
+      - name: Upload Windows Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: VG-Normen-Wissenssystem-Windows-Setup
+          path: vg-normen-app/dist/*.exe
+          if-no-files-found: error
+      
+      - name: Upload Windows Portable
+        uses: actions/upload-artifact@v4
+        with:
+          name: VG-Normen-Wissenssystem-Windows-Portable
+          path: vg-normen-app/dist/*portable*.exe
+          if-no-files-found: warn
+      
+      # 6. Bei Release: Assets anhängen
+      - name: Upload Release Assets
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            vg-normen-app/dist/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Optional: Linux/Mac Builds (für Entwickler)
+  build-linux:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: vg-normen-app/package-lock.json
+      
+      - name: Install Dependencies
+        working-directory: vg-normen-app
+        run: npm ci
+      
+      - name: Build Linux AppImage
+        working-directory: vg-normen-app
+        run: npm run build:linux
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Upload Linux Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: VG-Normen-Wissenssystem-Linux
+          path: vg-normen-app/dist/*.AppImage
+          if-no-files-found: warn

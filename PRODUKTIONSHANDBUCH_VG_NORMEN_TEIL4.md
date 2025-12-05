@@ -162,28 +162,66 @@ VG 95319 - 1006 - 13 - 4 - P - N - 059
 
 ### 4.4.2 Kontaktgrößen und Strombelastbarkeit
 
-| Kontaktgröße | Querschnitt (mm²) | AWG | Strombelastbarkeit | Anwendung |
-|--------------|-------------------|-----|-------------------|-----------|
-| **22D** | 0,25 - 0,50 | 24-22 | 5A | Signale |
-| **22M** | 0,25 - 0,50 | 24-22 | 5A | Signale |
-| **20** | 0,50 - 0,75 | 22-20 | 7,5A | Signale/Strom |
-| **16** | 1,00 - 1,50 | 18-16 | 13A | Strom |
-| **12** | 2,50 - 4,00 | 14-12 | 23A | Hochstrom |
-| **8** | 6,00 - 10,00 | 10-8 | 46A | Hochstrom |
-| **4** | 16,00 - 25,00 | 6-4 | 85A | Hochstrom |
-| **0** | 35,00 - 50,00 | 2-0 | 150A | Hochstrom |
+```
+KONTAKTDATEN VG 95319-1009 (VERIFIZIERT)
+════════════════════════════════════════
 
-**Quelle:** Amphenol-Air LB VG95319-1009, PEI Genesis Datasheet
+Quellen: Amphenol-Air LB, MILNEC, Glenair
 
-### 4.4. 3 Kontaktmaterialien und Beschichtung
+┌────────────┬─────────────────┬─────────────┬──────────────────┐
+│ Kontakt-   │ AWG-Bereich     │ mm²-Bereich │ Strombelastbar-  │
+│ größe      │                 │ (ca.)       │ keit (max.)      │
+├────────────┼─────────────────┼─────────────┼──────────────────┤
+│ 22D        │ 22, 24, 26, 28  │ 0,13-0,50   │ 5 A              │
+│ 22M        │ 22, 24, 26, 28  │ 0,13-0,50   │ 5 A              │
+│ 20         │ 20, 22, 24      │ 0,25-0,75   │ 7,5 A            │
+│ 16         │ 16, 18, 20      │ 0,75-1,50   │ 13 A             │
+│ 12         │ 12, 14          │ 2,50-4,00   │ 23 A             │
+│ 8          │ 8, 10           │ 6,00-10,00  │ 46 A             │
+│ 4          │ 4, 6            │ 16,00-25,00 │ 85 A             │
+│ 0          │ 0, 2            │ 35,00-50,00 │ 150 A            │
+└────────────┴─────────────────┴─────────────┴──────────────────┘
+
+⚠️ WICHTIG: Diese Stromwerte sind TESTWERTE. 
+   Bei vollbestücktem Steckverbinder: Derating beachten!
+   Nicht alle Kontakte gleichzeitig mit Maximalstrom belasten!
+```
+
+**✓ VERIFIZIERT** mit:
+- Amphenol-Air LB: https://amphenol-airlb.de/en/products/kontakte-vg95319-1009
+- MILNEC D38999 Contacts
+- Glenair Contact Specifications
+
+### 4.4.2a Crimpspezifikationen (VERIFIZIERT)
+
+| Parameter | Typische Werte | Quelle |
+|-----------|----------------|--------|
+| **Crimpwell-Durchmesser** | 0,89 - 2,54 mm | MILNEC |
+| **Crimpwell-Tiefe** | 3,58 - 5,31 mm | MILNEC |
+| **Haltekraft (axial)** | 44 - 133 N (10-30 lbs) | MILNEC, Glenair |
+
+**Quelle:** Amphenol-Air LB VG95319-1009, PEI Genesis Datasheet, MILNEC, Glenair
+
+### 4.4. 3 Kontaktmaterialien und Beschichtung (VERIFIZIERT)
 
 | Schicht | Material | Dicke | Funktion |
 |---------|----------|-------|----------|
-| **Grundmaterial** | Kupferlegierung (CuTe, CuBe) | — | Elektrische Leitfähigkeit |
+| **Grundmaterial** | Berylliumkupfer (BeCu) | — | Elektrische Leitfähigkeit |
 | **Zwischenschicht** | Nickel (Ni) | 1,27 - 2,54 µm | Korrosionsschutz |
 | **Kontaktschicht** | Gold (Au) | 0,76 - 1,27 µm | Niedriger Übergangswiderstand |
 
 **Kontaktwiderstand:** < 2,5 mΩ (Neuzustand)
+
+**✓ VERIFIZIERT** mit Glenair Performance Specifications
+
+### 4.4.3a Umgebungsbedingungen (VERIFIZIERT)
+
+| Parameter | Wert | Quelle |
+|-----------|------|--------|
+| **Temperaturbereich** | -65°C bis +175°C | Mouser, Glenair ✓ |
+| **Vibration** | 15g, 10-2000 Hz | MIL-DTL-38999 |
+| **Stoß** | 100g, 6 ms | MIL-DTL-38999 |
+| **Salznebelbeständigkeit** | 500 Stunden | MIL-DTL-38999 |
 
 ### 4.4. 4 Crimpbereiche
 

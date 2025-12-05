@@ -1,0 +1,71 @@
+{
+  "name": "vg-normen-wissenssystem",
+  "version": "1.0.0",
+  "description": "VG-Normen Wissenssystem für Kabelkonfektion - Offline-Datenbank für Quality-Experten",
+  "main": "main.js",
+  "author": "Quality Team",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder --win",
+    "build-portable": "electron-builder --win portable",
+    "build-all": "electron-builder --win --x64"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "dependencies": {
+    "pdf-parse": "^1.1.1"
+  },
+  "build": {
+    "appId": "com.quality.vg-normen",
+    "productName": "VG-Normen Wissenssystem",
+    "copyright": "Copyright © 2024 Quality Team",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerLanguages": ["de"],
+      "language": "1031",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "VG-Normen"
+    },
+    "portable": {
+      "artifactName": "${productName}-Portable-${version}.${ext}"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "app/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "app/user_documents",
+        "to": "user_documents",
+        "filter": ["**/*"]
+      }
+    ]
+  }
+}

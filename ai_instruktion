@@ -1,6 +1,2247 @@
 # 🎯 VG-NORMEN WISSENSSYSTEM - VOLLSTÄNDIGE IMPLEMENTIERUNGSANLEITUNG
 
-## FÜR: Claude Opus 4. 5 in GitHub Codespace
+## FÜR: Claude Opus 4.5 in GitHub Codespace
+
+---
+
+# 🔄 GITHUB ACTIONS - AUTOMATISCHER BUILD
+
+## CI/CD Pipeline für automatischen EXE-Build
+
+Bei jedem Push oder Release wird automatisch eine Windows .exe erstellt!
+
+### .github/workflows/build.yml
+
+```yaml
+name: Build Windows App
+
+on:
+  push:
+    branches: [ main ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:  # Manueller Start möglich
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: vg-normen-app/package-lock.json
+      
+      - name: Install Dependencies
+        working-directory: ./vg-normen-app
+        run: npm ci
+      
+      - name: Build Electron App
+        working-directory: ./vg-normen-app
+        run: npm run build
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Upload Installer Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: VG-Normen-Setup
+          path: vg-normen-app/dist/*.exe
+          retention-days: 30
+      
+      - name: Upload Portable Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: VG-Normen-Portable
+          path: vg-normen-app/dist/*-portable.exe
+          retention-days: 30
+
+  # Release erstellen wenn Tag gepusht wird
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            artifacts/**/*.exe
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+### Wie es funktioniert:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  🔄 AUTOMATISCHER BUILD-PROZESS                                                │
+│                                                                                 │
+│  1️⃣  Push auf main Branch                                                      │
+│      ↓                                                                          │
+│  2️⃣  GitHub Actions startet automatisch                                        │
+│      ↓                                                                          │
+│  3️⃣  Windows VM wird gestartet                                                 │
+│      ↓                                                                          │
+│  4️⃣  Node.js + Dependencies installiert                                        │
+│      ↓                                                                          │
+│  5️⃣  Electron-Builder erstellt .exe                                            │
+│      ↓                                                                          │
+│  6️⃣  .exe als Artifact hochgeladen (30 Tage verfügbar)                         │
+│                                                                                 │
+│  ═══════════════════════════════════════════════════════════════════════════   │
+│                                                                                 │
+│  FÜR RELEASE (Tag mit v*):                                                     │
+│                                                                                 │
+│  git tag v1.0.0                                                                │
+│  git push origin v1.0.0                                                        │
+│      ↓                                                                          │
+│  GitHub Release wird erstellt mit .exe zum Download!                           │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Download der fertigen App:
+
+1. Gehe zu **Actions** Tab im GitHub Repository
+2. Klicke auf den letzten erfolgreichen Build
+3. Scrolle zu **Artifacts**
+4. Download **VG-Normen-Setup.exe** oder **VG-Normen-Portable.exe**
+
+---
+
+# 💻 DESKTOP-ANWENDUNG (EXE) - ELECTRON
+
+## ÜBERSICHT: Warum Desktop-App?
+
+Der Benutzer möchte die Anwendung **NICHT im Browser**, sondern als **eigenständiges Programm** mit eigenem Fenster. Wie ein normales Windows-Programm!
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  💻 DESKTOP-APP VORTEILE                                                       │
+│                                                                                 │
+│  ✅ Eigenes Fenster (nicht im Browser)                                         │
+│  ✅ Icon auf dem Desktop / in der Taskleiste                                   │
+│  ✅ Startet wie ein normales Programm (.exe Doppelklick)                       │
+│  ✅ Vollständiger Dateisystem-Zugriff (Ordner scannen!)                        │
+│  ✅ Native Dialoge (Datei öffnen, Speichern unter...)                          │
+│  ✅ Drucken funktioniert besser                                                │
+│  ✅ Kein Browser nötig                                                         │
+│  ✅ Funktioniert 100% offline                                                  │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## TECHNOLOGIE: ELECTRON
+
+**Electron** ermöglicht es, Web-Apps (HTML/CSS/JS) als Desktop-Programme zu verpacken.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  WAS IST ELECTRON?                                                             │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                                                                         │   │
+│  │   Ihre Web-App (HTML/CSS/JS)                                            │   │
+│  │           +                                                             │   │
+│  │   Chromium (Browser-Engine)                                             │   │
+│  │           +                                                             │   │
+│  │   Node.js (Dateisystem-Zugriff)                                         │   │
+│  │           =                                                             │   │
+│  │   Native Desktop-Anwendung (.exe)                                       │   │
+│  │                                                                         │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+│  BEKANNTE ELECTRON-APPS:                                                       │
+│  • VS Code                                                                     │
+│  • Slack                                                                       │
+│  • Discord                                                                     │
+│  • Microsoft Teams                                                             │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## PROJEKTSTRUKTUR FÜR ELECTRON
+
+```
+📁 vg-normen-app/
+│
+├── package.json                    ← Electron-Konfiguration
+├── main.js                         ← Electron Hauptprozess
+├── preload.js                      ← Bridge zwischen Node.js und Browser
+│
+├── 📁 app/                         ← Ihre Web-App (wie vorher)
+│   ├── index.html
+│   ├── style.css
+│   ├── app.js
+│   ├── 📁 js/
+│   ├── 📁 wissensbasis/
+│   ├── 📁 formulare/
+│   ├── 📁 bilder/
+│   └── 📁 user_documents/          ← Benutzer-Dokumente (voller Zugriff!)
+│
+├── 📁 build/                       ← Build-Konfiguration
+│   └── icon.ico                    ← App-Icon für Windows
+│
+└── 📁 dist/                        ← Fertige .exe Datei (nach Build)
+    └── VG-Normen-Setup.exe
+```
+
+---
+
+## PACKAGE.JSON FÜR ELECTRON
+
+```json
+{
+  "name": "vg-normen-wissenssystem",
+  "version": "1.0.0",
+  "description": "VG-Normen Wissenssystem für Kabelkonfektion",
+  "main": "main.js",
+  "author": "Quality Team",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win",
+    "build-portable": "electron-builder --win portable"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "com.quality.vg-normen",
+    "productName": "VG-Normen Wissenssystem",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerLanguages": ["de"],
+      "language": "1031"
+    },
+    "portable": {
+      "artifactName": "VG-Normen-Portable.exe"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "app/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "app/user_documents",
+        "to": "user_documents",
+        "filter": ["**/*"]
+      }
+    ]
+  }
+}
+```
+
+---
+
+## MAIN.JS - ELECTRON HAUPTPROZESS
+
+```javascript
+const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
+const path = require('path');
+const fs = require('fs');
+
+let mainWindow;
+
+// Fenster erstellen
+function createWindow() {
+  mainWindow = new BrowserWindow({
+    width: 1400,
+    height: 900,
+    minWidth: 1024,
+    minHeight: 768,
+    icon: path.join(__dirname, 'build/icon.ico'),
+    title: 'VG-Normen Wissenssystem',
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false
+    }
+  });
+
+  // Web-App laden
+  mainWindow.loadFile('app/index.html');
+
+  // Menü entfernen (einfacher für 66-Jährigen)
+  mainWindow.setMenu(null);
+
+  // DevTools nur in Entwicklung
+  if (process.env.NODE_ENV === 'development') {
+    mainWindow.webContents.openDevTools();
+  }
+}
+
+// App starten
+app.whenReady().then(createWindow);
+
+// Beenden wenn alle Fenster geschlossen
+app.on('window-all-closed', () => {
+  app.quit();
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DATEISYSTEM-FUNKTIONEN (für Benutzer-Dokumente)
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Pfad zum user_documents Ordner
+function getUserDocumentsPath() {
+  // Im installierten Modus: neben der .exe
+  // Im Entwicklungsmodus: im Projektordner
+  if (app.isPackaged) {
+    return path.join(path.dirname(app.getPath('exe')), 'user_documents');
+  } else {
+    return path.join(__dirname, 'app', 'user_documents');
+  }
+}
+
+// Ordner erstellen falls nicht vorhanden
+function ensureUserDocumentsFolder() {
+  const folderPath = getUserDocumentsPath();
+  if (!fs.existsSync(folderPath)) {
+    fs.mkdirSync(folderPath, { recursive: true });
+  }
+  return folderPath;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// IPC HANDLERS (Kommunikation zwischen App und Node.js)
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Ordner scannen
+ipcMain.handle('scan-documents-folder', async () => {
+  const folderPath = ensureUserDocumentsFolder();
+  
+  try {
+    const files = fs.readdirSync(folderPath);
+    const fileInfos = [];
+    
+    for (const fileName of files) {
+      const filePath = path.join(folderPath, fileName);
+      const stats = fs.statSync(filePath);
+      
+      if (stats.isFile()) {
+        const ext = path.extname(fileName).toLowerCase();
+        if (['.pdf', '.docx', '.doc', '.txt', '.md', '.jpg', '.jpeg', '.png'].includes(ext)) {
+          fileInfos.push({
+            name: fileName,
+            path: filePath,
+            size: stats.size,
+            modified: stats.mtime.toISOString(),
+            type: ext.replace('.', '')
+          });
+        }
+      }
+    }
+    
+    return { success: true, files: fileInfos };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Datei lesen (für PDF/DOCX Textextraktion)
+ipcMain.handle('read-file', async (event, filePath) => {
+  try {
+    const buffer = fs.readFileSync(filePath);
+    return { success: true, data: buffer };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Datei öffnen Dialog
+ipcMain.handle('open-file-dialog', async (event, options) => {
+  const result = await dialog.showOpenDialog(mainWindow, {
+    title: options.title || 'Dateien auswählen',
+    filters: options.filters || [
+      { name: 'Alle unterstützten', extensions: ['pdf', 'docx', 'doc', 'txt', 'md', 'jpg', 'jpeg', 'png'] },
+      { name: 'PDF Dokumente', extensions: ['pdf'] },
+      { name: 'Word Dokumente', extensions: ['docx', 'doc'] },
+      { name: 'Textdateien', extensions: ['txt', 'md'] },
+      { name: 'Bilder', extensions: ['jpg', 'jpeg', 'png'] }
+    ],
+    properties: ['openFile', 'multiSelections']
+  });
+  
+  return result;
+});
+
+// Ordner öffnen Dialog
+ipcMain.handle('open-folder-dialog', async () => {
+  const result = await dialog.showOpenDialog(mainWindow, {
+    title: 'Ordner auswählen',
+    properties: ['openDirectory']
+  });
+  
+  return result;
+});
+
+// Datei in user_documents kopieren
+ipcMain.handle('copy-file-to-documents', async (event, sourcePath) => {
+  const folderPath = ensureUserDocumentsFolder();
+  const fileName = path.basename(sourcePath);
+  const destPath = path.join(folderPath, fileName);
+  
+  try {
+    fs.copyFileSync(sourcePath, destPath);
+    return { success: true, path: destPath };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Datei umbenennen
+ipcMain.handle('rename-file', async (event, oldPath, newName) => {
+  const folderPath = path.dirname(oldPath);
+  const newPath = path.join(folderPath, newName);
+  
+  try {
+    fs.renameSync(oldPath, newPath);
+    return { success: true, path: newPath };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Datei löschen
+ipcMain.handle('delete-file', async (event, filePath) => {
+  try {
+    // In Papierkorb verschieben (sicherer)
+    await shell.trashItem(filePath);
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// User Documents Ordner öffnen (im Windows Explorer)
+ipcMain.handle('open-documents-folder', async () => {
+  const folderPath = ensureUserDocumentsFolder();
+  shell.openPath(folderPath);
+  return { success: true, path: folderPath };
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DRUCKEN
+// ═══════════════════════════════════════════════════════════════════════════
+
+ipcMain.handle('print-page', async (event, options) => {
+  try {
+    await mainWindow.webContents.print({
+      silent: false,           // Druckdialog anzeigen
+      printBackground: true,   // Hintergrundfarben drucken
+      ...options
+    });
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Als PDF speichern
+ipcMain.handle('save-as-pdf', async (event, fileName) => {
+  const result = await dialog.showSaveDialog(mainWindow, {
+    title: 'Als PDF speichern',
+    defaultPath: fileName || 'dokument.pdf',
+    filters: [{ name: 'PDF', extensions: ['pdf'] }]
+  });
+  
+  if (result.canceled) {
+    return { success: false, canceled: true };
+  }
+  
+  try {
+    const pdfData = await mainWindow.webContents.printToPDF({
+      printBackground: true,
+      pageSize: 'A4'
+    });
+    
+    fs.writeFileSync(result.filePath, pdfData);
+    return { success: true, path: result.filePath };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BACKUP / EXPORT
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Backup speichern
+ipcMain.handle('save-backup', async (event, backupData) => {
+  const result = await dialog.showSaveDialog(mainWindow, {
+    title: 'Backup speichern',
+    defaultPath: `VG-Normen-Backup_${new Date().toISOString().split('T')[0]}.json`,
+    filters: [{ name: 'JSON Backup', extensions: ['json'] }]
+  });
+  
+  if (result.canceled) {
+    return { success: false, canceled: true };
+  }
+  
+  try {
+    fs.writeFileSync(result.filePath, JSON.stringify(backupData, null, 2));
+    return { success: true, path: result.filePath };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Backup laden
+ipcMain.handle('load-backup', async () => {
+  const result = await dialog.showOpenDialog(mainWindow, {
+    title: 'Backup laden',
+    filters: [{ name: 'JSON Backup', extensions: ['json'] }],
+    properties: ['openFile']
+  });
+  
+  if (result.canceled) {
+    return { success: false, canceled: true };
+  }
+  
+  try {
+    const data = fs.readFileSync(result.filePaths[0], 'utf8');
+    return { success: true, data: JSON.parse(data) };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+```
+
+---
+
+## PRELOAD.JS - BRIDGE ZWISCHEN NODE.JS UND BROWSER
+
+```javascript
+const { contextBridge, ipcRenderer } = require('electron');
+
+// Sichere API für die Web-App bereitstellen
+contextBridge.exposeInMainWorld('electronAPI', {
+  
+  // ═══════════════════════════════════════════════════════════════════════
+  // DATEISYSTEM
+  // ═══════════════════════════════════════════════════════════════════════
+  
+  // Dokumente-Ordner scannen
+  scanDocumentsFolder: () => ipcRenderer.invoke('scan-documents-folder'),
+  
+  // Datei lesen
+  readFile: (filePath) => ipcRenderer.invoke('read-file', filePath),
+  
+  // Datei öffnen Dialog
+  openFileDialog: (options) => ipcRenderer.invoke('open-file-dialog', options),
+  
+  // Ordner öffnen Dialog
+  openFolderDialog: () => ipcRenderer.invoke('open-folder-dialog'),
+  
+  // Datei in Dokumente kopieren
+  copyFileToDocuments: (sourcePath) => ipcRenderer.invoke('copy-file-to-documents', sourcePath),
+  
+  // Datei umbenennen
+  renameFile: (oldPath, newName) => ipcRenderer.invoke('rename-file', oldPath, newName),
+  
+  // Datei löschen
+  deleteFile: (filePath) => ipcRenderer.invoke('delete-file', filePath),
+  
+  // Dokumente-Ordner im Explorer öffnen
+  openDocumentsFolder: () => ipcRenderer.invoke('open-documents-folder'),
+  
+  // ═══════════════════════════════════════════════════════════════════════
+  // DRUCKEN
+  // ═══════════════════════════════════════════════════════════════════════
+  
+  // Seite drucken
+  printPage: (options) => ipcRenderer.invoke('print-page', options),
+  
+  // Als PDF speichern
+  saveAsPdf: (fileName) => ipcRenderer.invoke('save-as-pdf', fileName),
+  
+  // ═══════════════════════════════════════════════════════════════════════
+  // BACKUP
+  // ═══════════════════════════════════════════════════════════════════════
+  
+  // Backup speichern
+  saveBackup: (data) => ipcRenderer.invoke('save-backup', data),
+  
+  // Backup laden
+  loadBackup: () => ipcRenderer.invoke('load-backup'),
+  
+  // ═══════════════════════════════════════════════════════════════════════
+  // UTILS
+  // ═══════════════════════════════════════════════════════════════════════
+  
+  // Prüfen ob wir in Electron laufen
+  isElectron: true
+});
+```
+
+---
+
+## APP.JS - ANPASSUNGEN FÜR ELECTRON
+
+In der Web-App müssen wir prüfen ob wir in Electron oder im Browser laufen:
+
+```javascript
+// Prüfen ob Electron verfügbar
+const isElectron = window.electronAPI?.isElectron === true;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DATEIEN LADEN - Unterschiedlich je nach Umgebung
+// ═══════════════════════════════════════════════════════════════════════════
+
+async function scanUserDocuments() {
+  if (isElectron) {
+    // ELECTRON: Direkter Dateisystem-Zugriff
+    const result = await window.electronAPI.scanDocumentsFolder();
+    if (result.success) {
+      return result.files;
+    } else {
+      showToast('❌ Fehler beim Scannen: ' + result.error);
+      return [];
+    }
+  } else {
+    // BROWSER: Aus LocalStorage laden (eingeschränkt)
+    return JSON.parse(localStorage.getItem('userDocumentsIndex') || '[]');
+  }
+}
+
+async function addNewDocuments() {
+  if (isElectron) {
+    // ELECTRON: Native Datei-Dialog
+    const result = await window.electronAPI.openFileDialog({
+      title: 'Dokumente hinzufügen'
+    });
+    
+    if (!result.canceled && result.filePaths.length > 0) {
+      for (const filePath of result.filePaths) {
+        // Datei in user_documents kopieren
+        await window.electronAPI.copyFileToDocuments(filePath);
+      }
+      
+      // Neu scannen
+      await refreshDocumentsList();
+      showToast(`✅ ${result.filePaths.length} Datei(en) hinzugefügt!`);
+    }
+  } else {
+    // BROWSER: HTML File Input
+    document.getElementById('fileInput').click();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DRUCKEN - Unterschiedlich je nach Umgebung
+// ═══════════════════════════════════════════════════════════════════════════
+
+async function printPage() {
+  if (isElectron) {
+    // ELECTRON: Native Druckdialog
+    await window.electronAPI.printPage();
+  } else {
+    // BROWSER: window.print()
+    window.print();
+  }
+}
+
+async function saveAsPdf(title) {
+  if (isElectron) {
+    // ELECTRON: Als PDF speichern mit Dialog
+    const result = await window.electronAPI.saveAsPdf(title + '.pdf');
+    if (result.success) {
+      showToast('✅ PDF gespeichert: ' + result.path);
+    }
+  } else {
+    // BROWSER: Druckdialog (PDF als Drucker wählen)
+    showToast('ℹ️ Wählen Sie "Als PDF speichern" im Druckdialog');
+    window.print();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BACKUP - Unterschiedlich je nach Umgebung
+// ═══════════════════════════════════════════════════════════════════════════
+
+async function createBackup() {
+  const backupData = {
+    version: '1.0',
+    created: new Date().toISOString(),
+    data: {
+      favorites: JSON.parse(localStorage.getItem('favorites') || '[]'),
+      viewHistory: JSON.parse(localStorage.getItem('viewHistory') || '[]'),
+      userDocumentsIndex: JSON.parse(localStorage.getItem('userDocumentsIndex') || '{}'),
+      settings: {
+        fontSize: localStorage.getItem('fontSize') || 'normal',
+        highContrast: localStorage.getItem('highContrast') === 'true'
+      }
+    }
+  };
+  
+  if (isElectron) {
+    // ELECTRON: Native Speichern-Dialog
+    const result = await window.electronAPI.saveBackup(backupData);
+    if (result.success) {
+      showToast('✅ Backup gespeichert: ' + result.path);
+      localStorage.setItem('lastBackup', new Date().toISOString());
+    }
+  } else {
+    // BROWSER: Download als Blob
+    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `VG-Normen-Backup_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('✅ Backup heruntergeladen!');
+  }
+}
+
+async function loadBackup() {
+  if (isElectron) {
+    // ELECTRON: Native Öffnen-Dialog
+    const result = await window.electronAPI.loadBackup();
+    if (result.success) {
+      restoreBackupData(result.data);
+    }
+  } else {
+    // BROWSER: File Input
+    document.getElementById('backupFileInput').click();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ORDNER ÖFFNEN (nur in Electron)
+// ═══════════════════════════════════════════════════════════════════════════
+
+async function openDocumentsFolder() {
+  if (isElectron) {
+    await window.electronAPI.openDocumentsFolder();
+  } else {
+    showToast('ℹ️ Diese Funktion ist nur in der Desktop-App verfügbar.');
+  }
+}
+```
+
+---
+
+## BUILD-ANLEITUNG: VON WEB-APP ZU EXE
+
+### Schritt 1: Node.js installieren (einmalig)
+```bash
+# Download von https://nodejs.org/
+# Version 18 oder höher
+```
+
+### Schritt 2: Projektordner vorbereiten
+```bash
+cd vg-normen-app
+
+# Dependencies installieren
+npm install
+
+# Electron und Builder installieren
+npm install --save-dev electron electron-builder
+```
+
+### Schritt 3: App bauen
+```bash
+# Installer erstellen (.exe mit Installation)
+npm run build
+
+# ODER: Portable Version (eine .exe, keine Installation)
+npm run build-portable
+```
+
+### Schritt 4: Fertige App
+```
+📁 dist/
+├── VG-Normen-Setup.exe        ← Installer (mit Installation)
+└── VG-Normen-Portable.exe     ← Portable (ohne Installation)
+```
+
+---
+
+## VORTEILE DER ELECTRON-VERSION
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  VERGLEICH: BROWSER vs ELECTRON                                                │
+│                                                                                 │
+│  ┌─────────────────────────────┬─────────────────────────────────────────────┐ │
+│  │ FUNKTION                    │ BROWSER          │ ELECTRON (.exe)          │ │
+│  ├─────────────────────────────┼──────────────────┼──────────────────────────┤ │
+│  │ Eigenes Fenster             │ ❌ Nein          │ ✅ Ja                    │ │
+│  │ Desktop-Icon                │ ❌ Nein          │ ✅ Ja                    │ │
+│  │ Ordner scannen              │ ❌ Eingeschränkt │ ✅ Voller Zugriff        │ │
+│  │ Dateien automatisch laden   │ ❌ Nein          │ ✅ Ja                    │ │
+│  │ Native Dialoge              │ ❌ Nein          │ ✅ Ja                    │ │
+│  │ Drucken                     │ ⚠️ Browser-Dialog│ ✅ Native Dialog         │ │
+│  │ Als PDF speichern           │ ⚠️ Umständlich   │ ✅ Ein Klick             │ │
+│  │ Dateien umbenennen          │ ❌ Nein          │ ✅ Ja                    │ │
+│  │ Explorer öffnen             │ ❌ Nein          │ ✅ Ja                    │ │
+│  │ Taskleisten-Integration     │ ❌ Nein          │ ✅ Ja                    │ │
+│  │ Offline-Nutzung             │ ✅ Ja            │ ✅ Ja                    │ │
+│  │ Sprachsuche                 │ ✅ Ja            │ ✅ Ja                    │ │
+│  └─────────────────────────────┴──────────────────┴──────────────────────────┘ │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## DESKTOP-APP UI ANPASSUNGEN
+
+### Zusätzlicher Button: "Ordner öffnen"
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  📁 MEINE DOKUMENTE                                                            │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                                                                         │   │
+│  │  💡 SO FUNKTIONIERT ES:                                                 │   │
+│  │                                                                         │   │
+│  │  1. Klicken Sie "📂 ORDNER ÖFFNEN" - der Dokumenten-Ordner öffnet sich │   │
+│  │  2. Kopieren Sie Ihre Dateien dort hinein (einfach reinkopieren!)      │   │
+│  │  3. Klicken Sie "🔄 NEUE DATEIEN LADEN"                                 │   │
+│  │                                                                         │   │
+│  │  Das war's! Alle neuen Dateien werden automatisch erkannt.              │   │
+│  │                                                                         │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+│  ┌─────────────────────────────┐  ┌─────────────────────────────────────────┐  │
+│  │                             │  │                                         │  │
+│  │  📂 ORDNER ÖFFNEN           │  │  🔄 NEUE DATEIEN LADEN                  │  │
+│  │                             │  │                                         │  │
+│  │  Öffnet den Dokumenten-     │  │  Scannt den Ordner und                  │  │
+│  │  Ordner im Windows Explorer │  │  findet alle neuen Dateien              │  │
+│  │                             │  │                                         │  │
+│  └─────────────────────────────┘  └─────────────────────────────────────────┘  │
+│                                                                                 │
+│  ───────────────────────────── ODER ─────────────────────────────────────────  │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                                                                         │   │
+│  │  📄 DATEIEN DIREKT HINZUFÜGEN                                           │   │
+│  │                                                                         │   │
+│  │  Öffnet einen Dialog zum Auswählen von Dateien                          │   │
+│  │                                                                         │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+# 👴 SPEZIELLE FUNKTIONEN FÜR DEN 66-JÄHRIGEN BENUTZER
+
+## ÜBERSICHT: Alle Komfortfunktionen
+
+Diese Anwendung ist speziell für einen erfahrenen Quality-Experten (66 Jahre, 40 Jahre Erfahrung) optimiert. Folgende Funktionen sind **PFLICHT**:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  👴 BENUTZERFREUNDLICHKEIT - CHECKLISTE                                        │
+│                                                                                 │
+│  ✅ 1.  Einstellbare Schriftgröße (Normal / Groß / Sehr Groß)                  │
+│  ✅ 2.  Hoher Kontrast Modus                                                   │
+│  ✅ 3.  Verlauf (Zuletzt angesehen) - was habe ich gestern gesucht?            │
+│  ✅ 4.  Schnellzugriff auf häufige Aktionen                                    │
+│  ✅ 5.  Sprachsuche (Mikrofon-Button) - wie auf dem iPhone!                    │
+│  ✅ 6.  Drucken-Button auf JEDER Seite                                         │
+│  ✅ 7.  Hilfe-Button (?) auf jeder Seite                                       │
+│  ✅ 8.  Breadcrumbs Navigation (Wo bin ich?)                                   │
+│  ✅ 9.  Backup/Export der eigenen Daten                                        │
+│  ✅ 10. Offline-Indikator (Beruhigung dass alles funktioniert)                 │
+│  ✅ 11. Tastenkürzel für Power-User                                            │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 1️⃣ EINSTELLBARE SCHRIFTGRÖSSE
+
+### Wireframe:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  ⚙️ EINSTELLUNGEN                                     [Im Header, immer sichtbar]
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                                                                         │   │
+│  │  📏 SCHRIFTGRÖSSE                                                       │   │
+│  │                                                                         │   │
+│  │  ┌────────────┐  ┌────────────┐  ┌────────────┐                        │   │
+│  │  │            │  │            │  │            │                        │   │
+│  │  │   Normal   │  │   GROSS    │  │ SEHR GROSS │                        │   │
+│  │  │    Aa      │  │    Aa      │  │    Aa      │                        │   │
+│  │  │   18px     │  │   22px     │  │   26px     │                        │   │
+│  │  │            │  │            │  │     ✓      │   ← aktiv              │   │
+│  │  └────────────┘  └────────────┘  └────────────┘                        │   │
+│  │                                                                         │   │
+│  │  ─────────────────────────────────────────────────────────────────     │   │
+│  │                                                                         │   │
+│  │  🎨 KONTRAST                                                            │   │
+│  │                                                                         │   │
+│  │  ┌─────────────────────┐  ┌─────────────────────┐                      │   │
+│  │  │                     │  │                     │                      │   │
+│  │  │   Normal            │  │   Hoher Kontrast    │                      │   │
+│  │  │   ○                 │  │   ●  ← aktiv        │                      │   │
+│  │  │                     │  │                     │                      │   │
+│  │  └─────────────────────┘  └─────────────────────┘                      │   │
+│  │                                                                         │   │
+│  │  ─────────────────────────────────────────────────────────────────     │   │
+│  │                                                                         │   │
+│  │  💾 Einstellungen werden automatisch gespeichert!                      │   │
+│  │                                                                         │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### CSS Implementierung:
+
+```css
+/* Schriftgrößen-Stufen */
+:root {
+  --font-scale: 1; /* Default */
+}
+
+body.font-normal { --font-scale: 1; }
+body.font-gross { --font-scale: 1.22; }      /* 22px base */
+body.font-sehr-gross { --font-scale: 1.44; } /* 26px base */
+
+/* Alle Texte skalieren */
+body {
+  font-size: calc(18px * var(--font-scale));
+}
+
+h1 { font-size: calc(32px * var(--font-scale)); }
+h2 { font-size: calc(26px * var(--font-scale)); }
+h3 { font-size: calc(22px * var(--font-scale)); }
+
+/* Buttons auch größer */
+.btn {
+  padding: calc(12px * var(--font-scale)) calc(24px * var(--font-scale));
+  font-size: calc(18px * var(--font-scale));
+}
+
+/* Hoher Kontrast */
+body.high-contrast {
+  --color-background: #000000;
+  --color-surface: #1a1a1a;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #e0e0e0;
+  --color-primary: #4fc3f7;
+  --color-border: #ffffff;
+}
+```
+
+### JavaScript:
+
+```javascript
+// Schriftgröße speichern/laden
+function setFontSize(size) {
+  document.body.classList.remove('font-normal', 'font-gross', 'font-sehr-gross');
+  document.body.classList.add(`font-${size}`);
+  localStorage.setItem('fontSize', size);
+}
+
+function loadFontSize() {
+  const size = localStorage.getItem('fontSize') || 'normal';
+  setFontSize(size);
+}
+
+// Kontrast speichern/laden
+function setHighContrast(enabled) {
+  document.body.classList.toggle('high-contrast', enabled);
+  localStorage.setItem('highContrast', enabled);
+}
+```
+
+---
+
+## 2️⃣ VERLAUF (ZULETZT ANGESEHEN)
+
+### Wireframe:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  🕐 ZULETZT ANGESEHEN                                                          │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                                                                         │   │
+│  │  📄 Crimp Kontakt 16 - Spezifikation                                   │   │
+│  │     🔧 Crimpen  •  vor 5 Minuten                              [→]      │   │
+│  │                                                                         │   │
+│  ├─────────────────────────────────────────────────────────────────────────┤   │
+│  │                                                                         │   │
+│  │  📊 VG 95218 - Kabelübersicht System 150                               │   │
+│  │     📏 Kabel  •  vor 1 Stunde                                 [→]      │   │
+│  │                                                                         │   │
+│  ├─────────────────────────────────────────────────────────────────────────┤   │
+│  │                                                                         │   │
+│  │  📋 Formular F-07 Crimp-Prüfprotokoll                                  │   │
+│  │     📋 Formulare  •  gestern                                  [→]      │   │
+│  │                                                                         │   │
+│  ├─────────────────────────────────────────────────────────────────────────┤   │
+│  │                                                                         │   │
+│  │  📷 Bellmouth Akzeptanzkriterien                                       │   │
+│  │     🔧 Crimpen  •  vor 2 Tagen                                [→]      │   │
+│  │                                                                         │   │
+│  ├─────────────────────────────────────────────────────────────────────────┤   │
+│  │                                                                         │   │
+│  │  📄 Mein Dokument: Audit_Amphenol_2024.pdf                             │   │
+│  │     📁 Meine Dokumente  •  vor 3 Tagen                        [→]      │   │
+│  │                                                                         │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │  🗑️ VERLAUF LÖSCHEN                                                    │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### JavaScript:
+
+```javascript
+// Verlauf verwalten (max. 20 Einträge)
+const MAX_HISTORY = 20;
+
+function addToHistory(item) {
+  let history = JSON.parse(localStorage.getItem('viewHistory') || '[]');
+  
+  // Duplikate entfernen
+  history = history.filter(h => h.id !== item.id);
+  
+  // Neuen Eintrag am Anfang
+  history.unshift({
+    id: item.id,
+    title: item.title,
+    category: item.category,
+    type: item.type, // 'wissensbasis' oder 'meine_dokumente'
+    timestamp: Date.now()
+  });
+  
+  // Auf MAX begrenzen
+  history = history.slice(0, MAX_HISTORY);
+  
+  localStorage.setItem('viewHistory', JSON.stringify(history));
+}
+
+function getHistory() {
+  return JSON.parse(localStorage.getItem('viewHistory') || '[]');
+}
+
+function clearHistory() {
+  if (confirm('Verlauf wirklich löschen?')) {
+    localStorage.removeItem('viewHistory');
+    renderHistory();
+  }
+}
+
+// Zeitanzeige formatieren
+function formatTimeAgo(timestamp) {
+  const seconds = Math.floor((Date.now() - timestamp) / 1000);
+  
+  if (seconds < 60) return 'gerade eben';
+  if (seconds < 3600) return `vor ${Math.floor(seconds / 60)} Minuten`;
+  if (seconds < 86400) return `vor ${Math.floor(seconds / 3600)} Stunden`;
+  if (seconds < 172800) return 'gestern';
+  return `vor ${Math.floor(seconds / 86400)} Tagen`;
+}
+```
+
+---
+
+## 3️⃣ SCHNELLZUGRIFF (Startseite)
+
+### Wireframe:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  ⚡ SCHNELLZUGRIFF                                                              │
+│                                                                                 │
+│  ┌───────────────┐  ┌───────────────┐  ┌───────────────┐  ┌───────────────┐    │
+│  │               │  │               │  │               │  │               │    │
+│  │      📋       │  │      📊       │  │      🔧       │  │      📷       │    │
+│  │               │  │               │  │               │  │               │    │
+│  │   FORMULARE   │  │   TABELLEN    │  │    CRIMP-     │  │     GUT/      │    │
+│  │    DRUCKEN    │  │     ALLE      │  │    WERTE      │  │   SCHLECHT    │    │
+│  │               │  │               │  │               │  │    BILDER     │    │
+│  │   15 Stück    │  │   32 Stück    │  │  Alle Größen  │  │   47 Bilder   │    │
+│  │               │  │               │  │               │  │               │    │
+│  └───────────────┘  └───────────────┘  └───────────────┘  └───────────────┘    │
+│                                                                                 │
+│  ┌───────────────┐  ┌───────────────┐  ┌───────────────┐  ┌───────────────┐    │
+│  │               │  │               │  │               │  │               │    │
+│  │      🔍       │  │      📁       │  │      ⭐       │  │      🕐       │    │
+│  │               │  │               │  │               │  │               │    │
+│  │    SUCHE      │  │    MEINE      │  │   FAVORITEN   │  │   ZULETZT     │    │
+│  │    ÖFFNEN     │  │   DOKUMENTE   │  │               │  │   ANGESEHEN   │    │
+│  │               │  │               │  │               │  │               │    │
+│  │               │  │   3 Dateien   │  │   7 Favoriten │  │   12 Einträge │    │
+│  │               │  │               │  │               │  │               │    │
+│  └───────────────┘  └───────────────┘  └───────────────┘  └───────────────┘    │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### CSS für große Kacheln:
+
+```css
+.quick-access-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-lg);
+  margin: var(--spacing-xl) 0;
+}
+
+.quick-access-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 2px solid var(--color-border);
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+}
+
+.quick-access-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-primary);
+}
+
+.quick-access-card .icon {
+  font-size: 48px;
+}
+
+.quick-access-card .title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+}
+
+.quick-access-card .count {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* Responsive: 2 Spalten auf Tablet */
+@media (max-width: 1024px) {
+  .quick-access-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+```
+
+---
+
+## 4️⃣ SPRACHSUCHE (Mikrofon-Button)
+
+### Wireframe:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  🔍 SUCHE                                                                       │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────┐  ┌─────────┐  │
+│  │                                                             │  │         │  │
+│  │  🔍  Crimp Kontakt 16...                                    │  │   🎤    │  │
+│  │                                                             │  │         │  │
+│  └─────────────────────────────────────────────────────────────┘  └─────────┘  │
+│                                                                                 │
+│  Beispiele: "Kabel 150 Grad" • "Crimp Größe 16" • "Prüfprotokoll"             │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  WENN MIKROFON AKTIV:                                                          │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                                                                         │   │
+│  │                          🎤                                             │   │
+│  │                                                                         │   │
+│  │                    ●●● Ich höre zu... ●●●                               │   │
+│  │                                                                         │   │
+│  │                  "Kabel hundertfünfzig Grad"                            │   │
+│  │                                                                         │   │
+│  │                     [ ABBRECHEN ]                                       │   │
+│  │                                                                         │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### JavaScript (Web Speech API):
+
+```javascript
+// Spracherkennung initialisieren
+let recognition = null;
+
+function initSpeechRecognition() {
+  // Prüfen ob verfügbar
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    console.log('Spracherkennung nicht verfügbar');
+    document.getElementById('voiceSearchBtn').style.display = 'none';
+    return;
+  }
+  
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  
+  recognition.lang = 'de-DE';  // Deutsch!
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  
+  recognition.onstart = function() {
+    showVoiceModal();
+  };
+  
+  recognition.onresult = function(event) {
+    const transcript = event.results[0][0].transcript;
+    updateVoiceModal(transcript);
+    
+    if (event.results[0].isFinal) {
+      hideVoiceModal();
+      document.getElementById('searchInput').value = transcript;
+      performSearch(transcript);
+    }
+  };
+  
+  recognition.onerror = function(event) {
+    hideVoiceModal();
+    if (event.error === 'no-speech') {
+      showToast('Keine Sprache erkannt. Bitte erneut versuchen.');
+    } else if (event.error === 'not-allowed') {
+      showToast('Mikrofon-Zugriff verweigert. Bitte in den Browser-Einstellungen erlauben.');
+    }
+  };
+  
+  recognition.onend = function() {
+    hideVoiceModal();
+  };
+}
+
+function startVoiceSearch() {
+  if (recognition) {
+    recognition.start();
+  }
+}
+
+function stopVoiceSearch() {
+  if (recognition) {
+    recognition.stop();
+  }
+}
+
+// Modal für Sprachaufnahme
+function showVoiceModal() {
+  document.getElementById('voiceModal').classList.add('active');
+  document.getElementById('voiceTranscript').textContent = '';
+}
+
+function updateVoiceModal(text) {
+  document.getElementById('voiceTranscript').textContent = `"${text}"`;
+}
+
+function hideVoiceModal() {
+  document.getElementById('voiceModal').classList.remove('active');
+}
+```
+
+### HTML für Voice Modal:
+
+```html
+<!-- Voice Search Modal -->
+<div id="voiceModal" class="modal voice-modal">
+  <div class="modal-content">
+    <div class="voice-icon pulse">🎤</div>
+    <div class="voice-status">Ich höre zu...</div>
+    <div id="voiceTranscript" class="voice-transcript"></div>
+    <button onclick="stopVoiceSearch()" class="btn-secondary">ABBRECHEN</button>
+  </div>
+</div>
+```
+
+### CSS für Voice Modal:
+
+```css
+.voice-modal .modal-content {
+  text-align: center;
+  padding: var(--spacing-2xl);
+}
+
+.voice-icon {
+  font-size: 80px;
+  margin-bottom: var(--spacing-lg);
+}
+
+.voice-icon.pulse {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.voice-status {
+  font-size: var(--font-size-xl);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.voice-transcript {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  min-height: 60px;
+  margin-bottom: var(--spacing-xl);
+}
+```
+
+---
+
+## 5️⃣ DRUCKEN-BUTTON AUF JEDER SEITE
+
+### Wireframe:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  HEADER (auf JEDER Seite):                                                     │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                                                                         │   │
+│  │  ← ZURÜCK    │    📄 Kontakt Größe 16    │    ⭐    │    🖨️ DRUCKEN    │   │
+│  │                                                                         │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+│  ═══════════════════════════════════════════════════════════════════════════   │
+│                                                                                 │
+│  Bei Tabellen zusätzlich:                                                      │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │  📊 TECHNISCHE DATEN                                                    │   │
+│  │                                                                         │   │
+│  │  ┌───────────────┬───────────────────────────────────────────────────┐ │   │
+│  │  │ Parameter     │ Wert                                              │ │   │
+│  │  ├───────────────┼───────────────────────────────────────────────────┤ │   │
+│  │  │ Querschnitt   │ 1,0 - 1,5 mm²                                     │ │   │
+│  │  │ Strom         │ max. 13 A                                         │ │   │
+│  │  └───────────────┴───────────────────────────────────────────────────┘ │   │
+│  │                                                                         │   │
+│  │                                       [ 🖨️ NUR DIESE TABELLE DRUCKEN ] │   │
+│  │                                                                         │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### JavaScript:
+
+```javascript
+// Ganze Seite drucken
+function printPage() {
+  window.print();
+}
+
+// Nur bestimmten Bereich drucken
+function printElement(elementId) {
+  const element = document.getElementById(elementId);
+  const printWindow = window.open('', '_blank');
+  
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Drucken - VG-Normen</title>
+      <style>
+        body { 
+          font-family: 'Segoe UI', sans-serif; 
+          padding: 20px;
+          font-size: 14px;
+        }
+        table { 
+          width: 100%; 
+          border-collapse: collapse; 
+          margin: 20px 0;
+        }
+        th, td { 
+          border: 1px solid #000; 
+          padding: 8px; 
+          text-align: left; 
+        }
+        th { 
+          background: #f0f0f0; 
+          font-weight: bold;
+        }
+        h1, h2, h3 { margin: 10px 0; }
+        .no-print { display: none; }
+        @media print {
+          body { padding: 0; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="print-header">
+        <small>VG-Normen Wissenssystem • Gedruckt am: ${new Date().toLocaleDateString('de-DE')}</small>
+      </div>
+      ${element.innerHTML}
+    </body>
+    </html>
+  `);
+  
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+  printWindow.close();
+}
+```
+
+### CSS für Druckansicht:
+
+```css
+@media print {
+  /* Header, Navigation, Buttons verstecken */
+  .header, .nav, .btn, .no-print {
+    display: none !important;
+  }
+  
+  /* Hauptinhalt volle Breite */
+  .main-content {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Schrift für Druck optimieren */
+  body {
+    font-size: 12pt;
+    color: #000;
+    background: #fff;
+  }
+  
+  /* Tabellen mit Rahmen */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  th, td {
+    border: 1px solid #000;
+    padding: 8px;
+  }
+  
+  /* Seitenumbrüche vermeiden in Tabellen */
+  tr {
+    page-break-inside: avoid;
+  }
+}
+```
+
+---
+
+## 6️⃣ HILFE-BUTTON (?) AUF JEDER SEITE
+
+### Wireframe:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  JEDE SEITE HAT HILFE-BUTTON:                                                  │
+│                                                                                 │
+│  ┌───────────────────────────────────────────────────────────────────┐  ┌───┐  │
+│  │                                                                   │  │ ? │  │
+│  │                     Seiteninhalt                                  │  └───┘  │
+│  │                                                                   │   ↑     │
+│  └───────────────────────────────────────────────────────────────────┘ schwebend│
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  WENN HILFE GEKLICKT (Modal):                                                  │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                                                                         │   │
+│  │  ❓ HILFE - Wissensbasis                                         [X]   │   │
+│  │                                                                         │   │
+│  │  ═══════════════════════════════════════════════════════════════════   │   │
+│  │                                                                         │   │
+│  │  📖 WAS KÖNNEN SIE HIER TUN?                                           │   │
+│  │                                                                         │   │
+│  │  • Durchsuchen Sie alle VG-Normen                                      │   │
+│  │  • Klicken Sie auf eine Kategorie für Details                          │   │
+│  │  • Nutzen Sie die Suche oben für schnelles Finden                      │   │
+│  │  • Markieren Sie wichtige Themen als Favorit (⭐)                      │   │
+│  │                                                                         │   │
+│  │  ─────────────────────────────────────────────────────────────────     │   │
+│  │                                                                         │   │
+│  │  ⌨️ TASTENKÜRZEL                                                       │   │
+│  │                                                                         │   │
+│  │  Strg + F     Suche öffnen                                             │   │
+│  │  Strg + P     Diese Seite drucken                                      │   │
+│  │  Escape       Zurück / Dialog schließen                                │   │
+│  │  + / -        Schrift größer / kleiner                                 │   │
+│  │                                                                         │   │
+│  │  ─────────────────────────────────────────────────────────────────     │   │
+│  │                                                                         │   │
+│  │  💡 TIPP                                                               │   │
+│  │                                                                         │   │
+│  │  Nutzen Sie die Sprachsuche (🎤) - einfach reinsprechen!              │   │
+│  │                                                                         │   │
+│  │                                     [ VERSTANDEN ]                      │   │
+│  │                                                                         │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### HTML:
+
+```html
+<!-- Schwebender Hilfe-Button (auf jeder Seite) -->
+<button id="helpButton" class="help-fab" onclick="showHelp()">
+  ?
+</button>
+
+<!-- Hilfe-Texte pro Seite (data-Attribut) -->
+<div id="helpContent" data-page="wissensbasis">
+  <h3>📖 WAS KÖNNEN SIE HIER TUN?</h3>
+  <ul>
+    <li>Durchsuchen Sie alle VG-Normen</li>
+    <li>Klicken Sie auf eine Kategorie für Details</li>
+    <li>Nutzen Sie die Suche oben für schnelles Finden</li>
+    <li>Markieren Sie wichtige Themen als Favorit (⭐)</li>
+  </ul>
+</div>
+```
+
+### CSS:
+
+```css
+.help-fab {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.help-fab:hover {
+  transform: scale(1.1);
+  background: var(--color-primary-dark);
+}
+```
+
+---
+
+## 7️⃣ BREADCRUMBS NAVIGATION
+
+### Wireframe:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  IMMER UNTER DEM HEADER:                                                       │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                                                                         │   │
+│  │  🏠 Start  ›  📚 Wissensbasis  ›  🔧 Crimpen  ›  Kontakt Größe 16      │   │
+│  │     ↑              ↑                  ↑              ↑                  │   │
+│  │   klickbar      klickbar           klickbar      aktuell (nicht klickbar) │
+│  │                                                                         │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### HTML:
+
+```html
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  <ol>
+    <li><a href="#home">🏠 Start</a></li>
+    <li><a href="#wissensbasis">📚 Wissensbasis</a></li>
+    <li><a href="#crimpen">🔧 Crimpen</a></li>
+    <li aria-current="page">Kontakt Größe 16</li>
+  </ol>
+</nav>
+```
+
+### CSS:
+
+```css
+.breadcrumbs {
+  background: var(--color-surface-dark);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.breadcrumbs ol {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin: 0;
+  padding: 0;
+}
+
+.breadcrumbs li {
+  display: flex;
+  align-items: center;
+  font-size: var(--font-size-base);
+}
+
+.breadcrumbs li:not(:last-child)::after {
+  content: '›';
+  margin-left: var(--spacing-sm);
+  color: var(--color-text-secondary);
+}
+
+.breadcrumbs a {
+  color: var(--color-primary);
+  text-decoration: none;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+}
+
+.breadcrumbs a:hover {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.breadcrumbs li:last-child {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+```
+
+---
+
+## 8️⃣ BACKUP / EXPORT
+
+### Wireframe:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  💾 MEINE DATEN SICHERN                                                        │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                                                                         │   │
+│  │  Ihre persönlichen Daten werden im Browser gespeichert.                │   │
+│  │  Erstellen Sie regelmäßig eine Sicherung!                              │   │
+│  │                                                                         │   │
+│  │  ═══════════════════════════════════════════════════════════════════   │   │
+│  │                                                                         │   │
+│  │  📦 WAS WIRD GESICHERT?                                                │   │
+│  │                                                                         │   │
+│  │  ✅ Favoriten (7 Einträge)                                             │   │
+│  │  ✅ Verlauf (12 Einträge)                                              │   │
+│  │  ✅ Meine Dokumente - Index (3 Dateien)                                │   │
+│  │  ✅ Einstellungen (Schriftgröße, Kontrast)                             │   │
+│  │                                                                         │   │
+│  │  ─────────────────────────────────────────────────────────────────     │   │
+│  │                                                                         │   │
+│  │  ┌─────────────────────────────────────────────────────────────────┐   │   │
+│  │  │                                                                 │   │   │
+│  │  │         💾 BACKUP ERSTELLEN (Herunterladen)                     │   │   │
+│  │  │                                                                 │   │   │
+│  │  └─────────────────────────────────────────────────────────────────┘   │   │
+│  │                                                                         │   │
+│  │  ─────────────────────────────────────────────────────────────────     │   │
+│  │                                                                         │   │
+│  │  📥 BACKUP WIEDERHERSTELLEN                                            │   │
+│  │                                                                         │   │
+│  │  ┌─────────────────────────────────────────────────────────────────┐   │   │
+│  │  │  Backup-Datei auswählen...                              [📁]    │   │   │
+│  │  └─────────────────────────────────────────────────────────────────┘   │   │
+│  │                                                                         │   │
+│  │  ⚠️ Achtung: Beim Wiederherstellen werden aktuelle Daten überschrieben!│   │
+│  │                                                                         │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+│  ─────────────────────────────────────────────────────────────────────────────  │
+│                                                                                 │
+│  🗓️ Letzte Sicherung: 04.12.2024, 14:32 Uhr                                   │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### JavaScript:
+
+```javascript
+// Backup erstellen
+function createBackup() {
+  const backup = {
+    version: '1.0',
+    created: new Date().toISOString(),
+    data: {
+      favorites: JSON.parse(localStorage.getItem('favorites') || '[]'),
+      viewHistory: JSON.parse(localStorage.getItem('viewHistory') || '[]'),
+      userDocumentsIndex: JSON.parse(localStorage.getItem('userDocumentsIndex') || '{}'),
+      settings: {
+        fontSize: localStorage.getItem('fontSize') || 'normal',
+        highContrast: localStorage.getItem('highContrast') === 'true'
+      }
+    }
+  };
+  
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `VG-Normen-Backup_${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  
+  URL.revokeObjectURL(url);
+  
+  // Letzte Sicherung merken
+  localStorage.setItem('lastBackup', new Date().toISOString());
+  showToast('✅ Backup erfolgreich erstellt!');
+}
+
+// Backup wiederherstellen
+function restoreBackup(file) {
+  const reader = new FileReader();
+  
+  reader.onload = function(e) {
+    try {
+      const backup = JSON.parse(e.target.result);
+      
+      if (!backup.version || !backup.data) {
+        throw new Error('Ungültige Backup-Datei');
+      }
+      
+      // Bestätigung
+      if (!confirm('Achtung: Aktuelle Daten werden überschrieben. Fortfahren?')) {
+        return;
+      }
+      
+      // Daten wiederherstellen
+      localStorage.setItem('favorites', JSON.stringify(backup.data.favorites));
+      localStorage.setItem('viewHistory', JSON.stringify(backup.data.viewHistory));
+      localStorage.setItem('userDocumentsIndex', JSON.stringify(backup.data.userDocumentsIndex));
+      localStorage.setItem('fontSize', backup.data.settings.fontSize);
+      localStorage.setItem('highContrast', backup.data.settings.highContrast);
+      
+      showToast('✅ Backup erfolgreich wiederhergestellt!');
+      
+      // Seite neu laden um Einstellungen anzuwenden
+      setTimeout(() => location.reload(), 1500);
+      
+    } catch (error) {
+      showToast('❌ Fehler: Ungültige Backup-Datei');
+    }
+  };
+  
+  reader.readAsText(file);
+}
+```
+
+---
+
+## 9️⃣ OFFLINE-INDIKATOR
+
+### Wireframe:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  IM FOOTER (immer sichtbar):                                                   │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                                                                         │   │
+│  │  ✅ OFFLINE VERFÜGBAR                                                   │   │
+│  │  Diese Anwendung funktioniert ohne Internetverbindung.                  │   │
+│  │                                                                         │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+│  Oder als kleine Anzeige im Header:                                            │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │  VG-NORMEN WISSENSSYSTEM                           [✅ Offline OK]     │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### HTML & CSS:
+
+```html
+<div class="offline-indicator">
+  <span class="status-dot"></span>
+  <span class="status-text">Offline verfügbar</span>
+</div>
+```
+
+```css
+.offline-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-md);
+  background: var(--color-success);
+  color: white;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+```
+
+---
+
+## 🔟 TASTENKÜRZEL
+
+### JavaScript:
+
+```javascript
+// Globale Tastenkürzel
+document.addEventListener('keydown', function(e) {
+  // Strg + F = Suche öffnen
+  if (e.ctrlKey && e.key === 'f') {
+    e.preventDefault();
+    document.getElementById('searchInput').focus();
+  }
+  
+  // Strg + P = Drucken
+  if (e.ctrlKey && e.key === 'p') {
+    e.preventDefault();
+    printPage();
+  }
+  
+  // Strg + H = Startseite
+  if (e.ctrlKey && e.key === 'h') {
+    e.preventDefault();
+    navigateTo('home');
+  }
+  
+  // Escape = Zurück / Modal schließen
+  if (e.key === 'Escape') {
+    const activeModal = document.querySelector('.modal.active');
+    if (activeModal) {
+      closeModal(activeModal.id);
+    } else {
+      history.back();
+    }
+  }
+  
+  // + = Schrift größer
+  if (e.key === '+' || e.key === '=') {
+    increaseFontSize();
+  }
+  
+  // - = Schrift kleiner
+  if (e.key === '-') {
+    decreaseFontSize();
+  }
+});
+
+function increaseFontSize() {
+  const current = localStorage.getItem('fontSize') || 'normal';
+  if (current === 'normal') setFontSize('gross');
+  else if (current === 'gross') setFontSize('sehr-gross');
+}
+
+function decreaseFontSize() {
+  const current = localStorage.getItem('fontSize') || 'normal';
+  if (current === 'sehr-gross') setFontSize('gross');
+  else if (current === 'gross') setFontSize('normal');
+}
+```
+
+---
+
+# WICHTIG FÜR BENUTZER: DATEINAMEN-RICHTLINIEN
+
+## ⚠️ WIE SIE IHRE DATEIEN BENENNEN SOLLTEN
+
+Das System analysiert Ihre hochgeladenen Dateien **automatisch**. Damit die automatische Analyse gut funktioniert, beachten Sie bitte diese **wichtigen Regeln**:
+
+### ✅ GUTE DATEINAMEN (So sollten Sie es machen!)
+
+| Dateityp | Beispiel | Warum gut? |
+|----------|----------|------------|
+| **Crimp-Foto** | `Crimp_Gut_Kontakt16_Bellmouth.jpg` | Enthält: crimp, gut, kontakt, 16, bellmouth |
+| **Fehler-Foto** | `Crimp_Schlecht_Keine_Litze.jpg` | Enthält: crimp, schlecht, litze |
+| **PDF-Norm** | `VG95319_Steckverbinder_Tabelle.pdf` | Enthält: VG95319, steckverbinder, tabelle |
+| **Prüfprotokoll** | `Pruefprotokoll_Amphenol_2024-12.pdf` | Enthält: prüfprotokoll, lieferant, datum |
+| **Lieferant** | `Audit_TE_Connectivity_Bewertung_A.pdf` | Enthält: audit, lieferant, bewertung |
+| **Kabelspezifikation** | `Kabel_System150_2.5mm2_Spezifikation.pdf` | Enthält: kabel, system, querschnitt |
+
+### ❌ SCHLECHTE DATEINAMEN (Vermeiden Sie das!)
+
+| Dateityp | Schlechtes Beispiel | Problem |
+|----------|---------------------|---------|
+| **Kamerafoto** | `IMG_20241205_142356.jpg` | Keine Information - System weiß nicht was das ist! |
+| **Standard** | `Document1.pdf` | Keine Schlüsselwörter |
+| **Scan** | `scan.pdf` oder `scan001.pdf` | Keine Information |
+| **Abkürzung** | `dok.pdf` | Zu kurz, keine Bedeutung |
+
+### 📋 EMPFOHLENE NAMENSSTRUKTUR
+
+```
+[THEMA]_[DETAILS]_[ZUSATZ].[ENDUNG]
+
+Beispiele:
+├── Crimp_Gut_Kontakt16.jpg
+├── Crimp_Schlecht_Bellmouth_fehlt.jpg
+├── VG95218_Kabel_System150_Tabelle.pdf
+├── Pruefprotokoll_Wareneingang_2024-12-05.pdf
+├── Lieferant_Amphenol_Audit_2024.pdf
+└── Formular_Werkerselbstpruefung_ausgefuellt.pdf
+```
+
+### 🔑 WICHTIGE SCHLÜSSELWÖRTER (Verwenden Sie diese in Dateinamen!)
+
+| Kategorie | Schlüsselwörter |
+|-----------|-----------------|
+| **Crimp** | crimp, kontakt, bellmouth, litze, zugkraft |
+| **Qualität** | gut, schlecht, fehler, defekt, ok, nio |
+| **Kabel** | kabel, leitung, system25, system150, system200 |
+| **Stecker** | stecker, steckverbinder, kontakt, buchse, stift |
+| **Prüfung** | pruefung, protokoll, messung, test, kontrolle |
+| **Größen** | 16, 20, 22, 12, 0.5mm2, 1.5mm2, 2.5mm2 |
+| **Normen** | VG95218, VG95319, VG95343, VG96927, VG96936, IPC620 |
+
+### 📸 BESONDERS WICHTIG FÜR FOTOS!
+
+**Das System kann KEINEN Text aus Bildern lesen (kein OCR).**
+
+Daher ist der Dateiname bei Fotos **besonders wichtig**!
+
+```
+✅ Crimp_Gut_Kontakt16_Bellmouth_sichtbar.jpg
+   → System findet: crimp, gut, kontakt, 16, bellmouth
+
+❌ IMG_4523.jpg
+   → System findet: NICHTS! Bild ist nicht suchbar!
+```
+
+### 💡 TIPP: Benennen Sie Fotos sofort um!
+
+Wenn Sie ein Foto mit dem Handy machen:
+1. Öffnen Sie die Dateien-App
+2. Benennen Sie das Foto sofort um (z.B. `Crimp_Fehler_Projekt_XY.jpg`)
+3. Erst dann ins System hochladen
+
+---
+
+# WICHTIG FÜR ENTWICKLER: WISSENSBASIS-AKTUALISIERUNG
+
+## 🔄 ZWEI ARTEN VON DATENBANKEN
+
+Das System hat **zwei getrennte Datenbereiche**:
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                                                                         │
+│  1️⃣  WISSENSBASIS (statisch)         2️⃣  MEINE DOKUMENTE (dynamisch)   │
+│  ════════════════════════════         ════════════════════════════════  │
+│                                                                         │
+│  📁 /wissensbasis/                    📁 /user_documents/               │
+│  ├── index.json                       ├── [Benutzer-PDFs]               │
+│  ├── karten.json                      ├── [Benutzer-Bilder]             │
+│  ├── tabellen.json                    └── [Benutzer-Dokumente]          │
+│  ├── keywords.json                                                      │
+│  └── synonyme.json                    💾 LocalStorage:                  │
+│                                       └── user_documents_index.json     │
+│  🔧 Aktualisierung:                                                     │
+│  → Entwickler muss App                🔧 Aktualisierung:                │
+│    neu generieren                     → Button "DOKUMENTE AKTUALISIEREN"│
+│                                         scannt Ordner automatisch       │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+## 📚 WISSENSBASIS ERWEITERN (Für Entwickler/Marcin)
+
+Wenn Sie neue VG-Normen oder Inhalte zur Wissensbasis hinzufügen möchten:
+
+### Schritt 1: Neue TEIL-Dateien hier hinzufügen
+```
+/workspaces/Alex_normen/
+├── PRODUKTIONSHANDBUCH_VG_NORMEN_TEIL1.md   ← bestehend
+├── PRODUKTIONSHANDBUCH_VG_NORMEN_TEIL2.md   ← bestehend
+├── ...
+├── PRODUKTIONSHANDBUCH_VG_NORMEN_TEIL10.md  ← bestehend
+└── PRODUKTIONSHANDBUCH_VG_NORMEN_TEIL11.md  ← NEU (z.B. neue Norm)
+```
+
+### Schritt 2: App neu generieren lassen
+Sagen Sie dem AI-Assistenten:
+> "Bitte generiere die Wissensbasis-App neu mit allen TEIL-Dateien"
+
+### Schritt 3: Neue App deployen
+Die neue App enthält dann alle aktualisierten Inhalte in `/wissensbasis/`.
+
+---
+
+## 📁 DOKUMENTE AKTUALISIEREN (Für Benutzer/Ihr Chef)
+
+### 🔘 BUTTON: "DOKUMENTE AKTUALISIEREN"
+
+Die App soll einen prominenten Button haben, der:
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                                                                         │
+│  📁 MEINE DOKUMENTE                                                     │
+│                                                                         │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │                                                                 │   │
+│  │   🔄  DOKUMENTE AKTUALISIEREN                                   │   │
+│  │                                                                 │   │
+│  │   Scannt den Ordner /user_documents/ und verarbeitet            │   │
+│  │   alle neuen oder geänderten Dateien automatisch.               │   │
+│  │                                                                 │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### 🔧 WAS DER BUTTON MACHT:
+
+```javascript
+async function updateDocuments() {
+    // 1. Scanne /user_documents/ Ordner
+    const files = await scanUserDocumentsFolder();
+    
+    // 2. Vergleiche mit bereits verarbeiteten Dokumenten (LocalStorage)
+    const existingIndex = loadFromLocalStorage('user_documents_index');
+    
+    // 3. Finde neue/geänderte Dateien
+    const newFiles = files.filter(f => !existingIndex[f.name] || 
+                                       existingIndex[f.name].modified < f.modified);
+    
+    // 4. Verarbeite jede neue Datei
+    for (const file of newFiles) {
+        showProgress(`Verarbeite: ${file.name}...`);
+        
+        // Text extrahieren (PDF/DOCX)
+        const text = await extractText(file);
+        
+        // Schlüsselwörter aus Dateiname + Text
+        const keywords = extractKeywords(file.name, text);
+        
+        // Synonyme finden
+        const synonyms = findSynonyms(keywords);
+        
+        // Verbindungen zur Wissensbasis
+        const links = findWissensbasisLinks(keywords);
+        
+        // Zusammenfassung erstellen
+        const summary = createSummary(text, keywords);
+        
+        // In Index speichern
+        existingIndex[file.name] = {
+            modified: file.modified,
+            keywords: keywords,
+            synonyms: synonyms,
+            links: links,
+            summary: summary
+        };
+    }
+    
+    // 5. Index speichern
+    saveToLocalStorage('user_documents_index', existingIndex);
+    
+    showSuccess(`✅ ${newFiles.length} neue Dokumente verarbeitet!`);
+}
+```
+
+### 📂 WORKFLOW FÜR BENUTZER:
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                                                                         │
+│  SCHRITT 1: Dateien in Ordner kopieren                                  │
+│  ─────────────────────────────────────                                  │
+│                                                                         │
+│  Kopieren Sie Ihre Dateien einfach in den Ordner:                       │
+│  📁 vg-normen-wissenssystem/user_documents/                             │
+│                                                                         │
+│  ├── VG12345_Neue_Norm.pdf          ← NEU                               │
+│  ├── Crimp_Fehler_Beispiel.jpg      ← NEU                               │
+│  ├── Audit_Lieferant_2024.pdf       ← bereits verarbeitet               │
+│  └── ...                                                                │
+│                                                                         │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  SCHRITT 2: App öffnen und Button klicken                               │
+│  ─────────────────────────────────────────                              │
+│                                                                         │
+│  1. Öffnen Sie index.html                                               │
+│  2. Gehen Sie zu "Meine Dokumente"                                      │
+│  3. Klicken Sie [🔄 DOKUMENTE AKTUALISIEREN]                            │
+│                                                                         │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  SCHRITT 3: Automatische Verarbeitung                                   │
+│  ─────────────────────────────────────                                  │
+│                                                                         │
+│  Das System:                                                            │
+│  ✅ Findet alle neuen Dateien                                           │
+│  ✅ Extrahiert Text (PDF/DOCX)                                          │
+│  ✅ Erstellt Schlüsselwörter                                            │
+│  ✅ Findet Verbindungen zur Wissensbasis                                │
+│  ✅ Speichert alles im Browser (LocalStorage)                           │
+│                                                                         │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  SCHRITT 4: Fertig! Dokumente sind durchsuchbar                         │
+│  ──────────────────────────────────────────────                         │
+│                                                                         │
+│  Jetzt können Sie:                                                      │
+│  🔍 Nach Inhalten suchen                                                │
+│  ⭐ Favoriten markieren                                                 │
+│  🖨️ Dokumente drucken                                                   │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### ⚠️ WICHTIGER HINWEIS: BROWSER-SICHERHEIT
+
+Wegen Browser-Sicherheitseinschränkungen kann JavaScript **nicht direkt** 
+auf das Dateisystem zugreifen. Daher gibt es zwei Möglichkeiten:
+
+**Option A: File Input (empfohlen für einzelne Dateien)**
+```html
+<input type="file" id="fileInput" multiple accept=".pdf,.docx,.txt,.jpg,.png">
+```
+→ Benutzer wählt Dateien manuell aus
+
+**Option B: Drag & Drop + Ordner-Auswahl**
+```html
+<input type="file" id="folderInput" webkitdirectory directory>
+```
+→ Benutzer wählt ganzen Ordner aus, alle Dateien werden gescannt
+
+**Option C: Lokaler Server (für Power-User)**
+```bash
+python -m http.server 8000
+# oder
+npx serve .
+```
+→ Ermöglicht erweiterten Dateizugriff
+
+### 🎯 EMPFOHLENE IMPLEMENTIERUNG:
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                                                                         │
+│  📁 MEINE DOKUMENTE                                                     │
+│                                                                         │
+│  ┌────────────────────────────────┐  ┌────────────────────────────────┐│
+│  │                                │  │                                ││
+│  │  📄 DATEIEN HINZUFÜGEN         │  │  📁 ORDNER SCANNEN             ││
+│  │                                │  │                                ││
+│  │  Einzelne Dateien auswählen    │  │  Ganzen Ordner auswählen       ││
+│  │  und hochladen                 │  │  und alle Dateien scannen      ││
+│  │                                │  │                                ││
+│  │  [ DATEIEN AUSWÄHLEN ]         │  │  [ ORDNER AUSWÄHLEN ]          ││
+│  │                                │  │                                ││
+│  └────────────────────────────────┘  └────────────────────────────────┘│
+│                                                                         │
+│  ════════════════════════════════════════════════════════════════════  │
+│                                                                         │
+│  Oder Dateien hierher ziehen...                                         │
+│                                                                         │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │                                                                 │   │
+│  │                    📄 📷 📁                                     │   │
+│  │                                                                 │   │
+│  │              Drag & Drop Zone                                   │   │
+│  │                                                                 │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
