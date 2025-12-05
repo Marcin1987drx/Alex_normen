@@ -44,7 +44,7 @@ jobs:
       # 4. Windows EXE bauen (Setup + Portable)
       - name: Build Windows EXE
         working-directory: vg-normen-app
-        run: npm run build:win
+        run: npm run build
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
@@ -95,7 +95,7 @@ jobs:
       
       - name: Build Linux AppImage
         working-directory: vg-normen-app
-        run: npm run build:linux
+        run: npx electron-builder --linux
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
