@@ -1,0 +1,316 @@
+{
+  "teil": 7,
+  "titel": "IPC/WHMA-A-620 - Produktionsverfahren",
+  "version": "1.0",
+  "letzte_aktualisierung": "2024-01-15",
+  "beschreibung": "Anforderungen und Akzeptanzkriterien für Kabel- und Kabelbaumkonfektionierung",
+  "geltende_norm": "IPC/WHMA-A-620D",
+
+  "normuebersicht": {
+    "beschreibung": "IPC/WHMA-A-620 ist der weltweit anerkannte Standard für Anforderungen an Kabel- und Kabelbaumkonfektionierung, Akzeptanzkriterien für Qualitätsprüfung und Produktionsverfahren für Crimp, Löt, Schirmanschluss.",
+    "produktklassen": [
+      { "klasse": 1, "bezeichnung": "Allgemeine Elektronik", "typische_anwendung": "Consumer-Produkte" },
+      { "klasse": 2, "bezeichnung": "Gebrauchselektronik", "typische_anwendung": "Industrielle Anwendungen" },
+      { "klasse": 3, "bezeichnung": "Hochzuverlässigkeitselektronik", "typische_anwendung": "Militär, Luft- und Raumfahrt, Medizin" }
+    ],
+    "relevanz_vg": "Für VG-konforme Kabelgarnituren gilt ausschließlich KLASSE 3 (höchste Anforderungen)"
+  },
+
+  "crimpkriterien_klasse_3": {
+    "bellmouth": {
+      "definition": "Trichterförmige Aufweitung des Crimpbereichs an Ein- und Austritt, verursacht durch Crimpwerkzeug",
+      "quellen": ["SuperEngineer IPC-A-620", "Romtronic IPC Guide"],
+      "anforderungen_klasse_3": [
+        "Bellmouth MUSS an BEIDEN Enden sichtbar sein",
+        "Mindest- und Maximaldimensionen einhalten",
+        "Keine scharfen Kanten",
+        "Keine Risse oder Verformungen"
+      ],
+      "defekte": [
+        "Kein Bellmouth = DEFEKT für Klasse 3",
+        "Zu kleiner/großer Bellmouth = DEFEKT",
+        "Scharfe oder gerollte Kanten = DEFEKT"
+      ],
+      "vergleich_klassen": [
+        { "anforderung": "Bellmouth an BEIDEN Enden", "klasse_3": "PFLICHT", "klasse_2": "Empfohlen", "klasse_1": "Optional" },
+        { "anforderung": "Sichtbar ohne Vergrößerung", "klasse_3": "PFLICHT", "klasse_2": "—", "klasse_1": "—" },
+        { "anforderung": "Keine scharfen Kanten", "klasse_3": "PFLICHT", "klasse_2": "PFLICHT", "klasse_1": "Empfohlen" },
+        { "anforderung": "Keine Risse", "klasse_3": "PFLICHT", "klasse_2": "PFLICHT", "klasse_1": "PFLICHT" }
+      ]
+    },
+
+    "inspektionsloch": {
+      "beschreibung": "Das Inspektionsloch (Inspection Window) dient zur Kontrolle der Litzenposition",
+      "anforderungen_klasse_3": [
+        { "anforderung": "ALLE Litzen sichtbar", "klasse_3": "PFLICHT" },
+        { "anforderung": "Litze reicht bis zum Loch", "klasse_3": "PFLICHT" },
+        { "anforderung": "Nicht übermäßig überstehend", "klasse_3": "PFLICHT" },
+        { "anforderung": "Keine Isolierung im Crimpbereich", "klasse_3": "PFLICHT" }
+      ]
+    }
+  },
+
+  "crimp_geometrie": {
+    "messparameter": [
+      { "parameter": "Crimphöhe (H)", "beschreibung": "Vertikale Abmessung", "pruefmittel": "Crimp-Mikrometer" },
+      { "parameter": "Crimpbreite (W)", "beschreibung": "Horizontale Abmessung", "pruefmittel": "Schieblehre" },
+      { "parameter": "Leiterlänge im Crimp", "beschreibung": "Überstand", "pruefmittel": "Schieblehre" }
+    ],
+    "typische_defekte": [
+      {
+        "defekt": "UNTERCRIMP",
+        "beschreibung": "Zu wenig Kompression",
+        "visualisierung": "Lücken zwischen Litzen",
+        "folge": "Zu hoher Widerstand, mechanisch instabil"
+      },
+      {
+        "defekt": "ÜBERCRIMP",
+        "beschreibung": "Zu viel Kompression",
+        "visualisierung": "Litzen gequetscht",
+        "folge": "Leiterbruch, reduzierte Stromtragfähigkeit"
+      },
+      {
+        "defekt": "ASYMMETRIE",
+        "beschreibung": "Ungleichmäßige Verteilung",
+        "visualisierung": "Litzen nur auf einer Seite",
+        "folge": "Ungleichmäßiger Kontakt"
+      },
+      {
+        "defekt": "ISOLIERUNG IM CRIMP",
+        "beschreibung": "Isolierung eingequetscht",
+        "visualisierung": "Isolierung im Crimpbereich sichtbar",
+        "folge": "Schlechter Kontakt, mögliche Unterbrechung"
+      }
+    ]
+  },
+
+  "mindestzugkraefte": {
+    "beschreibung": "Die Zugprüfung ist eine destruktive Prüfung zur Stichprobenkontrolle",
+    "tabelle": [
+      { "kontaktgroesse": "28", "awg_bereich": "28-30", "mm2_bereich": "0,05-0,08", "mindestzugkraft_n": 8.9, "mindestzugkraft_lbf": 2 },
+      { "kontaktgroesse": "26", "awg_bereich": "26-28", "mm2_bereich": "0,08-0,13", "mindestzugkraft_n": 13.3, "mindestzugkraft_lbf": 3 },
+      { "kontaktgroesse": "24", "awg_bereich": "24-26", "mm2_bereich": "0,13-0,25", "mindestzugkraft_n": 17.8, "mindestzugkraft_lbf": 4 },
+      { "kontaktgroesse": "22", "awg_bereich": "22-24", "mm2_bereich": "0,25-0,50", "mindestzugkraft_n": 22.2, "mindestzugkraft_lbf": 5 },
+      { "kontaktgroesse": "20", "awg_bereich": "20-22", "mm2_bereich": "0,50-0,75", "mindestzugkraft_n": 31.1, "mindestzugkraft_lbf": 7 },
+      { "kontaktgroesse": "18", "awg_bereich": "18-20", "mm2_bereich": "0,75-1,00", "mindestzugkraft_n": 44.5, "mindestzugkraft_lbf": 10 },
+      { "kontaktgroesse": "16", "awg_bereich": "16-18", "mm2_bereich": "1,00-1,50", "mindestzugkraft_n": 66.7, "mindestzugkraft_lbf": 15 },
+      { "kontaktgroesse": "14", "awg_bereich": "14-16", "mm2_bereich": "1,50-2,50", "mindestzugkraft_n": 89.0, "mindestzugkraft_lbf": 20 },
+      { "kontaktgroesse": "12", "awg_bereich": "12-14", "mm2_bereich": "2,50-4,00", "mindestzugkraft_n": 111.2, "mindestzugkraft_lbf": 25 },
+      { "kontaktgroesse": "10", "awg_bereich": "10-12", "mm2_bereich": "4,00-6,00", "mindestzugkraft_n": 155.7, "mindestzugkraft_lbf": 35 },
+      { "kontaktgroesse": "8", "awg_bereich": "8-10", "mm2_bereich": "6,00-10,00", "mindestzugkraft_n": 200.2, "mindestzugkraft_lbf": 45 }
+    ],
+    "zugpruefung_verfahren": {
+      "pruefgeraet": ["Zugprüfmaschine oder kalibrierte Zugwaage", "Geeignete Klemmen für Leiter und Kontakt"],
+      "vorbereitung": [
+        "Stichprobe entnehmen (gem. AQL-Plan)",
+        "Probe in Prüfvorrichtung einspannen",
+        "Kontakt fest fixiert",
+        "Leiter in Zugklemme"
+      ],
+      "durchfuehrung": [
+        "Kraft gleichmäßig aufbauen",
+        "Zuggeschwindigkeit: 25-50 mm/min",
+        "Kraft bis zum Versagen erhöhen",
+        "Maximalkraft dokumentieren"
+      ],
+      "bewertung": {
+        "bestanden": "F_max ≥ Mindestzugkraft",
+        "nicht_bestanden": "F_max < Mindestzugkraft"
+      },
+      "versagensarten": [
+        "Leiter reißt vor Kontakt → OK (wenn > Grenzwert)",
+        "Leiter zieht aus Crimp → DEFEKT",
+        "Kontakt bricht → Materialfehler"
+      ]
+    }
+  },
+
+  "weitere_klasse_3_anforderungen": {
+    "leiterbeschaedigung": [
+      { "anforderung": "Alle Drähte unbeschädigt", "klasse_3": "PFLICHT" },
+      { "anforderung": "Keine Kerben oder Schnitte", "klasse_3": "PFLICHT" },
+      { "anforderung": "Keine abgetrennten Einzeldrähte", "klasse_3": "PFLICHT" },
+      { "anforderung": "Max. gebrochene Drähte", "klasse_3": "0%" }
+    ],
+    "verbotene_praktiken": [
+      { "praktik": "Verzinnung vor Crimp", "grund": "Reduziert Gasbildung im Crimp, Kalte Lötstelle möglich" },
+      { "praktik": "Isolierung im Crimp", "grund": "Verhindert metallischen Kontakt" },
+      { "praktik": "Nachcrimpen", "grund": "Ungleichmäßige Kompression, Unsichere Geometrie" },
+      { "praktik": "Wiederverwenden von Kontakten", "grund": "Verformte Crimpzone" },
+      { "praktik": "Lötmittel am Crimp", "grund": "Versprödung durch Flussmittel" }
+    ],
+    "dokumentation": [
+      { "dokument": "Crimpprotokoll", "inhalt": "Crimphöhe, -breite, Werkzeug", "aufbewahrung": "10 Jahre" },
+      { "dokument": "Zugprüfprotokoll", "inhalt": "Stichprobe, Kraft, Ergebnis", "aufbewahrung": "10 Jahre" },
+      { "dokument": "Werkzeugfreigabe", "inhalt": "Kalibrierung, Datum", "aufbewahrung": "Laufend" }
+    ]
+  },
+
+  "abisolierung": {
+    "anforderungen_klasse_3": [
+      { "pruefpunkt": "Litzenbeschädigung", "anforderung": "0 beschädigte Drähte erlaubt" },
+      { "pruefpunkt": "Isolationsreste", "anforderung": "Keine sichtbaren Reste" },
+      { "pruefpunkt": "Abisolierlänge", "anforderung": "±1 mm vom Sollwert" },
+      { "pruefpunkt": "Schnittqualität", "anforderung": "Sauberer 90°-Schnitt" },
+      { "pruefpunkt": "Oxidation", "anforderung": "Keine sichtbare Oxidation" }
+    ],
+    "korrekt": [
+      "Sauberer Schnitt",
+      "Alle Litzen intakt",
+      "Keine Isolationsreste",
+      "Korrekte Länge (±1 mm)"
+    ],
+    "defekte": [
+      { "defekt": "Litze beschädigt", "beschreibung": "Kerbe im Leiter" },
+      { "defekt": "Isolationsrest", "beschreibung": "Isolierung nicht vollständig entfernt" },
+      { "defekt": "Falsche Länge", "beschreibung": "Abisolierlänge zu lang/kurz" }
+    ]
+  },
+
+  "loetverbindungen": {
+    "qualitaetskriterien": {
+      "korrekt": [
+        "Glänzende Oberfläche",
+        "Konkave Hohlkehle (Filet)",
+        "Benetzung > 90°",
+        "Keine Poren"
+      ],
+      "defekte": [
+        { "defekt": "Kalte Lötstelle", "beschreibung": "Matt, körnig" },
+        { "defekt": "Zu viel Lot", "beschreibung": "Konvex" },
+        { "defekt": "Zu wenig Lot", "beschreibung": "Benetzung < 90°" }
+      ]
+    },
+    "parameter": [
+      { "parameter": "Lötkolbentemperatur", "empfohlener_wert": "320-380°C" },
+      { "parameter": "Lötzeit", "empfohlener_wert": "2-4 Sekunden" },
+      { "parameter": "Lotlegierung", "empfohlener_wert": "Sn63Pb37 oder bleifrei" },
+      { "parameter": "Flussmittel", "empfohlener_wert": "RMA oder ROL0" },
+      { "parameter": "Vorheizen", "empfohlener_wert": "Optional, bei großen Teilen" }
+    ]
+  },
+
+  "schirmung": {
+    "anforderung": "360° Kontakt zwischen Geflecht und Backshell/Ferrule",
+    "kriterien_klasse_3": [
+      { "anforderung": "Mindestabdeckung", "wert": "≥ 270° (360° bevorzugt)" },
+      { "anforderung": "Max. Lücke", "wert": "< 30°" },
+      { "anforderung": "Geflecht unbeschädigt", "wert": "PFLICHT" },
+      { "anforderung": "DC-Widerstand", "wert": "< 1 Ω über Gesamtlänge" }
+    ],
+    "defekt_beschreibung": "Lücke > 30° = DEFEKT"
+  },
+
+  "sichtpruefung": {
+    "vergroesserungsstufen": [
+      { "pruefaufgabe": "Übersichtsprüfung", "empfohlene_vergroesserung": "1× (ohne Vergrößerung)" },
+      { "pruefaufgabe": "Crimpkontrolle", "empfohlene_vergroesserung": "4× - 10×" },
+      { "pruefaufgabe": "Lötstellenprüfung", "empfohlene_vergroesserung": "10× - 20×" },
+      { "pruefaufgabe": "Litzenprüfung", "empfohlene_vergroesserung": "10× - 40×" }
+    ],
+    "beleuchtung": {
+      "anforderungen": [
+        "Mindestens 1000 Lux am Prüfplatz",
+        "Schattenfreie Ausleuchtung",
+        "Kaltlichtquelle bevorzugt",
+        "Keine Blendung"
+      ],
+      "empfohlen": [
+        "Ringbeleuchtung um Lupe/Mikroskop",
+        "LED-Arbeitsplatzleuchte",
+        "Schwenkbare Beleuchtung"
+      ]
+    }
+  },
+
+  "werkzeugqualifizierung": {
+    "crimpwerkzeug_anforderungen": [
+      { "anforderung": "Kalibrierung", "intervall": "Alle 12 Monate", "dokumentation": "Zertifikat" },
+      { "anforderung": "Verschleißprüfung", "intervall": "Täglich (Sichtkontrolle)", "dokumentation": "Checkliste" },
+      { "anforderung": "Austausch Crimpbacken", "intervall": "Nach 50.000-100.000 Crimps", "dokumentation": "Lebenslaufakte" }
+    ],
+    "first_article_pruefung": {
+      "beschreibung": "Erstmusterprüfung bei Schichtbeginn",
+      "ablauf": [
+        "Erste 3-5 Crimps mit vollständiger Prüfung",
+        "Crimphöhe messen und dokumentieren",
+        "Sichtprüfung (Bellmouth, Inspektionsloch)",
+        "Zugprüfung (1 Stück destruktiv)"
+      ],
+      "freigabe": {
+        "bestanden": "Alle Prüfungen bestanden → Serienfreigabe",
+        "nicht_bestanden": "Eine Prüfung nicht bestanden → Werkzeug prüfen/justieren"
+      },
+      "dokumentation": [
+        "Datum, Uhrzeit, Mitarbeiter",
+        "Werkzeug-ID",
+        "Messwerte",
+        "Freigabe-Unterschrift"
+      ]
+    }
+  },
+
+  "fehlersammelkarte": [
+    { "fehlerart": "Kein Bellmouth", "moegliche_ursache": "Werkzeug falsch eingestellt", "korrekturmassnahme": "Crimpbacken justieren" },
+    { "fehlerart": "Litzen im Inspektionsloch nicht sichtbar", "moegliche_ursache": "Abisolierlänge zu kurz", "korrekturmassnahme": "Abisoliermaß prüfen" },
+    { "fehlerart": "Litzen beschädigt", "moegliche_ursache": "Abisolierwerkzeug stumpf", "korrekturmassnahme": "Messer wechseln" },
+    { "fehlerart": "Crimp zu hoch", "moegliche_ursache": "Untercrimp", "korrekturmassnahme": "Werkzeugeinstellung" },
+    { "fehlerart": "Crimp zu niedrig", "moegliche_ursache": "Übercrimp", "korrekturmassnahme": "Werkzeugeinstellung" },
+    { "fehlerart": "Kalte Lötstelle", "moegliche_ursache": "Temperatur zu niedrig", "korrekturmassnahme": "Löttemperatur erhöhen" },
+    { "fehlerart": "Schirmung nicht 360°", "moegliche_ursache": "Falsche Technik", "korrekturmassnahme": "Mitarbeiterschulung" }
+  ],
+
+  "schulungsanforderungen": {
+    "qualifikationsmatrix": [
+      { "taetigkeit": "Crimpen", "schulung": "IPC-A-620 Kurs", "zertifizierung": "IPC-A-620 CIS", "nachschulung": "Alle 2 Jahre" },
+      { "taetigkeit": "Löten", "schulung": "IPC-A-610/620 Kurs", "zertifizierung": "IPC-A-610 CIS", "nachschulung": "Alle 2 Jahre" },
+      { "taetigkeit": "Inspektion", "schulung": "IPC-A-620 Kurs", "zertifizierung": "IPC-A-620 CIS", "nachschulung": "Alle 2 Jahre" }
+    ],
+    "kompetenznachweis": {
+      "erstschulung": [
+        "Theoretische Schulung (8-16 Stunden)",
+        "Praktische Übungen",
+        "Schriftliche Prüfung (≥ 70%)",
+        "Praktische Prüfung",
+        "Zertifikatsausstellung"
+      ],
+      "nachschulung": [
+        "Auffrischungskurs (4-8 Stunden)",
+        "Re-Zertifizierung"
+      ],
+      "dokumentation": [
+        "Schulungszertifikat",
+        "Qualifikationsmatrix",
+        "Personalakte"
+      ]
+    }
+  },
+
+  "schnellreferenz": {
+    "crimp_pruefung_klasse_3": [
+      "Bellmouth an BEIDEN Enden sichtbar",
+      "ALLE Litzen im Inspektionsloch sichtbar",
+      "Keine beschädigten Drähte",
+      "Keine Isolierung im Crimpbereich",
+      "Crimphöhe innerhalb Toleranz",
+      "Crimpbreite innerhalb Toleranz",
+      "Keine scharfen Kanten",
+      "Zugkraft ≥ Mindestwert (Stichprobe)"
+    ],
+    "verbotene_praktiken": [
+      "Verzinnung vor Crimp",
+      "Isolierung im Crimp",
+      "Nachcrimpen",
+      "Wiederverwendung von Kontakten",
+      "Lötmittel am Crimp",
+      "Beschädigte Litzen",
+      "Falsches Werkzeug"
+    ]
+  },
+
+  "quellen": [
+    { "quelle": "IPC/WHMA-A-620D Standard", "beschreibung": "Originalnorm" },
+    { "quelle": "SuperEngineer IPC-A-620", "url": "https://www.superengineer.net/blog/ipc-a-620-crimped-terminations" },
+    { "quelle": "Romtronic IPC Guide", "url": "https://www.romtronic.com/ipc-whma-a-620/" }
+  ]
+}

@@ -1,0 +1,574 @@
+/**
+ * Styles für Document Importer
+ */
+
+/* Import Container */
+.import-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.import-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.import-header h1 {
+    font-size: 2rem;
+    color: var(--primary-color, #1a5f7a);
+    margin-bottom: 10px;
+}
+
+.import-subtitle {
+    color: var(--text-secondary, #666);
+    font-size: 1.1rem;
+}
+
+/* Drop Zone */
+.drop-zone {
+    border: 3px dashed var(--border-color, #ccc);
+    border-radius: 16px;
+    padding: 60px 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    margin-bottom: 30px;
+}
+
+.drop-zone:hover {
+    border-color: var(--primary-color, #1a5f7a);
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+}
+
+.drop-zone.drag-over {
+    border-color: var(--success-color, #28a745);
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    transform: scale(1.02);
+}
+
+.drop-zone-content .drop-icon {
+    font-size: 4rem;
+    margin-bottom: 15px;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.drop-zone h3 {
+    font-size: 1.5rem;
+    color: var(--text-primary, #333);
+    margin-bottom: 8px;
+}
+
+.drop-zone p {
+    color: var(--text-secondary, #666);
+    margin-bottom: 20px;
+}
+
+.supported-formats {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.format-badge {
+    background: var(--primary-color, #1a5f7a);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Processing Status */
+.processing-status {
+    text-align: center;
+    padding: 40px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.processing-spinner {
+    width: 60px;
+    height: 60px;
+    border: 5px solid #e9ecef;
+    border-top-color: var(--primary-color, #1a5f7a);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.processing-status p {
+    font-size: 1.1rem;
+    color: var(--text-primary, #333);
+    margin-bottom: 20px;
+}
+
+.progress-bar {
+    width: 100%;
+    max-width: 400px;
+    height: 10px;
+    background: #e9ecef;
+    border-radius: 5px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color, #1a5f7a), var(--success-color, #28a745));
+    border-radius: 5px;
+    transition: width 0.3s ease;
+}
+
+/* Preview Section */
+.preview-section {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.preview-section h2 {
+    margin-bottom: 20px;
+    color: var(--primary-color, #1a5f7a);
+}
+
+.preview-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 25px;
+}
+
+.meta-item {
+    display: flex;
+    gap: 8px;
+}
+
+.meta-item label {
+    font-weight: 600;
+    color: var(--text-secondary, #666);
+}
+
+/* Form Styles */
+.preview-form {
+    margin-bottom: 25px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-primary, #333);
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--border-color, #ddd);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+    font-family: inherit;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--primary-color, #1a5f7a);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 150px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Preview Actions */
+.preview-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: var(--primary-color, #1a5f7a);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #134a5f;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+/* Imported Documents Section */
+.imported-docs-section {
+    margin-top: 40px;
+}
+
+.imported-docs-section h2 {
+    margin-bottom: 20px;
+    color: var(--primary-color, #1a5f7a);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    color: var(--text-secondary, #666);
+}
+
+.docs-filter {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.docs-filter .form-input {
+    flex: 1;
+}
+
+.docs-filter .form-select {
+    width: 250px;
+}
+
+/* Document Cards Grid */
+.docs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.doc-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
+}
+
+.doc-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+}
+
+.doc-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.doc-icon {
+    font-size: 1.8rem;
+}
+
+.doc-category {
+    font-size: 0.8rem;
+    color: var(--text-secondary, #666);
+    background: #f8f9fa;
+    padding: 4px 10px;
+    border-radius: 12px;
+}
+
+.doc-title {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    color: var(--text-primary, #333);
+    line-height: 1.4;
+}
+
+.doc-date {
+    font-size: 0.85rem;
+    color: var(--text-secondary, #888);
+    margin-bottom: 12px;
+}
+
+.doc-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 15px;
+}
+
+.tag {
+    background: #e3f2fd;
+    color: var(--primary-color, #1a5f7a);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.doc-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    border-top: 1px solid #e9ecef;
+    padding-top: 12px;
+}
+
+.btn-icon {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 8px;
+    background: #f8f9fa;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.btn-icon:hover {
+    background: #e9ecef;
+    transform: scale(1.1);
+}
+
+.btn-icon.btn-danger:hover {
+    background: #fee;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-large {
+    max-width: 900px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: var(--primary-color, #1a5f7a);
+}
+
+.modal-close {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: #f8f9fa;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modal-close:hover {
+    background: #e9ecef;
+}
+
+.modal-meta {
+    display: flex;
+    gap: 20px;
+    padding: 15px 25px;
+    background: #f8f9fa;
+    font-size: 0.9rem;
+    color: var(--text-secondary, #666);
+}
+
+.modal-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 25px;
+}
+
+.modal-body {
+    padding: 25px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.doc-content-view {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    white-space: pre-wrap;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 20px 25px;
+    border-top: 1px solid #e9ecef;
+}
+
+/* Notification */
+.notification {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: var(--primary-color, #1a5f7a);
+    color: white;
+    padding: 16px 24px;
+    border-radius: 12px;
+    font-weight: 500;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 1001;
+}
+
+.notification.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .import-container {
+        padding: 15px;
+    }
+    
+    .drop-zone {
+        padding: 40px 20px;
+    }
+    
+    .drop-zone-content .drop-icon {
+        font-size: 3rem;
+    }
+    
+    .docs-filter {
+        flex-direction: column;
+    }
+    
+    .docs-filter .form-select {
+        width: 100%;
+    }
+    
+    .docs-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .preview-actions {
+        flex-direction: column;
+    }
+    
+    .preview-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .modal-meta {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .drop-zone {
+        background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+        border-color: #4a5568;
+    }
+    
+    .drop-zone:hover {
+        background: linear-gradient(135deg, #2c5282 0%, #2b6cb0 100%);
+    }
+    
+    .preview-section,
+    .doc-card,
+    .modal-content {
+        background: #2d3748;
+        color: #e2e8f0;
+    }
+    
+    .form-input,
+    .form-select,
+    .form-textarea {
+        background: #1a202c;
+        color: #e2e8f0;
+        border-color: #4a5568;
+    }
+    
+    .doc-content-view {
+        background: #1a202c;
+        color: #e2e8f0;
+    }
+}

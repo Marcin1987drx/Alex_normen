@@ -57,10 +57,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function loadWissensbasis() {
   try {
-    // Karten laden
-    const response = await fetch('wissensbasis/karten.json');
-    App.wissensbasis = await response.json();
-    console.log(`📚 ${App.wissensbasis.length} Wissenskarten geladen`);
+    // Ładuj pełną wissensbasis z plików TEIL JSON
+    if (window.WissensbasisLoader) {
+      App.wissensbasis = await WissensbasisLoader.ladeDaten();
+      App.teilDaten = WissensbasisLoader.teilDaten;
+      console.log(`📚 ${App.wissensbasis.length} Wissenskarten aus TEIL-Dateien geladen`);
+    } else {
+      // Fallback do starego karten.json
+      const response = await fetch('wissensbasis/karten.json');
+      App.wissensbasis = await response.json();
+      console.log(`📚 ${App.wissensbasis.length} Wissenskarten geladen (Fallback)`);
+    }
   } catch (error) {
     console.error('Fehler beim Laden der Wissensbasis:', error);
     App.wissensbasis = [];
@@ -238,6 +245,14 @@ function navigateTo(page, subCategory) {
       renderMeineDokumentePage();
       UI.updateBreadcrumbs([{ title: '📁 Meine Dokumente' }]);
       break;
+      
+    case 'import':
+      renderImportPage();
+      UI.updateBreadcrumbs([
+        { title: '📁 Meine Dokumente', onclick: "navigateTo('meine-dokumente')" },
+        { title: '📥 Import' }
+      ]);
+      break;
   }
   
   UI.showPage(page);
@@ -320,11 +335,27 @@ function renderHomePage() {
     const histCount = Storage.getHistory().length;
     const docCount = Object.keys(Storage.getUserDocs()).length;
     
+    // Importierte Dokumente zählen
+    let importCount = 0;
+    if (typeof documentImporter !== 'undefined') {
+      importCount = documentImporter.importedDocuments.length;
+    }
+    
     statsEl.innerHTML = `
       <span>⭐ ${favCount} Favoriten</span>
-      <span>📄 ${docCount} Eigene Dokumente</span>
+      <span>📄 ${docCount + importCount} Dokumente</span>
       <span>🕐 ${histCount} in Historie</span>
     `;
+  }
+  
+  // User Docs Count aktualisieren
+  const userDocsCount = document.getElementById('userDocsCount');
+  if (userDocsCount) {
+    let totalDocs = Object.keys(Storage.getUserDocs()).length;
+    if (typeof documentImporter !== 'undefined') {
+      totalDocs += documentImporter.importedDocuments.length;
+    }
+    userDocsCount.textContent = `📄 ${totalDocs} Dokumente`;
   }
 }
 
@@ -373,6 +404,19 @@ function renderDetailPage(item) {
   
   const isFav = Storage.isFavorite(item.id);
   
+  // Sprawdź czy element ma pełne dane TEIL
+  let contentHtml = item.content || '';
+  
+  // Jeśli ma teilDaten, wygeneruj bogatszą zawartość
+  if (item.teilDaten) {
+    contentHtml = renderTeilDatenContent(item);
+  }
+  
+  // Jeśli ma formularDaten, wygeneruj widok formularza
+  if (item.formularDaten) {
+    contentHtml = renderFormularContent(item.formularDaten);
+  }
+  
   container.innerHTML = `
     <article class="detail-article">
       <header class="detail-header">
@@ -390,7 +434,7 @@ function renderDetailPage(item) {
       ${item.description ? `<p class="detail-description">${item.description}</p>` : ''}
       
       <div class="detail-content">
-        ${item.content || ''}
+        ${contentHtml}
       </div>
       
       ${item.keywords?.length ? `
@@ -413,6 +457,128 @@ function renderDetailPage(item) {
       ` : ''}
     </article>
   `;
+}
+
+// Renderuj zawartość z danych TEIL
+function renderTeilDatenContent(item) {
+  const daten = item.teilDaten;
+  if (!daten) return item.content || '';
+  
+  let html = '<div class="teil-content">';
+  
+  // Dla przeglądu pokaż strukturę
+  if (item.type === 'overview') {
+    // VG-Hierarchie
+    if (daten.vg_hierarchie) {
+      html += '<h3>📊 VG-Normen Struktur</h3>';
+      html += '<table class="data-table"><thead><tr><th>Norm</th><th>Titel</th><th>Beschreibung</th></tr></thead><tbody>';
+      daten.vg_hierarchie.forEach(n => {
+        html += `<tr><td><strong>${n.norm}</strong></td><td>${n.titel}</td><td>${n.beschreibung}</td></tr>`;
+      });
+      html += '</tbody></table>';
+    }
+    
+    // Temperatursysteme dla Kabelgarnituren
+    if (daten.temperatursysteme) {
+      html += '<h3>🌡️ Temperatursysteme</h3>';
+      html += '<div class="systems-grid">';
+      Object.entries(daten.temperatursysteme).forEach(([key, sys]) => {
+        html += `
+          <div class="system-card">
+            <h4>System ${key}</h4>
+            <p><strong>${sys.bezeichnung || ''}</strong></p>
+            ${sys.temperaturbereich ? `<p>${sys.temperaturbereich.min}°C bis ${sys.temperaturbereich.max}°C</p>` : ''}
+            ${sys.typische_anwendungen ? `<p class="small">${sys.typische_anwendungen.join(', ')}</p>` : ''}
+          </div>
+        `;
+      });
+      html += '</div>';
+    }
+    
+    // Drahttypen
+    if (daten.drahttypen) {
+      html += '<h3>🔌 Drahttypen nach VG 95218</h3>';
+      html += '<div class="types-grid">';
+      Object.entries(daten.drahttypen).forEach(([key, typ]) => {
+        html += `
+          <div class="type-card">
+            <h4>${typ.icon || '📏'} ${typ.bezeichnung}</h4>
+            <p>${typ.beschreibung}</p>
+            <p><strong>Material:</strong> ${typ.isolationsmaterial}</p>
+            <p><strong>Temperatur:</strong> ${typ.temperaturbereich_min}°C bis ${typ.temperaturbereich_max}°C</p>
+          </div>
+        `;
+      });
+      html += '</div>';
+    }
+    
+    // Zugelassene Hersteller
+    if (daten.zugelassene_hersteller?.liste) {
+      html += '<h3>🏭 Zugelassene Hersteller (QPL)</h3>';
+      html += '<div class="hersteller-grid">';
+      daten.zugelassene_hersteller.liste.forEach(h => {
+        html += `
+          <div class="hersteller-card">
+            <strong>${h.name}</strong>
+            ${h.komponenten ? `<p class="small">${h.komponenten.join(', ')}</p>` : ''}
+          </div>
+        `;
+      });
+      html += '</div>';
+    }
+  }
+  
+  html += '</div>';
+  return html;
+}
+
+// Renderuj zawartość formularza
+function renderFormularContent(formDaten) {
+  let html = '<div class="formular-content">';
+  
+  html += `<h3>📋 ${formDaten.titel}</h3>`;
+  if (formDaten.beschreibung) {
+    html += `<p class="formular-desc">${formDaten.beschreibung}</p>`;
+  }
+  
+  // Pokaż sekcje formularza
+  if (formDaten.abschnitte) {
+    Object.entries(formDaten.abschnitte).forEach(([key, section]) => {
+      html += `<div class="form-section">`;
+      html += `<h4>${key.replace(/_/g, ' ').toUpperCase()}</h4>`;
+      
+      if (section.felder) {
+        html += '<ul class="field-list">';
+        section.felder.forEach(f => html += `<li>☐ ${f}</li>`);
+        html += '</ul>';
+      }
+      
+      if (section.pruefpunkte) {
+        html += '<table class="data-table"><thead><tr><th>Prüfpunkt</th><th>Status</th></tr></thead><tbody>';
+        section.pruefpunkte.forEach(p => {
+          const punkt = typeof p === 'string' ? p : p.punkt;
+          html += `<tr><td>${punkt}</td><td>☐ OK ☐ NOK ☐ N/A</td></tr>`;
+        });
+        html += '</tbody></table>';
+      }
+      
+      html += '</div>';
+    });
+  }
+  
+  // Pokaż listę prüfpunkte dla prostszych formularzy
+  if (formDaten.pruefungen) {
+    formDaten.pruefungen.forEach(p => {
+      html += `<div class="form-section">`;
+      html += `<h4>${p.typ}</h4>`;
+      html += '<ul>';
+      p.punkte.forEach(punkt => html += `<li>☐ ${punkt}</li>`);
+      html += '</ul></div>';
+    });
+  }
+  
+  html += '</div>';
+  return html;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -438,8 +604,25 @@ function handleSearch() {
   // User Docs durchsuchen
   const udResults = SearchEngine.searchUserDocs(query);
   
+  // Importierte Dokumente durchsuchen
+  let importResults = [];
+  if (typeof documentImporter !== 'undefined') {
+    const importedMatches = documentImporter.searchDocuments(query);
+    importResults = importedMatches.map(doc => ({
+      id: `import-${doc.id}`,
+      title: doc.title,
+      type: 'imported',
+      icon: doc.formatIcon || '📄',
+      source: 'Importierte Dokumente',
+      preview: doc.content.substring(0, 200) + '...',
+      tags: doc.tags,
+      category: doc.category,
+      onclick: `documentImporter.viewDocument(${documentImporter.importedDocuments.indexOf(doc)})`
+    }));
+  }
+  
   // Ergebnisse zusammenführen
-  const results = [...wbResults, ...udResults];
+  const results = [...wbResults, ...udResults, ...importResults];
   
   // Ergebnisse anzeigen
   UI.renderSearchResults(results, query);
@@ -469,45 +652,130 @@ function clearSearch() {
 // VOICE SEARCH
 // ═══════════════════════════════════════════════════════════════════════════════
 
+// Globalna zmienna dla rozpoznawania mowy
+let currentRecognition = null;
+
 function startVoiceSearch() {
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-    UI.showToast('Sprachsuche wird von diesem Browser nicht unterstützt', 'error');
+    UI.showToast('Sprachsuche wird von diesem Browser nicht unterstützt. Nutzen Sie Chrome oder Edge.', 'error');
     return;
   }
   
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const recognition = new SpeechRecognition();
+  currentRecognition = recognition;
   
   recognition.lang = 'de-DE';
   recognition.continuous = false;
-  recognition.interimResults = false;
+  recognition.interimResults = true; // Pokaż tekst na bieżąco
+  recognition.maxAlternatives = 1;
   
   const voiceBtn = document.getElementById('btnVoiceSearch');
+  const voiceModal = document.getElementById('modalVoice');
+  const voiceTranscript = document.getElementById('voiceTranscript');
   
   recognition.onstart = () => {
     voiceBtn?.classList.add('listening');
-    UI.showToast('Sprechen Sie jetzt...', 'info', 2000);
+    if (voiceModal) {
+      voiceModal.classList.add('active');
+    }
+    if (voiceTranscript) {
+      voiceTranscript.textContent = '';
+    }
+    console.log('🎤 Spracherkennung gestartet...');
   };
   
   recognition.onresult = (event) => {
-    const transcript = event.results[0][0].transcript;
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-      searchInput.value = transcript;
-      handleSearch();
+    let interimTranscript = '';
+    let finalTranscript = '';
+    
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const transcript = event.results[i][0].transcript;
+      if (event.results[i].isFinal) {
+        finalTranscript += transcript;
+      } else {
+        interimTranscript += transcript;
+      }
+    }
+    
+    // Pokaż tekst na bieżąco w modalu
+    if (voiceTranscript) {
+      voiceTranscript.innerHTML = `
+        <span class="final">${finalTranscript}</span>
+        <span class="interim">${interimTranscript}</span>
+      `;
+    }
+    
+    // Jeśli jest końcowy wynik, wyszukaj
+    if (finalTranscript) {
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) {
+        searchInput.value = finalTranscript;
+        
+        // Zamknij modal i wyszukaj
+        setTimeout(() => {
+          if (voiceModal) voiceModal.classList.remove('active');
+          handleSearch();
+          UI.showToast(`Suche nach: "${finalTranscript}"`, 'success');
+        }, 500);
+      }
     }
   };
   
   recognition.onerror = (event) => {
     console.error('Voice recognition error:', event.error);
-    UI.showToast('Spracherkennung fehlgeschlagen', 'error');
+    
+    let errorMsg = 'Spracherkennung fehlgeschlagen';
+    switch(event.error) {
+      case 'no-speech':
+        errorMsg = 'Keine Sprache erkannt. Bitte sprechen Sie lauter.';
+        break;
+      case 'audio-capture':
+        errorMsg = 'Kein Mikrofon gefunden. Prüfen Sie die Mikrofoneinstellungen.';
+        break;
+      case 'not-allowed':
+        errorMsg = 'Mikrofonzugriff verweigert. Bitte erlauben Sie den Zugriff.';
+        break;
+      case 'network':
+        errorMsg = 'Netzwerkfehler bei der Spracherkennung.';
+        break;
+    }
+    
+    UI.showToast(errorMsg, 'error');
+    if (voiceModal) voiceModal.classList.remove('active');
   };
   
   recognition.onend = () => {
     voiceBtn?.classList.remove('listening');
+    currentRecognition = null;
+    console.log('🎤 Spracherkennung beendet');
   };
   
-  recognition.start();
+  try {
+    recognition.start();
+  } catch (e) {
+    console.error('Fehler beim Starten der Spracherkennung:', e);
+    UI.showToast('Spracherkennung konnte nicht gestartet werden', 'error');
+  }
+}
+
+function stopVoiceSearch() {
+  if (currentRecognition) {
+    currentRecognition.stop();
+    currentRecognition = null;
+  }
+  
+  const voiceModal = document.getElementById('modalVoice');
+  if (voiceModal) {
+    voiceModal.classList.remove('active');
+  }
+  
+  const voiceBtn = document.getElementById('btnVoiceSearch');
+  if (voiceBtn) {
+    voiceBtn.classList.remove('listening');
+  }
+  
+  UI.showToast('Sprachsuche abgebrochen', 'info');
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -905,14 +1173,6 @@ function handleSearchKeyup(event) {
   }
 }
 
-// Voice Search
-function stopVoiceSearch() {
-  if (window.speechRecognition) {
-    window.speechRecognition.stop();
-  }
-  UI.showToast('Sprachsuche beendet', 'info');
-}
-
 // Modal
 function closeModal(modalId) {
   UI.closeModal(modalId);
@@ -1084,74 +1344,180 @@ function renderFormularePage() {
   const container = document.getElementById('formulareContent');
   if (!container) return;
   
-  const formulare = [
-    { id: 'F01-Crimphoehen-Messprotokoll', title: 'Crimphöhen-Messprotokoll', icon: '📏', desc: 'Protokoll für Crimphöhen-Messungen nach VG 95319' },
-    { id: 'F02-Zugtest-Protokoll', title: 'Zugtest-Protokoll', icon: '🔧', desc: 'Protokoll für Zugprüfungen nach IPC-A-620' },
-    { id: 'F03-Wareneingang', title: 'Wareneingangs-Checkliste', icon: '📦', desc: 'Checkliste für Wareneingang Steckverbinder' },
-    { id: 'F04-Sichtkontrolle', title: 'Sichtkontrolle-Protokoll', icon: '👁️', desc: 'Visuelle Prüfung von Crimpverbindungen' },
-    { id: 'F05-Freigabe', title: 'Freigabe-Formular', icon: '✅', desc: 'Freigabedokumentation für Serienfertigung' },
-    { id: 'F06-Fehleranalyse', title: 'Fehleranalyse-Bericht', icon: '🔍', desc: '8D-Report für Crimpfehler' },
-    { id: 'F07-Werkzeugfreigabe', title: 'Werkzeug-Freigabe', icon: '🔧', desc: 'Freigabe für Crimpwerkzeuge' },
-    { id: 'F08-Schulungsnachweis', title: 'Schulungsnachweis', icon: '📋', desc: 'Nachweis für IPC-Schulungen' }
-  ];
+  // Pobierz formularze z wissensbasis (generowane z TEIL10)
+  const formularKarten = App.wissensbasis.filter(k => k.category === 'formulare' && k.type === 'formular');
   
-  let html = '<div class="cards-grid">';
+  // Jeśli nie ma kart, użyj danych z teilDaten
+  if (formularKarten.length === 0 && App.teilDaten?.teil10?.formularverzeichnis) {
+    const verzeichnis = App.teilDaten.teil10.formularverzeichnis.uebersicht;
+    
+    let html = '<h2>📋 Formulare und Checklisten</h2>';
+    html += '<p>Alle Formulare gemäß VG-Normen und IPC/WHMA-A-620 Dokumentationsanforderungen</p>';
+    html += '<div class="cards-grid">';
+    
+    verzeichnis.forEach(form => {
+      const icon = getFormularIcon(form.nr);
+      html += `
+        <div class="card formular-card" onclick="openFormularDetail('${form.nr}')">
+          <div class="card-header">
+            <span class="card-icon">${icon}</span>
+            <span class="card-title">${form.nr}: ${form.formular}</span>
+          </div>
+          <p class="card-desc">${form.anwendung}</p>
+          <span class="card-category">Kapitel ${form.kapitel}</span>
+        </div>
+      `;
+    });
+    
+    html += '</div>';
+    container.innerHTML = html;
+    return;
+  }
   
-  formulare.forEach(form => {
-    html += `
-      <div class="card formular-card" onclick="openFormular('${form.id}')">
-        <div class="card-header">
-          <span class="card-icon">${form.icon}</span>
-          <span class="card-title">${form.title}</span>
-        </div>
-        <p class="card-desc">${form.desc}</p>
-        <div class="card-actions">
-          <button class="btn-small btn-primary" onclick="event.stopPropagation(); openFormular('${form.id}')">
-            📄 ÖFFNEN
-          </button>
-          <button class="btn-small btn-secondary" onclick="event.stopPropagation(); printFormular('${form.id}')">
-            🖨️ DRUCKEN
-          </button>
-        </div>
-      </div>
-    `;
+  // Renderuj karty formularzy z wissensbasis
+  let html = '<h2>📋 Formulare und Checklisten</h2>';
+  html += '<p>Alle Formulare gemäß VG-Normen und IPC/WHMA-A-620 Dokumentationsanforderungen</p>';
+  
+  // Grupuj po kategoriach
+  const kategorien = {
+    wareneingang: { titel: '📦 Wareneingangsprüfung', karten: [] },
+    fertigung: { titel: '🔧 Fertigung', karten: [] },
+    pruefung: { titel: '✅ Prüfung', karten: [] },
+    qualitaet: { titel: '📊 Qualitätsmanagement', karten: [] }
+  };
+  
+  formularKarten.forEach(karte => {
+    const kategorie = karte.keywords?.find(k => ['wareneingang', 'fertigung', 'prüfung', 'qualität'].includes(k)) || 'sonstiges';
+    if (kategorien[kategorie]) {
+      kategorien[kategorie].karten.push(karte);
+    } else if (kategorien.qualitaet) {
+      kategorien.qualitaet.karten.push(karte);
+    }
   });
   
-  html += '</div>';
+  Object.entries(kategorien).forEach(([key, kat]) => {
+    if (kat.karten.length > 0) {
+      html += `<h3>${kat.titel}</h3><div class="cards-grid">`;
+      kat.karten.forEach(karte => {
+        html += `
+          <div class="card formular-card" onclick="openItem('${karte.id}')">
+            <div class="card-header">
+              <span class="card-icon">${karte.icon}</span>
+              <span class="card-title">${karte.title}</span>
+            </div>
+            <p class="card-desc">${karte.description}</p>
+          </div>
+        `;
+      });
+      html += '</div>';
+    }
+  });
+  
   container.innerHTML = html;
 }
 
+function getFormularIcon(formNr) {
+  const icons = {
+    'F-01': '📦', 'F-02': '🔌', 'F-03': '⚡', 'F-04': '🔥', 'F-05': '🛡️',
+    'F-06': '📋', 'F-07': '🔧', 'F-08': '⚡', 'F-09': '✅', 'F-10': '📊',
+    'F-11': '❌', 'F-12': '⚠️', 'F-13': '📏', 'F-14': '👷', 'F-15': '🏭'
+  };
+  return icons[formNr] || '📄';
+}
+
+function openFormularDetail(formNr) {
+  // Znajdź formularz w teilDaten
+  if (App.teilDaten?.teil10?.formulare) {
+    const formDaten = App.teilDaten.teil10.formulare[formNr];
+    if (formDaten) {
+      // Stwórz tymczasowy item do wyświetlenia
+      const item = {
+        id: `formular-${formNr.toLowerCase()}`,
+        title: `${formNr}: ${formDaten.titel}`,
+        icon: getFormularIcon(formNr),
+        norm: 'VG / IPC',
+        description: formDaten.beschreibung || formDaten.titel,
+        formularDaten: formDaten,
+        keywords: [formNr.toLowerCase(), 'formular']
+      };
+      
+      renderDetailPage(item);
+      UI.showPage('detail');
+      UI.updateBreadcrumbs([
+        { title: '📋 Formulare', action: () => navigateTo('formulare') },
+        { title: `${formNr}: ${formDaten.titel}` }
+      ]);
+      return;
+    }
+  }
+  
+  // Fallback
+  UI.showToast(`Formular ${formNr} wird geladen...`, 'info');
+}
 function renderTabellenPage() {
   const container = document.getElementById('tabellenContent');
   if (!container) return;
   
-  const tabellen = [
-    { id: 'tab-crimp-16', title: 'Crimphöhen Kontakt 16', icon: '📊', cat: 'Crimpen', desc: 'Sollwerte für Kontaktgröße 16 (1,0-1,5mm²)' },
-    { id: 'tab-crimp-20', title: 'Crimphöhen Kontakt 20', icon: '📊', cat: 'Crimpen', desc: 'Sollwerte für Kontaktgröße 20 (0,35-0,5mm²)' },
-    { id: 'tab-zugwerte', title: 'Zugwerte nach IPC', icon: '📊', cat: 'Prüfung', desc: 'Mindestzugkräfte nach IPC/WHMA-A-620' },
-    { id: 'tab-litzenquerschnitt', title: 'Litzenquerschnitte', icon: '📊', cat: 'Kabel', desc: 'AWG zu mm² Umrechnung' },
-    { id: 'tab-strombelastbar', title: 'Strombelastbarkeit', icon: '⚡', cat: 'Kabel', desc: 'Max. Stromstärken nach Querschnitt' },
-    { id: 'tab-temp-system', title: 'Temperatursysteme', icon: '🌡️', cat: 'Kabel', desc: 'VG 95218 Temperaturklassen' },
-    { id: 'tab-farben', title: 'Farbcodes', icon: '🎨', cat: 'Kabel', desc: 'Aderkennzeichnung nach Norm' },
-    { id: 'tab-stecker-typen', title: 'Steckverbinder-Typen', icon: '🔌', cat: 'Stecker', desc: 'Übersicht VG-Steckverbinder' }
-  ];
+  // Pobierz wszystkie karty typu tabelle
+  const tabellenKarten = App.wissensbasis.filter(k => k.type === 'tabelle');
   
-  let html = '<div class="cards-grid">';
+  let html = '<h2>📊 Technische Tabellen</h2>';
+  html += '<p>Alle wichtigen Referenztabellen aus den VG-Normen</p>';
   
-  tabellen.forEach(tab => {
-    html += `
-      <div class="card tabelle-card" onclick="openTabelle('${tab.id}')">
-        <div class="card-header">
-          <span class="card-icon">${tab.icon}</span>
-          <span class="card-title">${tab.title}</span>
+  if (tabellenKarten.length === 0) {
+    // Fallback - pokaż predefiniowane tabele
+    const tabellen = [
+      { id: 'teil2-awg-tabelle', title: 'AWG zu mm² Umrechnung', icon: '📊', cat: 'Kabel', desc: 'Querschnitte und Widerstände' },
+      { id: 'teil4-baugroessen', title: 'Steckverbinder Baugrößen', icon: '📐', cat: 'Stecker', desc: 'Shell Sizes 09-25' },
+      { id: 'teil4-kontaktgroessen', title: 'Kontaktgrößen', icon: '⚡', cat: 'Stecker', desc: 'Strombelastbarkeit 22D bis 0' },
+      { id: 'teil4-anzugsmomente', title: 'Anzugsmomente', icon: '🔧', cat: 'Stecker', desc: 'Drehmomente in Nm' },
+      { id: 'teil5-groessen', title: 'Abschirmgeflecht Größen', icon: '🛡️', cat: 'Schirmung', desc: 'VG06 Durchmesser' },
+      { id: 'teil7-zugkraefte', title: 'Mindestzugkräfte IPC', icon: '💪', cat: 'Prüfung', desc: 'Pull-Test Werte' },
+      { id: 'teil9-tabelle1', title: 'AQL Tabelle 1', icon: '📊', cat: 'Prüfung', desc: 'Stichprobenumfang' },
+      { id: 'teil9-tabelle2a', title: 'AQL Tabelle 2-A', icon: '📊', cat: 'Prüfung', desc: 'Ac/Re Werte' }
+    ];
+    
+    html += '<div class="cards-grid">';
+    tabellen.forEach(tab => {
+      html += `
+        <div class="card tabelle-card" onclick="openItem('${tab.id}')">
+          <div class="card-header">
+            <span class="card-icon">${tab.icon}</span>
+            <span class="card-title">${tab.title}</span>
+          </div>
+          <span class="card-category">${tab.cat}</span>
+          <p class="card-desc">${tab.desc}</p>
         </div>
-        <span class="card-category">${tab.cat}</span>
-        <p class="card-desc">${tab.desc}</p>
-      </div>
-    `;
-  });
+      `;
+    });
+    html += '</div>';
+  } else {
+    // Grupuj po kategorii
+    const grouped = {};
+    tabellenKarten.forEach(k => {
+      const cat = k.category || 'sonstiges';
+      if (!grouped[cat]) grouped[cat] = [];
+      grouped[cat].push(k);
+    });
+    
+    Object.entries(grouped).forEach(([catKey, karten]) => {
+      const catInfo = CONFIG.categories[catKey] || { title: catKey, icon: '📊' };
+      html += `<h3>${catInfo.icon} ${catInfo.title}</h3><div class="cards-grid">`;
+      karten.forEach(k => {
+        html += `
+          <div class="card tabelle-card" onclick="openItem('${k.id}')">
+            <div class="card-header">
+              <span class="card-icon">${k.icon}</span>
+              <span class="card-title">${k.title}</span>
+            </div>
+            <p class="card-desc">${k.description}</p>
+          </div>
+        `;
+      });
+      html += '</div>';
+    });
+  }
   
-  html += '</div>';
   container.innerHTML = html;
 }
 
@@ -1225,6 +1591,38 @@ function renderMeineDokumentePage() {
   
   html += '</div>';
   container.innerHTML = html;
+}
+
+/**
+ * Rendert die Import-Seite für Dokumente
+ */
+function renderImportPage() {
+  const container = document.getElementById('importPageContent');
+  if (!container) return;
+  
+  // DocumentImporter-Inhalt rendern
+  if (typeof documentImporter !== 'undefined') {
+    container.innerHTML = documentImporter.renderImportPage();
+    
+    // Event-Listener initialisieren
+    setTimeout(() => {
+      documentImporter.initializeEventListeners();
+    }, 100);
+  } else {
+    container.innerHTML = `
+      <div class="empty-state">
+        <span class="icon">⚠️</span>
+        <p>Import-Modul nicht verfügbar.</p>
+      </div>
+    `;
+  }
+}
+
+/**
+ * Callback für renderPage (verwendet von documentImporter)
+ */
+function renderPage(pageName) {
+  navigateTo(pageName);
 }
 
 function getDocIcon(fileName) {

@@ -1,0 +1,363 @@
+{
+  "teil": 6,
+  "titel": "Schrumpfschläuche und Formteile - VG 95343",
+  "version": "1.0",
+  "letzte_aktualisierung": "2024-01-15",
+  "beschreibung": "Komplette Spezifikation für VG 95343 Schrumpfschläuche und Formteile",
+  "geltende_norm": "VG 95343 T05",
+
+  "normenstruktur": {
+    "teile": [
+      { "teil": "VG 95343 T05", "bezeichnung": "Schrumpfschläuche", "beschreibung": "Standard-Schrumpfschläuche verschiedener Typen" },
+      { "teil": "VG 95343 T06", "bezeichnung": "Molded Boots", "beschreibung": "Geformte Endkappen (System 100)" },
+      { "teil": "VG 95343 T07", "bezeichnung": "Molded Parts", "beschreibung": "Sonstige Formteile" },
+      { "teil": "VG 95343 T29", "bezeichnung": "Heat Shrink Molded", "beschreibung": "Schrumpfbare Formteile (halogenfrei)" },
+      { "teil": "VG 95343 T30", "bezeichnung": "Zerohal Übergang", "beschreibung": "Übergangsformteile" }
+    ]
+  },
+
+  "anwendungsbereiche": [
+    "Isolierung von Crimp- und Lötstellen",
+    "Knickschutz an Steckverbindern",
+    "Abdichtung gegen Feuchtigkeit",
+    "Mechanischer Schutz",
+    "Kennzeichnung und Farbcodierung"
+  ],
+
+  "typen_uebersicht": {
+    "beschreibung": "Sieben Haupttypen nach VG 95343 T05",
+    "quellen": ["idetrading.com", "HellermannTyton", "Raytronics", "MIL-KABEL-SYSTEMS"],
+    "tabelle": [
+      {
+        "typ": "A",
+        "material": "Polyolefin FR (dünnwandig)",
+        "schrumpfverhaeltnis": "2:1",
+        "betriebstemperatur_min": -55,
+        "betriebstemperatur_max": 135,
+        "schrumpftemperatur_min": 95,
+        "schrumpftemperatur_voll": 120,
+        "anwendung": "Standard-Isolierung"
+      },
+      {
+        "typ": "B",
+        "material": "Polyolefin (transparent)",
+        "schrumpfverhaeltnis": "2:1",
+        "betriebstemperatur_min": -55,
+        "betriebstemperatur_max": 135,
+        "schrumpftemperatur_min": 95,
+        "schrumpftemperatur_voll": 120,
+        "anwendung": "Sichtkontrolle erforderlich"
+      },
+      {
+        "typ": "C",
+        "material": "Elastomer (Viton/Fluoro)",
+        "schrumpfverhaeltnis": "2:1",
+        "betriebstemperatur_min": -55,
+        "betriebstemperatur_max": 200,
+        "schrumpftemperatur_min": 150,
+        "schrumpftemperatur_voll": 175,
+        "anwendung": "Hochtemperatur, chemisch beständig"
+      },
+      {
+        "typ": "D",
+        "material": "Polyolefin FR (kraftstoffbeständig)",
+        "schrumpfverhaeltnis": "2:1",
+        "betriebstemperatur_min": -75,
+        "betriebstemperatur_max": 150,
+        "schrumpftemperatur_min": 150,
+        "schrumpftemperatur_voll": 175,
+        "anwendung": "Kraftstoff-/Ölbeständigkeit"
+      },
+      {
+        "typ": "E",
+        "material": "PVDF (Kynar)",
+        "schrumpfverhaeltnis": "2:1",
+        "betriebstemperatur_min": -55,
+        "betriebstemperatur_max": 175,
+        "schrumpftemperatur_min": 150,
+        "schrumpftemperatur_voll": 175,
+        "anwendung": "Hochtemperatur, chemisch beständig"
+      },
+      {
+        "typ": "G",
+        "material": "PTFE (Teflon)",
+        "schrumpfverhaeltnis": "2:1",
+        "betriebstemperatur_min": -55,
+        "betriebstemperatur_max": 260,
+        "schrumpftemperatur_min": 340,
+        "schrumpftemperatur_voll": 380,
+        "anwendung": "Extrem-Hochtemperatur"
+      },
+      {
+        "typ": "H",
+        "material": "Polyolefin mit Schmelzkleber",
+        "schrumpfverhaeltnis": "3:1",
+        "betriebstemperatur_min": -55,
+        "betriebstemperatur_max": 135,
+        "schrumpftemperatur_kleber": 80,
+        "schrumpftemperatur_schlauch": 120,
+        "anwendung": "Wasserdichte Abdichtung"
+      }
+    ]
+  },
+
+  "entscheidungsmatrix": {
+    "beschreibung": "Typauswahl nach Anforderungen",
+    "kriterien": [
+      { "anforderung": "Standard-Isolierung (bis +135°C)", "empfehlung": "TYP A (günstigster)" },
+      { "anforderung": "Sichtkontrolle erforderlich", "empfehlung": "TYP B (transparent)" },
+      { "anforderung": "Hochtemperatur bis +175°C", "empfehlung": "TYP E (PVDF)" },
+      { "anforderung": "Hochtemperatur bis +200°C", "empfehlung": "TYP C (Viton)" },
+      { "anforderung": "Hochtemperatur bis +260°C", "empfehlung": "TYP G (PTFE)" },
+      { "anforderung": "Kraftstoff-/Ölbeständigkeit", "empfehlung": "TYP D (kraftstoffbeständig)" },
+      { "anforderung": "Wasserdichte Abdichtung", "empfehlung": "TYP H (mit Schmelzkleber)" }
+    ]
+  },
+
+  "typ_a_standard": {
+    "bezeichnung": "TYP A - Standard Polyolefin",
+    "normbezeichnung": "VG 95343 T05 Type A",
+    "material": "Strahlenvernetztes Polyolefin",
+    "schrumpfverhaeltnis": "2:1",
+    "betriebstemperatur": "-55°C bis +135°C",
+    "minimale_schrumpftemperatur_c": 95,
+    "vollstaendige_rueckstellung_c": 120,
+    "laengsschrumpfung_max_prozent": 5,
+    "brandverhalten": "Selbstverlöschend (UL 94 V-0)",
+    "wandstaerke_geschrumpft_mm": "0,4-0,6",
+    "dielektrische_festigkeit_kv_mm": 15,
+
+    "dimensionstabelle": [
+      { "lieferdurchmesser_mm": 1.2, "rueckstelldurchmesser_mm": 0.6, "wandstaerke_mm": 0.4, "farben": "Alle" },
+      { "lieferdurchmesser_mm": 1.6, "rueckstelldurchmesser_mm": 0.8, "wandstaerke_mm": 0.4, "farben": "Alle" },
+      { "lieferdurchmesser_mm": 2.4, "rueckstelldurchmesser_mm": 1.2, "wandstaerke_mm": 0.4, "farben": "Alle" },
+      { "lieferdurchmesser_mm": 3.2, "rueckstelldurchmesser_mm": 1.6, "wandstaerke_mm": 0.5, "farben": "Alle" },
+      { "lieferdurchmesser_mm": 4.8, "rueckstelldurchmesser_mm": 2.4, "wandstaerke_mm": 0.5, "farben": "Alle" },
+      { "lieferdurchmesser_mm": 6.4, "rueckstelldurchmesser_mm": 3.2, "wandstaerke_mm": 0.6, "farben": "Alle" },
+      { "lieferdurchmesser_mm": 9.5, "rueckstelldurchmesser_mm": 4.8, "wandstaerke_mm": 0.6, "farben": "Alle" },
+      { "lieferdurchmesser_mm": 12.7, "rueckstelldurchmesser_mm": 6.4, "wandstaerke_mm": 0.7, "farben": "Alle" },
+      { "lieferdurchmesser_mm": 19.1, "rueckstelldurchmesser_mm": 9.5, "wandstaerke_mm": 0.8, "farben": "Alle" },
+      { "lieferdurchmesser_mm": 25.4, "rueckstelldurchmesser_mm": 12.7, "wandstaerke_mm": 0.9, "farben": "Alle" },
+      { "lieferdurchmesser_mm": 38.1, "rueckstelldurchmesser_mm": 19.0, "wandstaerke_mm": 1.0, "farben": "Alle" },
+      { "lieferdurchmesser_mm": 50.8, "rueckstelldurchmesser_mm": 25.4, "wandstaerke_mm": 1.2, "farben": "Alle" }
+    ],
+
+    "verfuegbare_farben": ["Schwarz (Standard)", "Braun", "Rot", "Orange", "Gelb", "Grün", "Blau", "Violett", "Grau", "Weiß"]
+  },
+
+  "typ_c_hochtemperatur": {
+    "bezeichnung": "TYP C - Elastomer Hochtemperatur",
+    "normbezeichnung": "VG 95343 T05 Type C",
+    "material": "Viton/Fluorelastomer",
+    "schrumpfverhaeltnis": "2:1",
+    "betriebstemperatur": "-55°C bis +200°C",
+    "minimale_schrumpftemperatur_c": 150,
+    "vollstaendige_rueckstellung_c": 175,
+    "chemikalienbestaendigkeit": "Ausgezeichnet",
+    "kraftstoffbestaendigkeit": true,
+    "brandverhalten": "Selbstverlöschend",
+    "anwendungsgebiete": [
+      "Motorraum und Triebwerksnähe",
+      "Treibstoffleitungen",
+      "Hydraulikanschlüsse",
+      "Chemisch aggressive Umgebungen",
+      "Aerospace-Anwendungen"
+    ]
+  },
+
+  "typ_d_kraftstoffbestaendig": {
+    "bezeichnung": "TYP D - Kraftstoffbeständig",
+    "normbezeichnung": "VG 95343 T05 Type D",
+    "material": "Polyolefin FR (speziell)",
+    "schrumpfverhaeltnis": "2:1",
+    "betriebstemperatur": "-75°C bis +150°C",
+    "minimale_schrumpftemperatur_c": 150,
+    "vollstaendige_rueckstellung_c": 175,
+    "kraftstoffbestaendigkeit": ["JP-4", "JP-5", "JP-8", "NATO F-34"],
+    "hydraulikoel_bestaendigkeit": ["MIL-H-5606", "MIL-H-83282"],
+    "mil_spec_aequivalent": "MIL-DTL-23053/16"
+  },
+
+  "typ_g_ptfe": {
+    "bezeichnung": "TYP G - PTFE Extrem-Hochtemperatur",
+    "normbezeichnung": "VG 95343 T05 Type G",
+    "material": "PTFE (Teflon)",
+    "schrumpfverhaeltnis": "2:1",
+    "betriebstemperatur": "-55°C bis +260°C",
+    "schrumpftemperatur": "+340°C bis +380°C",
+    "chemikalienbestaendigkeit": "Universell",
+    "oelbestaendigkeit": "Ausgezeichnet",
+    "brandverhalten": "Nicht brennbar",
+    "mil_spec_aequivalent": "MIL-DTL-23053/12",
+    "warnungen": [
+      "SCHRUMPFTEMPERATUR: +340°C bis +380°C!",
+      "NUR mit Heißluftgebläse (nicht mit Flamme!)",
+      "Abzugsanlage erforderlich (PTFE-Dämpfe!)",
+      "Schutzhandschuhe verwenden",
+      "Nicht überhitzen (max. 400°C)",
+      "Ausreichend Belüftung sicherstellen"
+    ]
+  },
+
+  "typ_h_mit_kleber": {
+    "bezeichnung": "TYP H - Mit Schmelzkleber",
+    "normbezeichnung": "VG 95343 T05 Type H",
+    "material": "Polyolefin mit Innenkleber",
+    "schrumpfverhaeltnis": "3:1",
+    "betriebstemperatur": "-55°C bis +135°C",
+    "kleber_fliesstemperatur_c": 80,
+    "schlauch_schrumpftemperatur_c": 120,
+    "kleberschichtdicke_mm": "0,2-0,5",
+    "dichtheit": "IP67 (nach Schrumpfung)",
+    "mil_spec_aequivalent": "MIL-DTL-23053/4",
+    "verarbeitungshinweise": {
+      "kritisch": "Kleber muss an beiden Enden austreten!",
+      "ablauf": [
+        "Schlauch auf korrekte Länge schneiden (Überlappung: min. 15 mm pro Seite)",
+        "Position mittig über Verbindungsstelle",
+        "Schrumpfen VON DER MITTE AUS nach außen (verhindert Lufteinschlüsse)",
+        "Bei 80°C: Kleber beginnt zu fließen",
+        "Bei 120°C: Schlauch ist vollständig geschrumpft",
+        "KONTROLLE: Kleberaustritt an beiden Enden sichtbar? JA → OK, NEIN → DEFEKT"
+      ]
+    }
+  },
+
+  "schrumpftemperaturen_uebersicht": {
+    "tabelle": [
+      { "typ": "A", "min_schrumpftemp_c": 95, "vollst_rueckstellung_c": 120, "empfohlene_arbeitstemperatur_c": "120-150" },
+      { "typ": "B", "min_schrumpftemp_c": 95, "vollst_rueckstellung_c": 120, "empfohlene_arbeitstemperatur_c": "120-150" },
+      { "typ": "C", "min_schrumpftemp_c": 150, "vollst_rueckstellung_c": 175, "empfohlene_arbeitstemperatur_c": "175-200" },
+      { "typ": "D", "min_schrumpftemp_c": 150, "vollst_rueckstellung_c": 175, "empfohlene_arbeitstemperatur_c": "175-200" },
+      { "typ": "E", "min_schrumpftemp_c": 150, "vollst_rueckstellung_c": 175, "empfohlene_arbeitstemperatur_c": "175-200" },
+      { "typ": "G", "min_schrumpftemp_c": 340, "vollst_rueckstellung_c": 380, "empfohlene_arbeitstemperatur_c": "350-400" },
+      { "typ": "H", "min_schrumpftemp_kleber_c": 80, "vollst_rueckstellung_c": 120, "empfohlene_arbeitstemperatur_c": "120-150" }
+    ],
+    "temperaturauswahl": [
+      { "max_betriebstemp_c": 135, "empfohlene_typen": "A, B, H (Standard)" },
+      { "max_betriebstemp_c": 150, "empfohlene_typen": "D (+ kraftstoffbeständig)" },
+      { "max_betriebstemp_c": 175, "empfohlene_typen": "E (PVDF)" },
+      { "max_betriebstemp_c": 200, "empfohlene_typen": "C (Viton)" },
+      { "max_betriebstemp_c": 260, "empfohlene_typen": "G (PTFE)" }
+    ]
+  },
+
+  "verarbeitungsverfahren": {
+    "allgemein": {
+      "vorbereitung": [
+        "Oberfläche reinigen (Isopropanol)",
+        "Korrekte Schlauchlänge berechnen",
+        "Überlappung: min. 1,5× Durchmesser pro Seite",
+        "Längsschrumpfung: +5% einplanen",
+        "Schlauch gerade abschneiden (90°)"
+      ],
+      "positionierung": [
+        "Schlauch mittig positionieren",
+        "Schlauch darf nicht verdreht sein",
+        "Schlauch darf nicht gedehnt sein"
+      ],
+      "schrumpfen": [
+        "Heißluftgebläse oder Schrumpfofen",
+        "Temperatur gem. Typ einstellen",
+        "Gleichmäßig von der Mitte nach außen",
+        "Schlauch kontinuierlich drehen",
+        "Nicht überhitzen (max. +50°C über Voll-Temp.)"
+      ],
+      "kontrolle": [
+        "Vollständig geschrumpft? (keine Falten)",
+        "Anliegend am Substrat? (keine Hohlräume)",
+        "Keine Blasen oder Verbrennungen?",
+        "Bei Typ H: Kleberaustritt sichtbar?"
+      ]
+    },
+    "werkzeuge": [
+      { "werkzeug": "Heißluftgebläse (einfach)", "temperaturbereich": "bis 350°C", "anwendung": "Typ A, B, H" },
+      { "werkzeug": "Heißluftgebläse (Profi)", "temperaturbereich": "bis 600°C", "anwendung": "Alle Typen" },
+      { "werkzeug": "Schrumpfofen", "temperaturbereich": "bis 250°C", "anwendung": "Serienproduktion A-E, H" },
+      { "werkzeug": "Infrarot-Strahler", "temperaturbereich": "bis 400°C", "anwendung": "Großflächig" },
+      { "werkzeug": "Gasflamme", "temperaturbereich": "—", "anwendung": "NICHT EMPFOHLEN" }
+    ]
+  },
+
+  "qualitaetskontrolle": {
+    "wareneingangspruefung": [
+      { "pruefpunkt": "Durchmesser", "anforderung": "±5% vom Nennwert", "pruefmittel": "Schieblehre" },
+      { "pruefpunkt": "Wandstärke", "anforderung": "±10% vom Nennwert", "pruefmittel": "Mikrometer" },
+      { "pruefpunkt": "Farbe", "anforderung": "Übereinstimmung", "pruefmittel": "Sichtkontrolle" },
+      { "pruefpunkt": "Beschriftung", "anforderung": "Lesbar, korrekt", "pruefmittel": "Sichtkontrolle" },
+      { "pruefpunkt": "Schrumpftest", "anforderung": "Vollständig bei Nenn-Temp.", "pruefmittel": "Heißluft" }
+    ],
+    "fertigungspruefung": {
+      "sichtpruefung_100_prozent": [
+        "Vollständig geschrumpft (keine Falten)",
+        "Anliegend (keine Hohlräume sichtbar)",
+        "Keine Blasen",
+        "Keine Verbrennungen/Verfärbungen",
+        "Überlappung ausreichend",
+        "Bei Typ H: Kleberaustritt vorhanden"
+      ],
+      "mechanische_pruefung_stichprobe": [
+        "Schlauch haftet am Substrat",
+        "Nicht abziehbar ohne Beschädigung",
+        "Keine Risse beim Biegen"
+      ],
+      "elektrische_pruefung_falls_erforderlich": [
+        "Spannungsfestigkeitstest (Hipot)",
+        "Isolationswiderstand"
+      ]
+    }
+  },
+
+  "milspec_aequivalente": [
+    { "vg_typ": "Type A", "mil_dtl_23053": "/5", "beschreibung": "Polyolefin, thin-wall" },
+    { "vg_typ": "Type B", "mil_dtl_23053": "/5 Class 3", "beschreibung": "Transparent" },
+    { "vg_typ": "Type C", "mil_dtl_23053": "/8", "beschreibung": "Elastomer (Viton)" },
+    { "vg_typ": "Type D", "mil_dtl_23053": "/16", "beschreibung": "Fuel resistant" },
+    { "vg_typ": "Type E", "mil_dtl_23053": "—", "beschreibung": "PVDF (Kynar)" },
+    { "vg_typ": "Type G", "mil_dtl_23053": "/12", "beschreibung": "PTFE" },
+    { "vg_typ": "Type H", "mil_dtl_23053": "/4", "beschreibung": "Adhesive lined" }
+  ],
+
+  "lagerung": {
+    "bedingungen": {
+      "temperatur": "+5°C bis +25°C",
+      "luftfeuchtigkeit": "30-70% RH",
+      "lichtschutz": "Vor UV und direktem Sonnenlicht schützen",
+      "lagerdauer_versiegelt": "5 Jahre ab Herstellung",
+      "lagerdauer_geoeffnet": "12 Monate"
+    },
+    "hinweise": [
+      "Original-Verpackung verwenden",
+      "Nicht knicken oder quetschen",
+      "Von Chemikalien und Lösungsmitteln fernhalten",
+      "Von Wärmequellen fernhalten",
+      "Charge/Losnummer dokumentieren",
+      "FIFO-Prinzip anwenden (First In, First Out)"
+    ]
+  },
+
+  "schnellreferenz_anwendungen": [
+    { "anwendung": "Standard-Crimpstelle", "empfohlener_typ": "Typ A", "begruendung": "Günstig, ausreichend" },
+    { "anwendung": "Sichtkontrolle erforderlich", "empfohlener_typ": "Typ B", "begruendung": "Transparent" },
+    { "anwendung": "Motornähe", "empfohlener_typ": "Typ C oder D", "begruendung": "Temperatur + Öl" },
+    { "anwendung": "Treibstoffleitung", "empfohlener_typ": "Typ D", "begruendung": "Kraftstoffbeständig" },
+    { "anwendung": "Triebwerknähe", "empfohlener_typ": "Typ G", "begruendung": "Extreme Temperatur" },
+    { "anwendung": "Feuchtigkeitsschutz", "empfohlener_typ": "Typ H", "begruendung": "Schmelzkleber dichtet" },
+    { "anwendung": "Chemische Umgebung", "empfohlener_typ": "Typ E oder G", "begruendung": "Chemikalienbeständig" }
+  ],
+
+  "zugelassene_lieferanten": [
+    { "hersteller": "TE Connectivity / Raychem", "produktbereich": "Vollsortiment", "zertifizierung": "BAAINBw" },
+    { "hersteller": "HellermannTyton", "produktbereich": "Vollsortiment", "zertifizierung": "BAAINBw" },
+    { "hersteller": "DSG-Canusa", "produktbereich": "Schrumpfschläuche", "zertifizierung": "ISO 9001" },
+    { "hersteller": "Panduit", "produktbereich": "Industriequalität", "zertifizierung": "UL" },
+    { "hersteller": "BIT Bierther", "produktbereich": "VG-Produkte", "zertifizierung": "BAAINBw" }
+  ],
+
+  "quellen": [
+    { "quelle": "idetrading.com Type A", "url": "https://idetrading.com/defense-military-mobility/vg95343-t05-type-a-heat-shrink-tubing/" },
+    { "quelle": "Raytronics VG95343T05D", "url": "https://raytronics.ch/phocadownloadpap/VG_and_MIL/" },
+    { "quelle": "HellermannTyton SE28", "url": "https://www.hellermanntyton.com/products/heat-shrink-tubing/" },
+    { "quelle": "MIL-KABEL-SYSTEMS", "url": "https://www.milkabelsystems.com/en/schrumpfschlaeuche/vg95343-schrumpfschlaeuche/" }
+  ]
+}

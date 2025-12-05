@@ -1,0 +1,413 @@
+{
+  "teil": 5,
+  "titel": "Abschirmung - VG 96936",
+  "version": "1.0",
+  "letzte_aktualisierung": "2024-01-15",
+  "beschreibung": "Komplette Spezifikation für VG 96936 Schutzschläuche und Abschirmgeflechte (EMI/RFI)",
+
+  "normenstruktur": {
+    "beschreibung": "Die Normenreihe VG 96936 definiert die Anforderungen an Schutzschläuche, Schutzgeflechte und Schutzkanäle für militärische Kabel und Leitungen. Der wichtigste Teil für die EMI/RFI-Abschirmung ist VG 96936-10.",
+    "teile": [
+      { "teil": "VG 96936-1", "bezeichnung": "Übersicht", "beschreibung": "Allgemeine Einführung und Klassifizierung" },
+      { "teil": "VG 96936-2", "bezeichnung": "Fachgrundnorm", "beschreibung": "Allgemeine Anforderungen und Prüfverfahren" },
+      { "teil": "VG 96936-10", "bezeichnung": "Metallische Geflechtschläuche", "beschreibung": "Abschirmgeflechte aus Metall" },
+      { "teil": "VG 96936-20", "bezeichnung": "Kunststoff-Schutzschläuche", "beschreibung": "Mechanischer Schutz (nicht EMI)" },
+      { "teil": "VG 96936-30", "bezeichnung": "Wellschläuche", "beschreibung": "Flexible Schutzrohre" }
+    ],
+    "quellen": ["DIN Media VG 96936-10", "GlobalSpec Standards Database"]
+  },
+
+  "anwendungsbereiche": [
+    { "anwendung": "EMI/RFI-Schutz", "anforderung": "Elektromagnetische Abschirmung", "empfohlenes_produkt": "VG 96936-10 Metallgeflecht" },
+    { "anwendung": "Mechanischer Schutz", "anforderung": "Abrieb, Schnitt, Vibration", "empfohlenes_produkt": "VG 96936-20 Kunststoff" },
+    { "anwendung": "Hochtemperatur", "anforderung": "> 150°C Umgebung", "empfohlenes_produkt": "VG 96936-10 mit Edelstahl" },
+    { "anwendung": "Chemikalienbeständigkeit", "anforderung": "Öle, Kraftstoffe", "empfohlenes_produkt": "VG 96936-10 verzinnt" },
+    { "anwendung": "Marine/Korrosion", "anforderung": "Salzwasser, hohe Feuchte", "empfohlenes_produkt": "VG 96936-10 vernickelt" }
+  ],
+
+  "metallgeflechte_vg96936_10": {
+    "normenreferenz": "VG 96936-10:2007-10",
+    "technische_daten": {
+      "material": "Verzinntes Kupfer (SnCu)",
+      "alternativ": ["Vernickeltes Kupfer", "Edelstahl"],
+      "optische_abdeckung": "85-95%",
+      "emi_daempfung": "Bis zu 60+ dB (10 kHz - 1 GHz)",
+      "temperaturbereich": "-65°C bis +150°C",
+      "brennbarkeit": "UL 94 V-2",
+      "rohs_konform": true
+    },
+    "quellen": ["DIN Media", "AFNOR", "GlobalSpec", "HellermannTyton HEGEMIP VG06", "TE Connectivity Cable Braids"]
+  },
+
+  "optische_abdeckung_vs_emi": {
+    "beschreibung": "Optische Abdeckung vs. EMI-Dämpfung (10 kHz - 1 GHz)",
+    "hinweis": "Höhere Abdeckung = bessere Dämpfung, aber geringere Flexibilität. Tatsächliche Dämpfung frequenzabhängig. Laborprüfung für genaue Werte empfohlen.",
+    "tabelle": [
+      { "optische_abdeckung_prozent": "80-85", "typische_anwendung": "Standard, hohe Flexibilität", "emi_daempfung_db": "40-50" },
+      { "optische_abdeckung_prozent": "85-90", "typische_anwendung": "Militär/Aerospace Standard", "emi_daempfung_db": "50-60" },
+      { "optische_abdeckung_prozent": "90-95", "typische_anwendung": "EMV-kritische Anwendungen", "emi_daempfung_db": "60+" },
+      { "optische_abdeckung_prozent": "95-100", "typische_anwendung": "Maximaler Schutz, geringere Flexibilität", "emi_daempfung_db": "70-80+" }
+    ],
+    "quellen": ["Zippertubing", "Glenair", "HellermannTyton HEGEMIP"]
+  },
+
+  "groessentabelle": {
+    "beschreibung": "VG06 Metallgeflechtschläuche nach HellermannTyton HEGEMIP",
+    "tabelle": [
+      { "bezeichnung": "VG06-02", "innen_durchmesser_mm": 2.0, "flaeche_mm2": 3.1, "max_kabel_durchmesser_mm": 1.5, "gewicht_g_m": 8 },
+      { "bezeichnung": "VG06-03", "innen_durchmesser_mm": 3.0, "flaeche_mm2": 7.1, "max_kabel_durchmesser_mm": 2.5, "gewicht_g_m": 12 },
+      { "bezeichnung": "VG06-04", "innen_durchmesser_mm": 4.0, "flaeche_mm2": 12.6, "max_kabel_durchmesser_mm": 3.5, "gewicht_g_m": 15 },
+      { "bezeichnung": "VG06-05", "innen_durchmesser_mm": 5.0, "flaeche_mm2": 19.6, "max_kabel_durchmesser_mm": 4.5, "gewicht_g_m": 20 },
+      { "bezeichnung": "VG06-06", "innen_durchmesser_mm": 6.0, "flaeche_mm2": 28.3, "max_kabel_durchmesser_mm": 5.5, "gewicht_g_m": 25 },
+      { "bezeichnung": "VG06-08", "innen_durchmesser_mm": 8.0, "flaeche_mm2": 50.3, "max_kabel_durchmesser_mm": 7.0, "gewicht_g_m": 35 },
+      { "bezeichnung": "VG06-10", "innen_durchmesser_mm": 10.0, "flaeche_mm2": 78.5, "max_kabel_durchmesser_mm": 9.0, "gewicht_g_m": 45 },
+      { "bezeichnung": "VG06-12", "innen_durchmesser_mm": 12.0, "flaeche_mm2": 113.1, "max_kabel_durchmesser_mm": 11.0, "gewicht_g_m": 55 },
+      { "bezeichnung": "VG06-15", "innen_durchmesser_mm": 15.0, "flaeche_mm2": 176.7, "max_kabel_durchmesser_mm": 14.0, "gewicht_g_m": 70 },
+      { "bezeichnung": "VG06-20", "innen_durchmesser_mm": 20.0, "flaeche_mm2": 314.2, "max_kabel_durchmesser_mm": 19.0, "gewicht_g_m": 95 },
+      { "bezeichnung": "VG06-25", "innen_durchmesser_mm": 25.0, "flaeche_mm2": 490.9, "max_kabel_durchmesser_mm": 24.0, "gewicht_g_m": 120 },
+      { "bezeichnung": "VG06-30", "innen_durchmesser_mm": 30.0, "flaeche_mm2": 706.9, "max_kabel_durchmesser_mm": 29.0, "gewicht_g_m": 150 },
+      { "bezeichnung": "VG06-40", "innen_durchmesser_mm": 40.0, "flaeche_mm2": 1256.6, "max_kabel_durchmesser_mm": 39.0, "gewicht_g_m": 200 },
+      { "bezeichnung": "VG06-50", "innen_durchmesser_mm": 50.0, "flaeche_mm2": 1963.5, "max_kabel_durchmesser_mm": 49.0, "gewicht_g_m": 260 }
+    ],
+    "quelle": "HellermannTyton HEGEMIP VG06 Produktdatenblatt"
+  },
+
+  "auswahlkriterien": {
+    "entscheidungsbaum": [
+      "START: Kabeldurchmesser bestimmen",
+      "Kabel-Ø messen (mit Toleranz +10%)",
+      "Geflecht-Innen-Ø = Kabel-Ø + 1 mm (Mindestspiel)",
+      "EMI-Anforderung prüfen: Standard (60 dB) → 85% Abdeckung, Erhöht (80 dB) → 95% Abdeckung, Maximum (100 dB) → 100% Abdeckung",
+      "Temperatur prüfen: < 150°C → CuSn (verzinnt), < 200°C → CuNi (vernickelt), < 350°C → Edelstahl",
+      "Flexibilität prüfen: Bewegte Anwendung → Feingeflecht, Stationär → Standardgeflecht"
+    ],
+    "beispiel": {
+      "kabel_durchmesser_mm": 8.5,
+      "emi_erforderlich_db": 80,
+      "temperatur_c": 120,
+      "ergebnis_geflecht": "VG06-10 (10 mm Innen-Ø)",
+      "ergebnis_typ": "95% Abdeckung",
+      "ergebnis_material": "CuSn (verzinnt)"
+    }
+  },
+
+  "materialspezifikationen": {
+    "cusn_verzinnt": {
+      "bezeichnung": "Kupfer verzinnt (CuSn) - Standard",
+      "grundmaterial": "Elektrolytkupfer (E-Cu)",
+      "pruefnorm": "DIN EN 13601",
+      "reinheit": "Min. 99,9% Cu",
+      "ueberzug": "Zinn (Sn)",
+      "schichtdicke_sn_um": "2-5",
+      "leitfaehigkeit": "58 MS/m (100% IACS)",
+      "leitfaehigkeit_norm": "IEC 60028",
+      "temperaturbereich": "-65°C bis +150°C",
+      "schmelzpunkt_sn_c": 232,
+      "korrosionsbestaendigkeit": "Gut (Salznebeltest 96h)",
+      "loetbarkeit": "Sehr gut"
+    },
+    "cuni_vernickelt": {
+      "bezeichnung": "Kupfer vernickelt (CuNi) - Erhöhte Beständigkeit",
+      "grundmaterial": "Elektrolytkupfer (E-Cu)",
+      "pruefnorm": "DIN EN 13601",
+      "ueberzug": "Nickel (Ni)",
+      "schichtdicke_ni_um": "1-3",
+      "temperaturbereich": "-65°C bis +200°C",
+      "korrosionsbestaendigkeit": "Sehr gut (Salznebeltest 500h)",
+      "loetbarkeit": "Mittel (Flussmittel erforderlich)",
+      "chemikalienbestaendigkeit": "Sehr gut"
+    },
+    "edelstahl": {
+      "bezeichnung": "Edelstahl - Hochtemperatur",
+      "material": "AISI 304 / 1.4301",
+      "pruefnorm": "DIN EN 10088",
+      "temperaturbereich": "-65°C bis +350°C",
+      "korrosionsbestaendigkeit": "Ausgezeichnet (Salznebeltest 1000h)",
+      "leitfaehigkeit": "1,4 MS/m (2,4% IACS)",
+      "emi_daempfung_hinweis": "Reduziert (ca. 40-60 dB) wegen geringerer Leitfähigkeit",
+      "loetbarkeit": "Nicht lötbar (mechanische Verbindung)",
+      "anwendung": "Motorraum, Abgasbereich"
+    },
+    "vergleich": {
+      "temperatur_max": { "cusn": "150°C", "cuni": "200°C", "edelstahl": "350°C" },
+      "emi_daempfung": { "cusn": "ausgezeichnet", "cuni": "ausgezeichnet", "edelstahl": "gut" },
+      "korrosion": { "cusn": "gut", "cuni": "sehr gut", "edelstahl": "ausgezeichnet" },
+      "flexibilitaet": { "cusn": "ausgezeichnet", "cuni": "sehr gut", "edelstahl": "gut" },
+      "gewicht": { "cusn": "sehr gut", "cuni": "sehr gut", "edelstahl": "gut" },
+      "kosten": { "cusn": "€", "cuni": "€€", "edelstahl": "€€€" },
+      "loetbarkeit": { "cusn": "ausgezeichnet", "cuni": "gut", "edelstahl": "nicht geeignet" }
+    }
+  },
+
+  "emi_rfi_abschirmung": {
+    "schirmwirkung": {
+      "prinzip": "Elektromagnetisches Feld → ABSCHIRMUNG (Reflexion + Absorption) → Reduziertes Feld",
+      "formel": "Schirmdämpfung (SE) = 20 × log₁₀(E₀/E₁) [dB]",
+      "erlaeuterung": {
+        "e0": "Feldstärke ohne Schirm",
+        "e1": "Feldstärke mit Schirm"
+      },
+      "beispiele": [
+        { "se_db": 60, "reduktion": "Feldstärke auf 1/1.000 reduziert" },
+        { "se_db": 80, "reduktion": "Feldstärke auf 1/10.000 reduziert" },
+        { "se_db": 100, "reduktion": "Feldstärke auf 1/100.000 reduziert" }
+      ]
+    },
+
+    "daempfung_nach_frequenz": {
+      "quelle": "TE Connectivity EMI Shielding Technical Guide",
+      "tabelle": [
+        { "frequenz": "1 MHz", "abdeckung_85_prozent_db": 65, "abdeckung_95_prozent_db": 85, "abdeckung_100_prozent_db": 95 },
+        { "frequenz": "10 MHz", "abdeckung_85_prozent_db": 60, "abdeckung_95_prozent_db": 80, "abdeckung_100_prozent_db": 90 },
+        { "frequenz": "100 MHz", "abdeckung_85_prozent_db": 55, "abdeckung_95_prozent_db": 75, "abdeckung_100_prozent_db": 85 },
+        { "frequenz": "1 GHz", "abdeckung_85_prozent_db": 50, "abdeckung_95_prozent_db": 70, "abdeckung_100_prozent_db": 80 },
+        { "frequenz": "10 GHz", "abdeckung_85_prozent_db": 40, "abdeckung_95_prozent_db": 60, "abdeckung_100_prozent_db": 70 }
+      ]
+    },
+
+    "anforderungen_nach_anwendung": [
+      { "anwendung": "Fahrzeugelektronik", "min_daempfung_db": 40, "min_abdeckung_prozent": 85, "bemerkung": "Standardanforderung" },
+      { "anwendung": "Kommunikation", "min_daempfung_db": 60, "min_abdeckung_prozent": 90, "bemerkung": "Erhöhte Anforderung" },
+      { "anwendung": "Radar/Navigation", "min_daempfung_db": 80, "min_abdeckung_prozent": 95, "bemerkung": "Hohe Anforderung" },
+      { "anwendung": "EMP-Schutz", "min_daempfung_db": 100, "min_abdeckung_prozent": 100, "bemerkung": "Höchste Anforderung" },
+      { "anwendung": "Medizintechnik", "min_daempfung_db": 60, "min_abdeckung_prozent": 90, "bemerkung": "Patientensicherheit" },
+      { "anwendung": "Avionik", "min_daempfung_db": 80, "min_abdeckung_prozent": 95, "bemerkung": "Sicherheitskritisch" }
+    ],
+
+    "transferimpedanz": {
+      "beschreibung": "Die Transferimpedanz (Zt) ist ein Maß für die Qualität der Abschirmung",
+      "grenzwerte": [
+        { "zt_mohm_m": 100, "bewertung": "Unzureichend" },
+        { "zt_mohm_m": 50, "bewertung": "Minimum für EMV" },
+        { "zt_mohm_m": 20, "bewertung": "Standard VG 96936" },
+        { "zt_mohm_m": 10, "bewertung": "Gut" },
+        { "zt_mohm_m": 5, "bewertung": "Sehr gut" },
+        { "zt_mohm_m": 1, "bewertung": "Ausgezeichnet" }
+      ],
+      "vg96936_10_grenzwerte": {
+        "standard": "Zt ≤ 20 mΩ/m @ 1 MHz",
+        "erhoeht": "Zt ≤ 10 mΩ/m @ 1 MHz",
+        "maximum": "Zt ≤ 5 mΩ/m @ 1 MHz"
+      }
+    }
+  },
+
+  "mechanische_eigenschaften": {
+    "biegeradius": {
+      "tabelle": [
+        { "geflecht_durchmesser_mm": "2-5", "min_biegeradius_statisch": "3 × Ø", "min_biegeradius_dynamisch": "6 × Ø" },
+        { "geflecht_durchmesser_mm": "6-10", "min_biegeradius_statisch": "4 × Ø", "min_biegeradius_dynamisch": "8 × Ø" },
+        { "geflecht_durchmesser_mm": "12-20", "min_biegeradius_statisch": "5 × Ø", "min_biegeradius_dynamisch": "10 × Ø" },
+        { "geflecht_durchmesser_mm": "25-50", "min_biegeradius_statisch": "6 × Ø", "min_biegeradius_dynamisch": "12 × Ø" }
+      ],
+      "beispiel": {
+        "geflecht": "VG06-10 (Ø 10 mm)",
+        "statisch_mm": 40,
+        "dynamisch_mm": 80
+      }
+    },
+
+    "zugfestigkeit": [
+      { "material": "CuSn Ø 5 mm", "zugfestigkeit_n": "> 200", "bemerkung": "Bei Raumtemperatur" },
+      { "material": "CuSn Ø 10 mm", "zugfestigkeit_n": "> 400", "bemerkung": "Bei Raumtemperatur" },
+      { "material": "CuSn Ø 20 mm", "zugfestigkeit_n": "> 800", "bemerkung": "Bei Raumtemperatur" },
+      { "material": "Edelstahl Ø 10 mm", "zugfestigkeit_n": "> 600", "bemerkung": "Höhere Festigkeit" }
+    ],
+
+    "biegewechselfestigkeit": {
+      "biegewinkel": "±90°",
+      "biegewinkel_hinweis": "Um min. Biegeradius",
+      "frequenz": "30 Zyklen/min",
+      "min_zyklen": 10000,
+      "min_zyklen_hinweis": "Ohne Bruch",
+      "prueftemperatur": "+23°C ±5°C"
+    }
+  },
+
+  "montage_terminierung": {
+    "verfahren_uebersicht": [
+      { "verfahren": "Spannband", "beschreibung": "Geflecht unter Metallband", "vorteil": "Schnell, demontierbar", "nachteil": "Mittlere EMI-Dämpfung" },
+      { "verfahren": "Schrumpfschlauch", "beschreibung": "Mit leitfähigem Schlauch", "vorteil": "Gute Abdichtung", "nachteil": "Nicht demontierbar" },
+      { "verfahren": "Crimpring", "beschreibung": "Metallring verpresst", "vorteil": "Hohe EMI-Dämpfung", "nachteil": "Spezialwerkzeug" },
+      { "verfahren": "Löten", "beschreibung": "Geflecht verlötet", "vorteil": "Beste Verbindung", "nachteil": "Wärmeempfindlich" },
+      { "verfahren": "Backshell", "beschreibung": "Im Steckverbinder-Backshell", "vorteil": "Professionell", "nachteil": "Höhere Kosten" }
+    ],
+
+    "spannband_montage": {
+      "material": ["Geflecht VG 96936-10", "Spannband (Edelstahl oder verzinnt)", "Spannbandwerkzeug"],
+      "schritte": {
+        "vorbereitung": [
+          "Geflecht auf Kabel aufschieben",
+          "Länge bestimmen (Kabel + 30 mm Überlänge je Seite)",
+          "Geflecht abschneiden (mit Seitenschneider)",
+          "Enden mit Klebeband sichern (gegen Aufdröseln)"
+        ],
+        "positionierung": [
+          "Geflecht gleichmäßig über Kabel ziehen",
+          "Enden auf Backshell/Stecker positionieren",
+          "Geflecht straff ziehen (ohne Dehnung!)"
+        ],
+        "terminierung": [
+          "Geflecht 360° um Backshell-Körper legen",
+          "Spannband anlegen",
+          "Mit Werkzeug festziehen",
+          "Überschuss abschneiden"
+        ],
+        "kontrolle": [
+          "360° Kontakt (keine Lücken)",
+          "Spannband fest (kein Spiel)",
+          "Geflecht nicht beschädigt",
+          "Widerstand Geflecht-Backshell < 2,5 mΩ"
+        ]
+      }
+    },
+
+    "schrumpfschlauch_montage": {
+      "material": ["Geflecht VG 96936-10", "Schrumpfschlauch VG 95343 (mit Kleber)", "Heißluftpistole (200-300°C)"],
+      "schritte": {
+        "vorbereitung": [
+          "Schrumpfschlauch ablängen (Überlappung 15-20 mm)",
+          "Schrumpfschlauch auf Kabel schieben (vor Geflecht!)",
+          "Geflecht montieren"
+        ],
+        "aufweiten": [
+          "Geflechtende ca. 20 mm aufweiten",
+          "Über Backshell stülpen",
+          "Geflecht andrücken (360° Kontakt)"
+        ],
+        "schrumpfen": [
+          "Heißluftpistole auf 200-250°C einstellen",
+          "Von Mitte nach außen erwärmen",
+          "Gleichmäßig rotieren",
+          "Bis Schlauch eng anliegt und Kleber austritt"
+        ],
+        "kontrolle": [
+          "Schrumpfschlauch vollständig geschrumpft",
+          "Keine Luftblasen",
+          "Kleber sichtbar an Enden",
+          "Keine Beschädigung des Geflechts"
+        ]
+      }
+    },
+
+    "crimpring_montage": {
+      "material": ["Geflecht VG 96936-10", "Crimpring (passend zur Größe)", "Crimpzange (kalibriert)"],
+      "schritte": {
+        "ring_aufschieben": [
+          "Crimpring auf Geflecht schieben",
+          "Geflecht über Backshell stülpen",
+          "Ring in Position bringen"
+        ],
+        "crimpen": [
+          "Crimpzange ansetzen",
+          "Gleichmäßig vercrimpen",
+          "Ring muss fest sitzen"
+        ],
+        "kontrolle": [
+          "Ring sitzt fest (Zugprüfung > 50 N)",
+          "Geflecht nicht durchtrennt",
+          "360° Kontakt",
+          "Widerstand < 2,5 mΩ"
+        ]
+      }
+    },
+
+    "backshell_typen": [
+      { "typ": "A", "bezeichnung": "Spannring-Backshell", "beschreibung": "Geflecht eingeklemmt unter Spannring" },
+      { "typ": "B", "bezeichnung": "Schrumpf-Backshell", "beschreibung": "Geflecht überschrumpft" },
+      { "typ": "C", "bezeichnung": "Schraub-Backshell", "beschreibung": "Geflecht eingeklemmt unter Überwurfmutter" }
+    ]
+  },
+
+  "qualitaetskontrolle": {
+    "eingangspruefung": {
+      "dokumentation": [
+        "Lieferschein mit Chargennummer",
+        "Materialzertifikat (CuSn, CuNi, etc.)",
+        "Konformitätserklärung VG 96936-10",
+        "RoHS-Erklärung"
+      ],
+      "visuelle_pruefung": [
+        "Verpackung unbeschädigt",
+        "Geflecht gleichmäßig (keine Löcher)",
+        "Keine Oxidation/Verfärbung",
+        "Keine mechanischen Beschädigungen",
+        "Innenschlauch vorhanden (falls spezifiziert)"
+      ],
+      "massliche_pruefung": [
+        "Innendurchmesser messen (3 Stellen)",
+        "Toleranz: ±0,5 mm",
+        "Geflechtdichte visuell prüfen"
+      ],
+      "funktionspruefung_stichprobe": [
+        "Flexibilität prüfen (Biegen ohne Knicken)",
+        "Aufweitbarkeit prüfen",
+        "Lötbarkeit prüfen (nur CuSn)"
+      ]
+    },
+
+    "pruefung_montiertes_geflecht": [
+      { "pruefung": "Optische Abdeckung", "methode": "Mikroskop/Lupe", "grenzwert": "≥ 85% (oder Spezifikation)", "haeufigkeit": "Stichprobe" },
+      { "pruefung": "Übergangswiderstand", "methode": "4-Leiter-Messung", "grenzwert": "< 2,5 mΩ", "haeufigkeit": "100%" },
+      { "pruefung": "360°-Kontakt", "methode": "Visuelle Prüfung", "grenzwert": "Keine Lücken", "haeufigkeit": "100%" },
+      { "pruefung": "Zugfestigkeit", "methode": "Zugprüfung", "grenzwert": "> 50 N", "haeufigkeit": "Stichprobe" },
+      { "pruefung": "Schirmdämpfung", "methode": "Netzwerkanalysator", "grenzwert": "Nach Spezifikation", "haeufigkeit": "Typenprüfung" }
+    ],
+
+    "messung_uebergangswiderstand": {
+      "methode": "4-Leiter-Messung (Kelvin-Methode)",
+      "messstrom": "100 mA DC",
+      "messspitze_1": "Auf Geflecht (ca. 50 mm vom Backshell)",
+      "messspitze_2": "Auf Backshell-Körper",
+      "messungen": "Min. 3 an verschiedenen Positionen",
+      "auswertung": "Mittelwert bilden",
+      "grenzwert_bestanden": "R ≤ 2,5 mΩ",
+      "grenzwert_nicht_bestanden": "R > 2,5 mΩ → Nacharbeiten"
+    }
+  },
+
+  "fehleranalyse": [
+    { "fehler": "Hoher Übergangswiderstand", "moegliche_ursache": "Oxidation, schlechter Kontakt", "abhilfe": "Reinigen, neu terminieren" },
+    { "fehler": "Geflecht aufgedröselt", "moegliche_ursache": "Falsche Schneidtechnik", "abhilfe": "Mit Klebeband sichern vor Schnitt" },
+    { "fehler": "Geflecht zu kurz", "moegliche_ursache": "Falsche Längenmessung", "abhilfe": "Überlänge einplanen (+30 mm)" },
+    { "fehler": "Kein 360°-Kontakt", "moegliche_ursache": "Ungleichmäßige Aufweitung", "abhilfe": "Gleichmäßig aufweiten" },
+    { "fehler": "Spannband locker", "moegliche_ursache": "Falsches Werkzeug", "abhilfe": "Korrekte Spannkraft einstellen" },
+    { "fehler": "Schrumpfschlauch nicht dicht", "moegliche_ursache": "Zu wenig Wärme", "abhilfe": "Länger/heißer schrumpfen" }
+  ],
+
+  "lagerung_handhabung": {
+    "lagerungsbedingungen": {
+      "temperatur": "+15°C bis +25°C",
+      "temperatur_hinweis": "Raumtemperatur",
+      "luftfeuchtigkeit": "40-60% RH",
+      "luftfeuchtigkeit_hinweis": "Keine Kondensation",
+      "lichteinwirkung": "Vermeiden (UV kann Material altern)",
+      "max_lagerdauer_cusn": "5 Jahre",
+      "max_lagerdauer_edelstahl": "10 Jahre",
+      "lagerdauer_hinweis": "Bei korrekter Lagerung"
+    },
+    "handhabung_richtig": [
+      "Mit sauberen Handschuhen anfassen",
+      "Innenschlauch bis zur Montage belassen",
+      "Auf Spulen lagern (nicht knicken)",
+      "Enden mit Klebeband sichern"
+    ],
+    "handhabung_falsch": [
+      "Mit bloßen Händen anfassen (Schweiß → Korrosion)",
+      "Knicken oder quetschen",
+      "Auf dem Boden ablegen",
+      "Offen lagern (Staub/Feuchtigkeit)"
+    ]
+  },
+
+  "quellen": [
+    { "quelle": "VG 96936-10 DIN Media", "url": "https://www.dinmedia.de/en/standard/vg-96936-10/101666294" },
+    { "quelle": "VG 96936-10 GlobalSpec", "url": "https://standards.globalspec.com/std/14258855/vg-96936-10" },
+    { "quelle": "VG 96936-10 AFNOR", "url": "https://www.boutique.afnor.org/en-gb/standard/vg-9693610/" },
+    { "quelle": "HellermannTyton HEGEMIP VG06", "url": "https://www.hellermanntyton.com/products/open-woven-sleeves/hegemip-vg06/173-00202" },
+    { "quelle": "TE Connectivity Cable Braids", "url": "https://www.te.com/en/plp/cable-braids/Y314yVw9ywz.html" },
+    { "quelle": "Normadoc VG 96936-10:2007-10", "url": "https://www.normadoc.com/english/vg-96936-10-2007-10.html" },
+    { "quelle": "Zippertubing EMI Shielding", "url": "https://www.zippertubing.com/blogs/engineers-knowledgebase/understanding-optical-coverage-in-emi-shielding" },
+    { "quelle": "Glenair Braided Shielding", "url": "https://www.glenair.com/braided-shielding-and-sleeving/a.htm" }
+  ]
+}

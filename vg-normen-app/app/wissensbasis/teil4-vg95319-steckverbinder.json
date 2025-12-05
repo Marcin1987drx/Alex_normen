@@ -1,0 +1,447 @@
+{
+  "teil": 4,
+  "titel": "Steckverbinder - VG 95319",
+  "version": "1.0",
+  "letzte_aktualisierung": "2024-01-15",
+  "beschreibung": "Komplette Spezifikation für VG 95319 Steckverbinder (MIL-DTL-38999 äquivalent)",
+  
+  "normenstruktur": {
+    "beschreibung": "Die Normenreihe VG 95319 definiert die Anforderungen an elektrische Steckverbinder und Steckvorrichtungen für militärische Anwendungen. Sie ist das deutsche Äquivalent zur US-amerikanischen MIL-DTL-38999 Serie.",
+    "teile": [
+      { "teil": "VG 95319-1", "bezeichnung": "Übersichtsnorm", "beschreibung": "Allgemeine Anforderungen, Klassifizierung" },
+      { "teil": "VG 95319-100", "bezeichnung": "Fachgrundnorm", "beschreibung": "Prüfverfahren und Qualitätsanforderungen" },
+      { "teil": "VG 95319-102", "bezeichnung": "Übersicht Detail", "beschreibung": "Detailspezifikationen für Bauarten" },
+      { "teil": "VG 95319-1006", "bezeichnung": "Rundsteckverbinder", "beschreibung": "Gewinde-Kupplung (Screw Coupling)" },
+      { "teil": "VG 95319-1007", "bezeichnung": "Schnellkupplung", "beschreibung": "Bajonett-Kupplung (Bayonet)" },
+      { "teil": "VG 95319-1009", "bezeichnung": "Kontakte", "beschreibung": "Stift- und Buchsenkontakte" },
+      { "teil": "VG 95319-1010", "bezeichnung": "Gehäuse Überwurf", "beschreibung": "Jam-Nut Gehäuse" },
+      { "teil": "VG 95319-1011", "bezeichnung": "Endgehäuse", "beschreibung": "Backshells, Zugentlastungen" },
+      { "teil": "VG 95319-1012", "bezeichnung": "Gehäuse Flansch", "beschreibung": "Flansch-Gehäuse (Square Flange)" }
+    ],
+    "quellen": ["DIN Media VG 95319-1", "GlobalSpec Standards Database"]
+  },
+
+  "milspec_kompatibilitaet": [
+    { "vg_norm": "VG 95319-1006", "mil_spec": "MIL-DTL-38999 Serie III", "anwendung": "Rundsteckverbinder mit Gewinde" },
+    { "vg_norm": "VG 95319-1007", "mil_spec": "MIL-DTL-38999 Serie I/II", "anwendung": "Schnellkupplung (Bajonett)" },
+    { "vg_norm": "VG 95319-1009", "mil_spec": "MIL-PRF-29504", "anwendung": "Kontakte (Crimp/Löt)" },
+    { "vg_norm": "VG 95319-1011", "mil_spec": "MIL-DTL-38999 Backshells", "anwendung": "Endgehäuse und Zugentlastung" }
+  ],
+
+  "baugroessen": {
+    "beschreibung": "Shell Sizes nach VG 95319",
+    "tabelle": [
+      { "baugroesse": "09", "aussen_durchmesser_mm": 15.88, "kontaktanzahl_typ": "4-7", "anwendung": "Signalleitungen" },
+      { "baugroesse": "11", "aussen_durchmesser_mm": 19.05, "kontaktanzahl_typ": "7-13", "anwendung": "Signale/Strom" },
+      { "baugroesse": "13", "aussen_durchmesser_mm": 22.22, "kontaktanzahl_typ": "10-22", "anwendung": "Standardanwendungen" },
+      { "baugroesse": "15", "aussen_durchmesser_mm": 25.40, "kontaktanzahl_typ": "15-37", "anwendung": "Mehradrige Verbindungen" },
+      { "baugroesse": "17", "aussen_durchmesser_mm": 28.58, "kontaktanzahl_typ": "19-55", "anwendung": "Komplexe Systeme" },
+      { "baugroesse": "19", "aussen_durchmesser_mm": 31.75, "kontaktanzahl_typ": "22-66", "anwendung": "Hochpolige Anwendungen" },
+      { "baugroesse": "21", "aussen_durchmesser_mm": 34.93, "kontaktanzahl_typ": "32-79", "anwendung": "Hochpolige Systeme" },
+      { "baugroesse": "23", "aussen_durchmesser_mm": 38.10, "kontaktanzahl_typ": "41-100", "anwendung": "Großverbinder" },
+      { "baugroesse": "25", "aussen_durchmesser_mm": 44.45, "kontaktanzahl_typ": "55-128", "anwendung": "Maximale Polzahl" }
+    ]
+  },
+
+  "kontaktanordnungen": {
+    "beschreibung": "Insert Arrangements - Beispiel Baugröße 13",
+    "beispiele": [
+      { "anordnung": "13-4", "kontakte": 4, "typ": "Stromkontakte (größer)" },
+      { "anordnung": "13-35", "kontakte": 22, "typ": "Signalkontakte (kleiner)" }
+    ]
+  },
+
+  "kupplungsarten": [
+    { "art": "Gewindekupplung", "vg_norm": "VG 95319-1006", "beschreibung": "Schraubverbindung", "vorteil": "Höchste Vibrationsfestigkeit" },
+    { "art": "Bajonettkupplung", "vg_norm": "VG 95319-1007", "beschreibung": "Schnellverschluss", "vorteil": "Schnelles Stecken/Lösen" },
+    { "art": "Push-Pull", "vg_norm": "VG 95319-10xx", "beschreibung": "Druckknopf", "vorteil": "Einhändige Bedienung" }
+  ],
+
+  "rundsteckverbinder_vg95319_1006": {
+    "beschreibung": "Gewindekupplung - MIL-DTL-38999 Serie III äquivalent",
+    "technische_daten": {
+      "norm": "VG 95319-1006",
+      "kupplungsart": "Gewindekupplung (3-Start-Gewinde)",
+      "temperaturbereich": "-65°C bis +200°C",
+      "vibrationsfestigkeit": "15 g, 10-2000 Hz",
+      "stossfestigkeit": "100 g, 6 ms",
+      "schutzart": "IP67 (gekoppelt)",
+      "salznebelbestaendigkeit": "500 Stunden",
+      "gehaeusematerial": "Aluminium vernickelt",
+      "gehaeusematerial_alternativ": ["Edelstahl", "Verbundwerkstoff"],
+      "kontaktmaterial": "Kupferlegierung vergoldet",
+      "gold_schicht_dicke_min_um": 1.27
+    },
+    "quellen": ["TE Connectivity VG Products Datasheet", "Mouser Electronics"],
+    
+    "gehaeusetypen": [
+      { "typ": "P", "bezeichnung": "Stecker (Plug)", "beschreibung": "Beweglicher Teil mit Stiftkontakten", "montage": "Kabelseite" },
+      { "typ": "S", "bezeichnung": "Kabeldose (Receptacle)", "beschreibung": "Beweglicher Teil mit Buchsenkontakten", "montage": "Kabelseite" },
+      { "typ": "B", "bezeichnung": "Gerätestecker (Box Mount)", "beschreibung": "Fester Teil mit Stiften, Flanschmontage", "montage": "Gerätewand" },
+      { "typ": "R", "bezeichnung": "Gerätedose (Box Mount)", "beschreibung": "Fester Teil mit Buchsen, Flanschmontage", "montage": "Gerätewand" },
+      { "typ": "JN", "bezeichnung": "Jam-Nut", "beschreibung": "Überwurfmutter-Montage", "montage": "Gerätewand" },
+      { "typ": "SF", "bezeichnung": "Square Flange", "beschreibung": "Quadratflansch-Montage", "montage": "Gerätewand" }
+    ],
+
+    "bezeichnungssystem": {
+      "beispiel": "VG 95319 - 1006 - 13 - 4 - P - N - 059",
+      "struktur": [
+        { "position": 1, "bezeichnung": "VG 95319", "bedeutung": "Hauptnorm VG 95319" },
+        { "position": 2, "bezeichnung": "1006", "bedeutung": "Detailnorm (Gewindekupplung)" },
+        { "position": 3, "bezeichnung": "13", "bedeutung": "Baugröße (13 = 22,22 mm Ø)" },
+        { "position": 4, "bezeichnung": "4", "bedeutung": "Kontaktanordnung (4 = 4 Kontakte)" },
+        { "position": 5, "bezeichnung": "P", "bedeutung": "Gehäusetyp: P=Plug, S=Socket, B/R=Box Mount" },
+        { "position": 6, "bezeichnung": "N", "bedeutung": "Finish: N=Nickel, C=Cadmium (veraltet), Z=Zink-Nickel" },
+        { "position": 7, "bezeichnung": "059", "bedeutung": "Bauartnummer" }
+      ]
+    },
+
+    "anzugsmomente": {
+      "hinweis": "WICHTIG: Drehmomentschlüssel verwenden! Übermäßiges Anziehen beschädigt Gewinde und Dichtungen.",
+      "tabelle": [
+        { "baugroesse": "09-11", "kupplungsmutter_nm_min": 1.0, "kupplungsmutter_nm_max": 1.5, "kontaktschraube_nm_min": 0.3, "kontaktschraube_nm_max": 0.5 },
+        { "baugroesse": "13-15", "kupplungsmutter_nm_min": 1.5, "kupplungsmutter_nm_max": 2.0, "kontaktschraube_nm_min": 0.3, "kontaktschraube_nm_max": 0.5 },
+        { "baugroesse": "17-19", "kupplungsmutter_nm_min": 2.0, "kupplungsmutter_nm_max": 2.5, "kontaktschraube_nm_min": 0.5, "kontaktschraube_nm_max": 0.7 },
+        { "baugroesse": "21-25", "kupplungsmutter_nm_min": 2.5, "kupplungsmutter_nm_max": 3.5, "kontaktschraube_nm_min": 0.5, "kontaktschraube_nm_max": 0.7 }
+      ]
+    }
+  },
+
+  "kontakte_vg95319_1009": {
+    "beschreibung": "Stift- und Buchsenkontakte nach VG 95319-1009",
+    "quellen": ["Amphenol-Air LB", "MILNEC", "Glenair"],
+
+    "kontakttypen": [
+      { "typ": "Stiftkontakt", "bezeichnung": "Pin (Male)", "anwendung": "Signalausgang, Stromzufuhr" },
+      { "typ": "Buchsenkontakt", "bezeichnung": "Socket (Female)", "anwendung": "Signaleingang, Stromaufnahme" },
+      { "typ": "Koaxialkontakt", "bezeichnung": "Coax", "anwendung": "HF-Signale" },
+      { "typ": "Hochstromkontakt", "bezeichnung": "Power", "anwendung": "Stromversorgung > 20A" }
+    ],
+
+    "kontaktgroessen_strombelastbarkeit": {
+      "hinweis": "WICHTIG: Diese Stromwerte sind TESTWERTE. Bei vollbestücktem Steckverbinder: Derating beachten! Nicht alle Kontakte gleichzeitig mit Maximalstrom belasten!",
+      "tabelle": [
+        { "kontaktgroesse": "22D", "awg_bereich": "22, 24, 26, 28", "mm2_bereich_ca": "0,13-0,50", "strombelastbarkeit_max_a": 5 },
+        { "kontaktgroesse": "22M", "awg_bereich": "22, 24, 26, 28", "mm2_bereich_ca": "0,13-0,50", "strombelastbarkeit_max_a": 5 },
+        { "kontaktgroesse": "20", "awg_bereich": "20, 22, 24", "mm2_bereich_ca": "0,25-0,75", "strombelastbarkeit_max_a": 7.5 },
+        { "kontaktgroesse": "16", "awg_bereich": "16, 18, 20", "mm2_bereich_ca": "0,75-1,50", "strombelastbarkeit_max_a": 13 },
+        { "kontaktgroesse": "12", "awg_bereich": "12, 14", "mm2_bereich_ca": "2,50-4,00", "strombelastbarkeit_max_a": 23 },
+        { "kontaktgroesse": "8", "awg_bereich": "8, 10", "mm2_bereich_ca": "6,00-10,00", "strombelastbarkeit_max_a": 46 },
+        { "kontaktgroesse": "4", "awg_bereich": "4, 6", "mm2_bereich_ca": "16,00-25,00", "strombelastbarkeit_max_a": 85 },
+        { "kontaktgroesse": "0", "awg_bereich": "0, 2", "mm2_bereich_ca": "35,00-50,00", "strombelastbarkeit_max_a": 150 }
+      ]
+    },
+
+    "crimpspezifikationen": {
+      "crimpwell_durchmesser_mm": "0,89 - 2,54",
+      "crimpwell_tiefe_mm": "3,58 - 5,31",
+      "haltekraft_axial_n": "44 - 133",
+      "haltekraft_axial_lbs": "10-30",
+      "quellen": ["MILNEC", "Glenair"]
+    },
+
+    "kontaktmaterialien": {
+      "schichten": [
+        { "schicht": "Grundmaterial", "material": "Berylliumkupfer (BeCu)", "dicke": "—", "funktion": "Elektrische Leitfähigkeit" },
+        { "schicht": "Zwischenschicht", "material": "Nickel (Ni)", "dicke_um": "1,27 - 2,54", "funktion": "Korrosionsschutz" },
+        { "schicht": "Kontaktschicht", "material": "Gold (Au)", "dicke_um": "0,76 - 1,27", "funktion": "Niedriger Übergangswiderstand" }
+      ],
+      "kontaktwiderstand_neuzustand_mohm": 2.5
+    },
+
+    "umgebungsbedingungen": {
+      "temperaturbereich": "-65°C bis +175°C",
+      "vibration": "15g, 10-2000 Hz",
+      "stoss": "100g, 6 ms",
+      "salznebelbestaendigkeit_stunden": 500,
+      "quellen": ["Mouser", "Glenair", "MIL-DTL-38999"]
+    }
+  },
+
+  "crimpverarbeitung": {
+    "crimpzonen": {
+      "beschreibung": "Crimp-Aufbau mit Isolationscrimp und Leitercrimp",
+      "beispiel_kontakt_16": {
+        "isolationscrimp_durchmesser_mm": "2,8 - 3,2",
+        "hinweis_isolation": "für 1,5 mm² Leitung",
+        "leitercrimp_durchmesser_mm": "1,8 - 2,0",
+        "hinweis_leiter": "nach Crimp",
+        "kontaktlaenge_gesamt_mm": 18.5
+      }
+    },
+
+    "crimpwerkzeuge": [
+      { "hersteller": "Daniels (DMC)", "werkzeug": "M22520/2-01", "kontaktgroessen": "12-22", "bemerkung": "Mil-Spec Standard" },
+      { "hersteller": "Daniels (DMC)", "werkzeug": "M22520/1-01", "kontaktgroessen": "0-8", "bemerkung": "Hochstromkontakte" },
+      { "hersteller": "Amphenol", "werkzeug": "HT-2001", "kontaktgroessen": "12-22", "bemerkung": "VG-zertifiziert" },
+      { "hersteller": "TE Connectivity", "werkzeug": "354940-1", "kontaktgroessen": "16-22", "bemerkung": "Raychem System 25" }
+    ],
+    "hinweis": "WICHTIG: Nur zertifizierte Crimpwerkzeuge mit gültiger Kalibrierung verwenden!",
+
+    "abisolierlaengen": [
+      { "kontaktgroesse": "22", "leitercrimp_mm_min": 2.5, "leitercrimp_mm_max": 3.0, "isolationscrimp_mm_min": 2.0, "isolationscrimp_mm_max": 2.5, "gesamt_mm_min": 5.0, "gesamt_mm_max": 6.0 },
+      { "kontaktgroesse": "20", "leitercrimp_mm_min": 3.0, "leitercrimp_mm_max": 3.5, "isolationscrimp_mm_min": 2.5, "isolationscrimp_mm_max": 3.0, "gesamt_mm_min": 5.5, "gesamt_mm_max": 6.5 },
+      { "kontaktgroesse": "16", "leitercrimp_mm_min": 3.5, "leitercrimp_mm_max": 4.0, "isolationscrimp_mm_min": 3.0, "isolationscrimp_mm_max": 3.5, "gesamt_mm_min": 6.5, "gesamt_mm_max": 7.5 },
+      { "kontaktgroesse": "12", "leitercrimp_mm_min": 4.0, "leitercrimp_mm_max": 5.0, "isolationscrimp_mm_min": 3.5, "isolationscrimp_mm_max": 4.0, "gesamt_mm_min": 8.0, "gesamt_mm_max": 9.0 },
+      { "kontaktgroesse": "8", "leitercrimp_mm_min": 5.0, "leitercrimp_mm_max": 6.0, "isolationscrimp_mm_min": 4.0, "isolationscrimp_mm_max": 5.0, "gesamt_mm_min": 10.0, "gesamt_mm_max": 11.0 }
+    ],
+
+    "crimp_prozess_checkliste": {
+      "schritt_1_vorbereitung": [
+        "Korrekte Leitung wählen (Querschnitt prüfen)",
+        "Abisolierlänge nach Herstellervorgabe",
+        "Korrekten Kontakt wählen (Größe, Typ)",
+        "Kalibriertes Crimpwerkzeug verwenden"
+      ],
+      "schritt_2_abisolieren": [
+        "Isolierung sauber entfernen (kein Schnitt in Litze!)",
+        "Abisolierlänge: typisch 3,0 - 4,0 mm (kontaktabhängig)",
+        "Litzenenden NICHT verzinnen (nur Crimp!)",
+        "Litzenenden NICHT verdrillen"
+      ],
+      "schritt_3_crimpen": [
+        "Leitung in Kontakt einführen (bis Anschlag)",
+        "Litzenenden sichtbar im Kontrollfenster",
+        "Crimp ausführen (korrekter Locator)",
+        "Isolationscrimp ausführen (falls vorhanden)"
+      ],
+      "schritt_4_kontrolle": [
+        "Optische Kontrolle (Bellmouth, keine Risse)",
+        "Zugprüfung (Haltekraft nach Tabelle)",
+        "Elektrische Prüfung (Widerstand < 10 mΩ)"
+      ]
+    }
+  },
+
+  "endgehaeuse_backshells_vg95319_1011": {
+    "beschreibung": "Backshells, Zugentlastungen nach VG 95319-1011",
+    
+    "backshell_typen": [
+      { "typ": "Gerader Ausgang", "beschreibung": "Kabel geht gerade aus", "anwendung": "Standardanwendung" },
+      { "typ": "45° Winkel", "beschreibung": "Kabel im 45°-Winkel", "anwendung": "Enge Platzverhältnisse" },
+      { "typ": "90° Winkel", "beschreibung": "Kabel im 90°-Winkel", "anwendung": "Wandmontage" },
+      { "typ": "EMI/RFI-geschirmt", "beschreibung": "Mit Schirmanbindung", "anwendung": "EMV-kritische Anwendungen" },
+      { "typ": "Umweltbeständig", "beschreibung": "Mit Dichtungen", "anwendung": "Außenanwendungen" },
+      { "typ": "Selbstschließend", "beschreibung": "Automatische Abdeckung", "anwendung": "Schutz bei Nicht-Kopplung" }
+    ],
+
+    "bezeichnungssystem": {
+      "beispiel": "VG 95319 - 1011 - 13 - S - A - 08",
+      "struktur": [
+        { "position": 1, "bezeichnung": "VG 95319", "bedeutung": "Hauptnorm VG 95319" },
+        { "position": 2, "bezeichnung": "1011", "bedeutung": "Detailnorm (Backshells)" },
+        { "position": 3, "bezeichnung": "13", "bedeutung": "Baugröße (passend zum Steckverbinder)" },
+        { "position": 4, "bezeichnung": "S", "bedeutung": "Ausgangsrichtung: S=Straight (gerade), R=Right Angle (90°), F=45° Angle" },
+        { "position": 5, "bezeichnung": "A", "bedeutung": "Ausführung: A=Standard, B=EMI-geschirmt, C=Umweltbeständig" },
+        { "position": 6, "bezeichnung": "08", "bedeutung": "Kabelausgangsgröße (Ø mm)" }
+      ]
+    },
+
+    "emi_rfi_abschirmung": {
+      "klassen": [
+        { "klasse": "A", "daempfung_db": "> 60", "frequenzbereich": "1 MHz - 10 GHz", "anwendung": "Standardschutz" },
+        { "klasse": "B", "daempfung_db": "> 80", "frequenzbereich": "1 MHz - 10 GHz", "anwendung": "Erhöhter Schutz" },
+        { "klasse": "C", "daempfung_db": "> 100", "frequenzbereich": "1 MHz - 18 GHz", "anwendung": "Höchster Schutz" }
+      ]
+    },
+
+    "schirmanbindung": {
+      "methoden": [
+        {
+          "methode": "Schirmgeflecht unter Spannring",
+          "beschreibung": "Geflecht 360° unter Spannring geklemmt"
+        },
+        {
+          "methode": "Schrumpfschlauch mit Schirmband",
+          "schritte": [
+            "Geflecht zurückklappen",
+            "Schirmband anlegen",
+            "Schrumpfschlauch überziehen",
+            "Erwärmen (120-150°C)"
+          ]
+        }
+      ],
+      "anforderung": "360° Kontakt zwischen Geflecht und Backshell",
+      "widerstand_max_mohm": 2.5
+    }
+  },
+
+  "elektrische_anforderungen": {
+    "kontaktwiderstand": [
+      { "zustand": "Neuzustand", "grenzwert_mohm": 2.5, "messmethode": "4-Leiter-Messung, 100 mA" },
+      { "zustand": "Nach 500 Steckzyklen", "grenzwert_mohm": 5.0, "messmethode": "4-Leiter-Messung, 100 mA" },
+      { "zustand": "Nach Umweltprüfung", "grenzwert_mohm": 10.0, "messmethode": "4-Leiter-Messung, 100 mA" }
+    ],
+
+    "isolationswiderstand": [
+      { "pruefung": "Kontakt-Kontakt", "spannung_v": 500, "grenzwert_mohm": 5000, "dauer_s": 60 },
+      { "pruefung": "Kontakt-Gehäuse", "spannung_v": 500, "grenzwert_mohm": 5000, "dauer_s": 60 },
+      { "pruefung": "Nach Feuchteprüfung", "spannung_v": 500, "grenzwert_mohm": 100, "dauer_s": 60 }
+    ],
+
+    "spannungsfestigkeit_hipot": [
+      { "pruefung": "Kontakt-Kontakt (Sea Level)", "spannung_vrms": 1000, "dauer_s": 60, "max_leckstrom_ma": 1 },
+      { "pruefung": "Kontakt-Gehäuse (Sea Level)", "spannung_vrms": 1000, "dauer_s": 60, "max_leckstrom_ma": 1 },
+      { "pruefung": "Kontakt-Kontakt (70.000 ft)", "spannung_vrms": 350, "dauer_s": 60, "max_leckstrom_ma": 1 }
+    ],
+
+    "strombelastbarkeit_derating": {
+      "hinweis": "Bei Umgebungstemperatur > 25°C: Derating beachten!",
+      "regel": "Pro 10°C über 25°C: Strombelastbarkeit -5%"
+    }
+  },
+
+  "mechanische_anforderungen": {
+    "steckzyklen": {
+      "minimum": 500,
+      "typische_lebensdauer": "1000-2000",
+      "max_steckkraft_baugroesse_13_n": 22,
+      "max_steckkraft_pro_kontakt_n": 1.5,
+      "max_trennkraft_baugroesse_13_n": 35,
+      "max_trennkraft_pro_kontakt_n": 2.5
+    },
+
+    "vibrationsfestigkeit": {
+      "frequenzbereich_hz": "10 - 2000",
+      "beschleunigung_g": 15,
+      "beschleunigung_m_s2": 147,
+      "dauer_stunden": 12,
+      "dauer_pro_achse_stunden": 4,
+      "pruefkriterium": "Kein Kontaktausfall > 1 µs"
+    },
+
+    "stossfestigkeit": {
+      "beschleunigung_g": 100,
+      "beschleunigung_m_s2": 981,
+      "dauer_ms": 6,
+      "form": "Halbsinus",
+      "anzahl_stoesse": "3 pro Richtung, 6 Richtungen",
+      "pruefkriterium": "Kein Kontaktausfall, keine Beschädigung"
+    },
+
+    "kontakthaltekraft": [
+      { "kontaktgroesse": "22", "min_haltekraft_n": 22, "pruefmethode": "Axialer Zug" },
+      { "kontaktgroesse": "20", "min_haltekraft_n": 35, "pruefmethode": "Axialer Zug" },
+      { "kontaktgroesse": "16", "min_haltekraft_n": 45, "pruefmethode": "Axialer Zug" },
+      { "kontaktgroesse": "12", "min_haltekraft_n": 90, "pruefmethode": "Axialer Zug" },
+      { "kontaktgroesse": "8", "min_haltekraft_n": 135, "pruefmethode": "Axialer Zug" },
+      { "kontaktgroesse": "4", "min_haltekraft_n": 180, "pruefmethode": "Axialer Zug" }
+    ]
+  },
+
+  "umweltanforderungen": {
+    "temperaturbereich": {
+      "gehaeuse_aluminium": { "min": -65, "max": 175, "kurzzeitig_1h": 200 },
+      "gehaeuse_verbundwerkstoff": { "min": -55, "max": 125, "kurzzeitig_1h": 150 },
+      "kontakte_standard": { "min": -65, "max": 200, "loeten": 260 },
+      "dichtungen_silikon": { "min": -55, "max": 200 },
+      "dichtungen_fluorsilikon": { "min": -40, "max": 200 }
+    },
+
+    "schutzart_ip": [
+      { "zustand": "Gekoppelt, mit Backshell", "schutzart": "IP67", "beschreibung": "Staubdicht, Untertauchen 1m/30min" },
+      { "zustand": "Gekoppelt, ohne Backshell", "schutzart": "IP65", "beschreibung": "Staubdicht, Strahlwasser" },
+      { "zustand": "Ungekoppelt, mit Schutzkappe", "schutzart": "IP67", "beschreibung": "Staubdicht, Untertauchen" },
+      { "zustand": "Ungekoppelt, ohne Schutzkappe", "schutzart": "IP20", "beschreibung": "Fingerschutz" }
+    ],
+
+    "bestaendigkeitspruefungen": [
+      { "pruefung": "Salznebelprüfung", "bedingungen": "5% NaCl, +35°C", "dauer": "500 h", "anforderung": "Keine Korrosion" },
+      { "pruefung": "Feuchte-Wärme", "bedingungen": "+65°C, 95% RH", "dauer": "240 h", "anforderung": "Isolationswiderstand > 100 MΩ" },
+      { "pruefung": "Flüssigkeitsbeständigkeit", "bedingungen": "MIL-H-5606 Hydrauliköl", "dauer": "72 h", "anforderung": "Keine Quellung" },
+      { "pruefung": "Sand und Staub", "bedingungen": "Nach MIL-STD-810", "dauer": "6 h", "anforderung": "Funktionsfähig" }
+    ]
+  },
+
+  "montage_kontaktbestueckung": {
+    "werkzeuge": {
+      "einbauwerkzeug": { "bezeichnung": "Insertion Tool", "beispiel": "DMC DRK-16" },
+      "ausbauwerkzeug": { "bezeichnung": "Extraction Tool", "beispiel": "DMC DRK-16" }
+    },
+    "einbau_prozess": [
+      "Steckverbinder fixieren",
+      "Korrekte Kavität identifizieren (nach Zeichnung)",
+      "Kontakt in Einbauwerkzeug setzen",
+      "In Kavität einführen bis \"Klick\" hörbar",
+      "Leicht ziehen → Haltekraft prüfen"
+    ],
+    "ausbau_prozess": [
+      "Ausbauwerkzeug in Kavität einführen",
+      "Haltefeder lösen",
+      "Kontakt herausziehen",
+      "Kontakt auf Beschädigung prüfen"
+    ],
+    "warnung": "NIEMALS ohne Werkzeug arbeiten! Beschädigte Kontakte = AUSSCHUSS"
+  },
+
+  "haeufige_fehler": [
+    { "fehler": "Kontakt sitzt nicht fest", "ursache": "Falsche Kavität, beschädigte Feder", "abhilfe": "Kontakt austauschen" },
+    { "fehler": "Crimp zu locker", "ursache": "Falsches Werkzeug, falsche Einstellung", "abhilfe": "Neu crimpen" },
+    { "fehler": "Crimp zu fest", "ursache": "Übercrimpt", "abhilfe": "Kontakt ersetzen" },
+    { "fehler": "Litzenbruch", "ursache": "Isolierung zu tief geschnitten", "abhilfe": "Neu abisolieren" },
+    { "fehler": "Hoher Widerstand", "ursache": "Oxidation, schlechter Crimp", "abhilfe": "Kontakt ersetzen" }
+  ],
+
+  "qualitaetskontrolle": {
+    "eingangspruefung": {
+      "dokumentation": [
+        "Lieferschein mit Chargennummer",
+        "Konformitätserklärung / CoC",
+        "Materialzertifikat (3.1)"
+      ],
+      "visuelle_pruefung": [
+        "Verpackung unbeschädigt",
+        "Beschriftung korrekt (Part Number)",
+        "Keine Korrosion, Kratzer, Verformung",
+        "Gewinde sauber und unbeschädigt",
+        "Dichtungen vorhanden und unbeschädigt"
+      ],
+      "massliche_pruefung_stichprobe": [
+        "Baugröße korrekt (Durchmesser messen)",
+        "Gewindegang prüfen (Lehre)",
+        "Kontaktkavitäten frei"
+      ],
+      "funktionspruefung_stichprobe": [
+        "Stecken/Trennen möglich",
+        "Kupplungsmutter dreht frei",
+        "Kontakte lassen sich bestücken"
+      ]
+    },
+
+    "endpruefung_montiert": {
+      "optische_pruefung": [
+        "Alle Kontakte korrekt bestückt",
+        "Keine überstehenden Litzen",
+        "Backshell fest montiert",
+        "Schirmanbindung 360° (bei EMI-Backshell)",
+        "Schrumpfschlauch korrekt positioniert",
+        "Keine Beschädigungen"
+      ],
+      "elektrische_pruefung": [
+        "Durchgangsprüfung (alle Kontakte)",
+        "Kontaktwiderstand < 10 mΩ",
+        "Isolationswiderstand > 100 MΩ @ 500V DC",
+        "Hipot 1050V AC, 60s (wenn gefordert)"
+      ],
+      "mechanische_pruefung": [
+        "Zugprüfung Kontakte (Stichprobe)",
+        "Zugprüfung Kabel im Backshell",
+        "Kupplungsmutter Drehmoment prüfen"
+      ],
+      "dokumentation": [
+        "Prüfprotokoll ausfüllen",
+        "Seriennummer/Chargennummer zuordnen",
+        "Bei Fehler → Sperrung und Analyse"
+      ]
+    }
+  },
+
+  "quellen": [
+    { "quelle": "VG 95319-1 DIN Media", "url": "https://www.dinmedia.de/en/standard/vg-95319-1/193115150" },
+    { "quelle": "VG 95319-102 GlobalSpec", "url": "https://standards.globalspec.com/std/14258540/vg-95319-102" },
+    { "quelle": "Amphenol-Air LB VG95319-1009 Kontakte", "url": "https://amphenol-airlb.de/en/products/kontakte-vg95319-1009" },
+    { "quelle": "Amphenol VG95319-1011 Backshells", "url": "https://www.peigenesis.com/images/content/pei_tabs/amphenol/air-lb-vg95319/Amphenol_VG95319-1011.pdf" },
+    { "quelle": "TE Connectivity VG Products", "url": "https://www.mouser.com/datasheet/2/418/9/ENG_DS_2392785_1_vg_products_2312-3367207.pdf" },
+    { "quelle": "Intertek Inform VG 95319-1012:2020", "url": "https://www.intertekinform.com/en-us/standards/vg-95319-1012-2020-1209059_saig_vg_vg_2925670/" }
+  ]
+}

@@ -1,0 +1,279 @@
+{
+  "teil": 8,
+  "titel": "Qualitätsmanagement",
+  "version": "1.0",
+  "letzte_aktualisierung": "2024-01-15",
+  "beschreibung": "Qualitätssicherung bei VG-konformer Kabelproduktion",
+
+  "qualitaetssystem": {
+    "standards": [
+      { "standard": "ISO 9001:2015", "beschreibung": "Qualitätsmanagementsystem", "anwendung": "Basis für alle Prozesse" },
+      { "standard": "EN 9100", "beschreibung": "Luft- und Raumfahrt QMS", "anwendung": "Bei Aerospace-Anwendungen" },
+      { "standard": "AQAP 2110", "beschreibung": "NATO-Qualitätssicherung", "anwendung": "Militärische Beschaffung" },
+      { "standard": "VG 95212", "beschreibung": "Zulassungsregister", "anwendung": "BAAINBw-Zulassung" }
+    ],
+    "qualitaetspyramide": [
+      "Audit (extern)",
+      "Endprüfung (100%)",
+      "Zwischenprüfung (Stichprobe)",
+      "Fertigungsbegleitende Prüfung (Werkerselbstprüfung)",
+      "Wareneingangsprüfung (WE)"
+    ]
+  },
+
+  "wareneingangspruefung": {
+    "pruefumfang_nach_komponente": [
+      { "komponente": "Leitungen (VG 95218)", "dokumentenpruefung": "100%", "sichtpruefung": "100%", "masspruefung": "Stichprobe", "elektrische_pruefung": "Bei Verdacht" },
+      { "komponente": "Steckverbinder (VG 95319)", "dokumentenpruefung": "100%", "sichtpruefung": "100%", "masspruefung": "Stichprobe", "elektrische_pruefung": "—" },
+      { "komponente": "Kontakte (VG 95319-1009)", "dokumentenpruefung": "100%", "sichtpruefung": "Stichprobe", "masspruefung": "Stichprobe", "elektrische_pruefung": "—" },
+      { "komponente": "Schrumpfschläuche (VG 95343)", "dokumentenpruefung": "100%", "sichtpruefung": "100%", "masspruefung": "Stichprobe", "elektrische_pruefung": "—" },
+      { "komponente": "Geflecht (VG 96936)", "dokumentenpruefung": "100%", "sichtpruefung": "100%", "masspruefung": "Stichprobe", "elektrische_pruefung": "—" }
+    ],
+    "dokumentenpruefung_checkliste": [
+      "Lieferschein vorhanden und vollständig",
+      "Materialzertifikat 3.1 vorhanden",
+      "Konformitätserklärung (VG-Norm angegeben)",
+      "Chargennummer/Losnummer dokumentiert",
+      "RoHS-Erklärung vorhanden",
+      "Haltbarkeitsdatum geprüft (falls angegeben)",
+      "Menge entspricht Bestellung"
+    ],
+    "sichtpruefung": [
+      { "pruefpunkt": "Verpackung", "akzeptabel": "Unbeschädigt", "ablehngrund": "Beschädigt, nass" },
+      { "pruefpunkt": "Beschriftung", "akzeptabel": "Lesbar, korrekt", "ablehngrund": "Unleserlich, falsch" },
+      { "pruefpunkt": "Farbe", "akzeptabel": "Entspricht Bestellung", "ablehngrund": "Abweichend" },
+      { "pruefpunkt": "Oberfläche", "akzeptabel": "Glatt, gleichmäßig", "ablehngrund": "Kratzer, Verfärbung" },
+      { "pruefpunkt": "Form", "akzeptabel": "Gerade, nicht geknickt", "ablehngrund": "Knicke, Verformung" }
+    ],
+    "entscheidung": {
+      "freigegeben": "Dokumentenprüfung OK → Sichtprüfung OK → Maßprüfung OK",
+      "gesperrt": "Eine Prüfung NOK → Reklamation"
+    }
+  },
+
+  "fertigungsbegleitende_pruefung": {
+    "werkerselbstpruefung": {
+      "vor_arbeitsbeginn": [
+        "Arbeitsanweisung gelesen und verstanden",
+        "Werkzeuge kalibriert/geprüft",
+        "Materialien bereitgestellt und identifiziert",
+        "First-Article-Prüfung durchgeführt"
+      ],
+      "waehrend_arbeit": [
+        "Sichtprüfung nach jedem Arbeitsschritt",
+        "Maßprüfung bei kritischen Merkmalen",
+        "Auffälligkeiten sofort melden"
+      ],
+      "schichtende": [
+        "Werkzeuge reinigen und lagern",
+        "Dokumentation vollständig",
+        "Übergabe an Folgeschicht"
+      ]
+    },
+    "first_article_pruefung": [
+      { "zeitpunkt": "Schichtbeginn", "pruefumfang": "Erste 3-5 Stück vollständig", "dokumentation": "Erstmusterprotokoll" },
+      { "zeitpunkt": "Nach Werkzeugwechsel", "pruefumfang": "Erste 3-5 Stück vollständig", "dokumentation": "Erstmusterprotokoll" },
+      { "zeitpunkt": "Nach Unterbrechung > 4h", "pruefumfang": "Erste 3 Stück", "dokumentation": "Vermerk im Fertigungsbegleitblatt" }
+    ]
+  },
+
+  "zwischenpruefung": {
+    "crimp_pruefung": {
+      "stichprobe_nach_aql": [
+        "Sichtprüfung mit Vergrößerung (10×): Bellmouth vorhanden?, Inspektionsloch: Litzen sichtbar?, Keine beschädigten Drähte?",
+        "Maßprüfung: Crimphöhe mit Mikrometer, Wert dokumentieren",
+        "Zugprüfung (destruktiv, 1 Stück/Los): Kraft dokumentieren, Vergleich mit Mindestwert"
+      ],
+      "ergebnis": {
+        "ok": "Alle Prüfungen OK → Weiterproduktion",
+        "nok": "Eine Prüfung NOK → Stopp, Ursachenanalyse"
+      }
+    },
+    "pruefhaeufigkeit": [
+      { "pruefung": "Sichtprüfung Crimp", "haeufigkeit": "100%", "dokumentation": "Fertigungsbegleitblatt" },
+      { "pruefung": "Maßprüfung Crimphöhe", "haeufigkeit": "Jedes 25. Stück", "dokumentation": "Prüfprotokoll" },
+      { "pruefung": "Zugprüfung", "haeufigkeit": "1× pro Los", "dokumentation": "Zugprüfprotokoll" },
+      { "pruefung": "Abisolierlänge", "haeufigkeit": "Stichprobe", "dokumentation": "Fertigungsbegleitblatt" }
+    ]
+  },
+
+  "endpruefung": {
+    "elektrische_pruefung_100_prozent": {
+      "test_1_durchgang": {
+        "bezeichnung": "DURCHGANGSPRÜFUNG (Continuity)",
+        "pruefungen": [
+          "Alle Adern einzeln prüfen",
+          "Widerstand < Grenzwert (gem. Länge und Querschnitt)",
+          "Kontaktwiderstand < 10 mΩ"
+        ],
+        "protokoll": "Messwert jeder Ader"
+      },
+      "test_2_isolation": {
+        "bezeichnung": "ISOLATIONSPRÜFUNG (Insulation)",
+        "pruefungen": [
+          "Alle Adern vs. Schirm: > 100 MΩ @ 500V DC",
+          "Ader vs. Ader: > 100 MΩ @ 500V DC"
+        ],
+        "protokoll": "Messwert"
+      },
+      "test_3_hipot": {
+        "bezeichnung": "HOCHSPANNUNGSPRÜFUNG (Hipot)",
+        "pruefungen": [
+          { "system": "System 25/100", "spannung": "1050V AC", "dauer": "60s", "max_strom": "< 2 mA" },
+          { "system": "System 200", "spannung": "1500V AC", "dauer": "60s", "max_strom": "< 1 mA" }
+        ],
+        "anforderung": "Kein Durchschlag",
+        "protokoll": "Prüfspannung, Strom, Dauer, Ergebnis"
+      },
+      "ergebnis": {
+        "freigabe": "Alle Tests bestanden",
+        "aussonderung": "Ein Test nicht bestanden"
+      }
+    },
+    "sicht_und_masspruefung": [
+      { "pruefpunkt": "Gesamtlänge", "anforderung": "±2% oder ±5 mm", "pruefmittel": "Stahllineal" },
+      { "pruefpunkt": "Beschriftung", "anforderung": "Lesbar, korrekt", "pruefmittel": "Sichtprüfung" },
+      { "pruefpunkt": "Stecker-Zustand", "anforderung": "Unbeschädigt", "pruefmittel": "Sichtprüfung" },
+      { "pruefpunkt": "Schrumpfschläuche", "anforderung": "Vollständig geschrumpft", "pruefmittel": "Sichtprüfung" },
+      { "pruefpunkt": "Schirmung", "anforderung": "360° Kontakt", "pruefmittel": "Sichtprüfung" }
+    ]
+  },
+
+  "pruefmittelueberwachung": {
+    "kalibrierintervalle": [
+      { "pruefmittel": "Multimeter", "intervall": "12 Monate", "prueflabor": "DAkkS-akkreditiert" },
+      { "pruefmittel": "Megaohmmeter", "intervall": "12 Monate", "prueflabor": "DAkkS-akkreditiert" },
+      { "pruefmittel": "Hipot-Tester", "intervall": "12 Monate", "prueflabor": "DAkkS-akkreditiert" },
+      { "pruefmittel": "Crimp-Mikrometer", "intervall": "12 Monate", "prueflabor": "DAkkS-akkreditiert" },
+      { "pruefmittel": "Zugprüfmaschine", "intervall": "12 Monate", "prueflabor": "DAkkS-akkreditiert" },
+      { "pruefmittel": "Schieblehre", "intervall": "12 Monate", "prueflabor": "Intern möglich" },
+      { "pruefmittel": "Crimpwerkzeug", "intervall": "Nach Herstellerangabe", "prueflabor": "Hersteller" }
+    ],
+    "pruefmittelkarte_felder": [
+      "Gerät",
+      "Inventar-Nr.",
+      "Standort",
+      "Hersteller",
+      "Typ",
+      "Seriennummer",
+      "Genauigkeit",
+      "Kalibrierhistorie (Datum, Ergebnis, Nächste Kal., Unterschrift)"
+    ]
+  },
+
+  "fehlermanagement": {
+    "fehlerklassifizierung": [
+      { "klasse": "Kritisch", "bezeichnung": "Sicherheitsrelevant", "definition": "Gefahr für Personen, Totalausfall", "konsequenz": "Sofortige Sperrung, 100% Nachprüfung" },
+      { "klasse": "Hauptfehler", "bezeichnung": "Funktionsbeeinträchtigung", "definition": "Gerät funktioniert nicht richtig", "konsequenz": "Aussonderung oder Nacharbeit" },
+      { "klasse": "Nebenfehler", "bezeichnung": "Optisch", "definition": "Keine Funktionsbeeinträchtigung", "konsequenz": "Dokumentation, ggf. Sonderfreigabe" }
+    ],
+    "fehlerbehandlung_ablauf": [
+      "1. SOFORT STOPPEN - Produktion unterbrechen",
+      "2. KENNZEICHNEN - Rote Karte/Sperrmarke",
+      "3. SEPARIEREN - In Sperrbereich legen",
+      "4. DOKUMENTIEREN - Fehlerart, Menge, Zeit",
+      "5. MELDEN - QS-Abteilung informieren",
+      "QS ENTSCHEIDUNG: Nacharbeit möglich → Nacharbeitsanweisung, Nacharbeit nicht möglich → Verschrottung, Sonderfreigabe prüfen → Genehmigungsverfahren"
+    ],
+    "acht_d_report": [
+      { "schritt": "D1", "bezeichnung": "Team bilden", "inhalt": "Verantwortliche benennen" },
+      { "schritt": "D2", "bezeichnung": "Problem beschreiben", "inhalt": "Was, wann, wo, wie viele" },
+      { "schritt": "D3", "bezeichnung": "Sofortmaßnahmen", "inhalt": "Schadensbegrenzung" },
+      { "schritt": "D4", "bezeichnung": "Ursachenanalyse", "inhalt": "5-Why, Ishikawa" },
+      { "schritt": "D5", "bezeichnung": "Korrekturmaßnahmen", "inhalt": "Dauerhaft abstellen" },
+      { "schritt": "D6", "bezeichnung": "Wirksamkeit prüfen", "inhalt": "Nachverfolgung" },
+      { "schritt": "D7", "bezeichnung": "Vorbeugung", "inhalt": "Wiederholung verhindern" },
+      { "schritt": "D8", "bezeichnung": "Abschluss", "inhalt": "Dokumentation, Lob" }
+    ]
+  },
+
+  "rueckverfolgbarkeit": {
+    "kette": [
+      { "stufe": "ROHMATERIAL", "elemente": ["Hersteller-Chargennummer", "Materialzertifikat 3.1", "WE-Protokoll-Nr."] },
+      { "stufe": "FERTIGUNG", "elemente": ["Fertigungsauftragsnummer", "Datum/Uhrzeit", "Arbeitsplatz/Maschine", "Mitarbeiter-ID"] },
+      { "stufe": "PRÜFUNG", "elemente": ["Prüfprotokoll-Nr.", "Prüfergebnis", "Prüfer-ID"] },
+      { "stufe": "VERSAND", "elemente": ["Lieferschein-Nr.", "Seriennummer Endprodukt", "Kundennummer"] }
+    ],
+    "kennzeichnungspflicht": [
+      { "element": "Leitung", "kennzeichnung": "Chargennummer", "methode": "Etikett auf Trommel" },
+      { "element": "Steckverbinder", "kennzeichnung": "Teilenummer, Charge", "methode": "Verpackung" },
+      { "element": "Fertige Garnitur", "kennzeichnung": "Seriennummer, Auftragsnummer", "methode": "Kabelmarker/Etikett" },
+      { "element": "Prüfprotokoll", "kennzeichnung": "Protokoll-Nr., Garnitur-ID", "methode": "Papier/Digital" }
+    ]
+  },
+
+  "dokumentenaufbewahrung": {
+    "aufbewahrungsfristen": [
+      { "dokumentart": "Materialzertifikate", "frist": "10 Jahre", "format": "Papier/Digital" },
+      { "dokumentart": "Prüfprotokolle", "frist": "10 Jahre", "format": "Papier/Digital" },
+      { "dokumentart": "Fertigungsbegleitblätter", "frist": "10 Jahre", "format": "Papier/Digital" },
+      { "dokumentart": "Kalibrierzertifikate", "frist": "10 Jahre", "format": "Papier" },
+      { "dokumentart": "Reklamationsunterlagen", "frist": "10 Jahre", "format": "Papier/Digital" },
+      { "dokumentart": "Schulungsnachweise", "frist": "Dauer Beschäftigung + 5 Jahre", "format": "Personalakte" }
+    ],
+    "archivierungshinweise": [
+      "Dokumente chronologisch ordnen",
+      "Auftragsnummer als Hauptordnungskriterium",
+      "Jährliche Archivierung abgeschlossener Aufträge",
+      "Zugriffsschutz für vertrauliche Unterlagen",
+      "Backup bei digitalen Dokumenten",
+      "Vernichtung nur nach Ablauf der Aufbewahrungsfrist",
+      "Vernichtungsprotokoll erstellen"
+    ]
+  },
+
+  "lieferantenmanagement": {
+    "bewertungskriterien": [
+      { "kriterium": "Produktqualität", "gewichtung": "40%", "bewertungsskala": "1-5 Punkte" },
+      { "kriterium": "Liefertreue", "gewichtung": "25%", "bewertungsskala": "1-5 Punkte" },
+      { "kriterium": "Dokumentation", "gewichtung": "15%", "bewertungsskala": "1-5 Punkte" },
+      { "kriterium": "Preis-Leistung", "gewichtung": "10%", "bewertungsskala": "1-5 Punkte" },
+      { "kriterium": "Service/Support", "gewichtung": "10%", "bewertungsskala": "1-5 Punkte" }
+    ],
+    "klassifizierung": [
+      { "punktzahl": "4,5 - 5,0", "klasse": "A", "status": "Bevorzugter Lieferant" },
+      { "punktzahl": "3,5 - 4,4", "klasse": "B", "status": "Qualifizierter Lieferant" },
+      { "punktzahl": "2,5 - 3,4", "klasse": "C", "status": "Unter Beobachtung" },
+      { "punktzahl": "< 2,5", "klasse": "D", "status": "Gesperrt" }
+    ]
+  },
+
+  "kontinuierliche_verbesserung": {
+    "pdca_zyklus": ["PLAN (Planen)", "DO (Umsetzen)", "CHECK (Prüfen)", "ACT (Handeln)"],
+    "kpis": [
+      { "kennzahl": "Ausschussrate", "berechnung": "Ausschuss / Gesamtmenge × 100%", "zielwert": "< 2%" },
+      { "kennzahl": "Nacharbeitsrate", "berechnung": "Nacharbeit / Gesamtmenge × 100%", "zielwert": "< 5%" },
+      { "kennzahl": "Lieferqualität", "berechnung": "Fehlerfreie Lieferungen / Alle Lieferungen × 100%", "zielwert": "≥ 98%" },
+      { "kennzahl": "First-Pass-Yield", "berechnung": "OK beim ersten Mal / Gesamtmenge × 100%", "zielwert": "≥ 95%" },
+      { "kennzahl": "Reklamationsquote", "berechnung": "Reklamationen / Lieferungen × 100%", "zielwert": "< 1%" }
+    ]
+  },
+
+  "audit_vorbereitung": {
+    "checkliste": {
+      "dokumentation": [
+        "Qualitätshandbuch aktuell?",
+        "Verfahrensanweisungen verfügbar?",
+        "Arbeitsanweisungen am Arbeitsplatz?",
+        "Prüfprotokolle vollständig?",
+        "Kalibrierzertifikate gültig?"
+      ],
+      "produktion": [
+        "Arbeitsplätze sauber und ordentlich?",
+        "Prüfmittel gekennzeichnet und kalibriert?",
+        "Gesperrtes Material separiert?",
+        "Kennzeichnung der Produkte?"
+      ],
+      "personal": [
+        "Schulungsnachweise aktuell?",
+        "Zuständigkeiten definiert?",
+        "Mitarbeiter informiert?"
+      ],
+      "organisation": [
+        "Ansprechpartner benannt?",
+        "Besprechungsraum reserviert?",
+        "Audit-Programm verteilt?"
+      ]
+    }
+  }
+}

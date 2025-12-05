@@ -1,0 +1,685 @@
+{
+  "teil": 10,
+  "titel": "Prüfkarten und Formulare",
+  "beschreibung": "Vollständige Dokumentenvorlagen für VG-Normen Produktion gemäß IPC/WHMA-A-620E und ISO 9001:2015",
+  "formularverzeichnis": {
+    "uebersicht": [
+      {"nr": "F-01", "formular": "Wareneingangsprüfung Leitungen", "anwendung": "Eingangskontrolle VG 95218", "kapitel": "8.2"},
+      {"nr": "F-02", "formular": "Wareneingangsprüfung Steckverbinder", "anwendung": "Eingangskontrolle VG 95319", "kapitel": "8.2"},
+      {"nr": "F-03", "formular": "Wareneingangsprüfung Kontakte", "anwendung": "Eingangskontrolle VG 95319-1009", "kapitel": "8.2"},
+      {"nr": "F-04", "formular": "Wareneingangsprüfung Schrumpfschläuche", "anwendung": "Eingangskontrolle VG 95343", "kapitel": "8.2"},
+      {"nr": "F-05", "formular": "Wareneingangsprüfung Geflecht", "anwendung": "Eingangskontrolle VG 96936", "kapitel": "8.2"},
+      {"nr": "F-06", "formular": "Fertigungsbegleitblatt", "anwendung": "Produktionsdokumentation", "kapitel": "8.3"},
+      {"nr": "F-07", "formular": "Crimp-Prüfprotokoll", "anwendung": "Zwischenprüfung", "kapitel": "8.4"},
+      {"nr": "F-08", "formular": "Elektrisches Prüfprotokoll", "anwendung": "Endprüfung", "kapitel": "8.5"},
+      {"nr": "F-09", "formular": "Endprüfprotokoll komplett", "anwendung": "Endprüfung", "kapitel": "8.5"},
+      {"nr": "F-10", "formular": "AQL-Prüfprotokoll", "anwendung": "Stichprobenprüfung", "kapitel": "9.5"},
+      {"nr": "F-11", "formular": "Fehlersammelkarte", "anwendung": "Fehlermanagement", "kapitel": "8.7"},
+      {"nr": "F-12", "formular": "Sonderfreigabe", "anwendung": "Abweichungen", "kapitel": "8.7"},
+      {"nr": "F-13", "formular": "Prüfmittelkarte", "anwendung": "Kalibrierung", "kapitel": "8.8"},
+      {"nr": "F-14", "formular": "Werkerselbstprüfung", "anwendung": "Fertigungsbegleitend", "kapitel": "8.3"},
+      {"nr": "F-15", "formular": "Lieferantenüberwachung", "anwendung": "Qualitätshistorie", "kapitel": "9.5"}
+    ],
+    "kategorien": {
+      "wareneingangspruefung": ["F-01", "F-02", "F-03", "F-04", "F-05"],
+      "fertigung": ["F-06", "F-14"],
+      "pruefung": ["F-07", "F-08", "F-09", "F-10"],
+      "qualitaetsmanagement": ["F-11", "F-12", "F-13", "F-15"]
+    }
+  },
+  "formularhandhabung": {
+    "ausfuellen": [
+      "Kugelschreiber (dokumentenecht, blau oder schwarz)",
+      "Lesbare Handschrift",
+      "Keine Tipp-Ex-Korrekturen (durchstreichen, neu schreiben, Visum)",
+      "Alle Pflichtfelder ausfüllen",
+      "Datum und Unterschrift nicht vergessen"
+    ],
+    "aufbewahrung": [
+      "Mindestens 10 Jahre (für VG-Produkte)",
+      "Geschützt vor Feuchtigkeit und Licht",
+      "Sortiert nach Auftragsnummer oder Datum",
+      "Schnell auffindbar (Ablagesystem)"
+    ],
+    "digitalisierung": [
+      "Scan erlaubt als Backup",
+      "Original-Papier aufbewahren",
+      "Elektronische Signatur nur mit Genehmigung"
+    ]
+  },
+  "formulare": {
+    "F-01": {
+      "titel": "Wareneingangsprüfung Leitungen VG 95218",
+      "dokumentennummer_format": "WE-XXXXXX",
+      "abschnitte": {
+        "lieferantendaten": {
+          "felder": ["Lieferant", "Lieferschein-Nr.", "Lieferdatum", "Bestellnummer"]
+        },
+        "materialdaten": {
+          "felder": ["Artikelnummer", "Bezeichnung", "VG-Typ (A/E/G/H)", "Größe", "Farbe", "Menge (m/Stück)", "Chargennummer"]
+        },
+        "dokumentenpruefung": {
+          "pruefpunkte": [
+            {"punkt": "Lieferschein vorhanden und vollständig", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "Materialzertifikat 3.1 vorhanden", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "Konformitätserklärung VG 95218", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "Chargennummer dokumentiert", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "RoHS-Erklärung vorhanden", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "Haltbarkeitsdatum geprüft (falls angegeben)", "optionen": ["OK", "NOK", "N/A"]}
+          ]
+        },
+        "sichtpruefung": {
+          "umfang": "100%",
+          "pruefpunkte": [
+            {"punkt": "Verpackung unbeschädigt", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "Beschriftung korrekt (Typbezeichnung)", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "Farbe entspricht Bestellung", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "Keine Oxidation/Verfärbung sichtbar", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "Keine mechanischen Beschädigungen", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "Keine Knicke oder Verformungen", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "Oberfläche glatt und gleichmäßig", "optionen": ["OK", "NOK", "N/A"]}
+          ]
+        },
+        "masspruefung": {
+          "stichprobe": "n=5",
+          "aussendurchmesser": {
+            "toleranz": "±0,1 mm",
+            "messwerte_anzahl": 5
+          },
+          "widerstand": {
+            "einheit": "Ω/km",
+            "hinweis": "nur bei Verdacht oder Neuzulassung"
+          }
+        },
+        "gesamtergebnis": {
+          "optionen": [
+            {"status": "FREIGEGEBEN", "zusatz": "für Produktion - Lagerort, Lagermenge angeben"},
+            {"status": "BEDINGT FREIGEGEBEN", "zusatz": "Einschränkung beschreiben, Genehmigung einholen"},
+            {"status": "GESPERRT", "massnahmen": ["Reklamation", "Rücksendung", "Sonderfreigabe prüfen"]}
+          ]
+        },
+        "unterschriften": ["Prüfer + Datum", "QS-Freigabe + Datum"]
+      }
+    },
+    "F-02": {
+      "titel": "Wareneingangsprüfung Steckverbinder VG 95319",
+      "dokumentennummer_format": "WE-XXXXXX",
+      "abschnitte": {
+        "lieferantendaten": {
+          "felder": ["Lieferant", "Lieferschein-Nr.", "Lieferdatum", "Bestellnummer"]
+        },
+        "materialdaten": {
+          "felder": ["Part-Number", "Hersteller", "Baugröße", "Kontaktanordnung", 
+                    "Gehäusetyp (Plug P/Receptacle S/Box Mount B/R)", "Menge", "Chargennummer"]
+        },
+        "dokumentenpruefung": {
+          "pruefpunkte": [
+            {"punkt": "Lieferschein vorhanden", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "Konformitätserklärung VG 95319", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "Materialdatenblatt verfügbar", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "Part-Number entspricht Bestellung", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "Chargennummer dokumentiert", "optionen": ["OK", "NOK", "N/A"]}
+          ]
+        },
+        "sichtpruefung": {
+          "umfang": "100%",
+          "pruefpunkte": [
+            {"punkt": "Verpackung unbeschädigt", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "Beschriftung/Markierung korrekt", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "Keine Korrosion sichtbar", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "Keine Kratzer oder Beschädigungen", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "Gewinde unbeschädigt", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "Dichtungen vorhanden und unbeschädigt", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "Kontaktkavitäten frei und sauber", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "Keyway/Polarisation korrekt", "optionen": ["OK", "NOK", "N/A"]}
+          ]
+        },
+        "funktionspruefung": {
+          "stichprobe": "n=3",
+          "pruefpunkte": [
+            {"punkt": "Kupplungsmutter dreht frei", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "Gegenstecker passt (falls vorhanden)", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "Testkontakte lassen sich einbauen", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "Testkontakte halten (Zugprüfung)", "optionen": ["OK", "NOK", "N/A"]},
+            {"punkt": "Schutzkappe passt (falls zutreffend)", "optionen": ["OK", "NOK", "N/A"]}
+          ]
+        },
+        "masspruefung": {
+          "stichprobe": "n=3",
+          "messungen": [
+            {"messwert": "Baugröße (Ø mm)", "typ": "numerisch"},
+            {"messwert": "Gewinde (Lehre)", "typ": "GO/NO-GO"}
+          ]
+        },
+        "gesamtergebnis": {
+          "optionen": ["FREIGEGEBEN", "BEDINGT FREIGEGEBEN", "GESPERRT"]
+        }
+      }
+    },
+    "F-03": {
+      "titel": "Wareneingangsprüfung Kontakte VG 95319-1009",
+      "dokumentennummer_format": "WE-XXXXXX",
+      "beschreibung": "Prüfung von Kontakten nach VG 95319-1009 (Crimpkontakte)",
+      "materialdaten": ["Part-Number", "Kontaktgröße", "Kontakttyp (Pin/Socket)", "Oberfläche (Gold/Silber)", "Menge", "Chargennummer"],
+      "pruefungen": [
+        {"typ": "Dokumentenprüfung", "punkte": ["Konformitätserklärung", "Materialzertifikat", "QPL-Nachweis"]},
+        {"typ": "Sichtprüfung 100%", "punkte": ["Oberfläche unbeschädigt", "Keine Verfärbung", "Keine verbogenen Kontakte"]},
+        {"typ": "Stichprobe n=3", "punkte": ["Crimp-Test mit Referenzleitung", "Einbautest in Referenzstecker"]}
+      ]
+    },
+    "F-04": {
+      "titel": "Wareneingangsprüfung Schrumpfschläuche VG 95343",
+      "dokumentennummer_format": "WE-XXXXXX",
+      "beschreibung": "Prüfung von Schrumpfschläuchen gemäß VG 95343",
+      "materialdaten": ["Artikelnummer", "VG-Typ (A-H)", "Größe (Lieferzustand)", "Schrumpfverhältnis", "Farbe", "Menge (m)", "Chargennummer"],
+      "pruefungen": [
+        {"typ": "Dokumentenprüfung", "punkte": ["Konformitätserklärung VG 95343", "Haltbarkeitsdatum", "Lagerbedingungen"]},
+        {"typ": "Sichtprüfung 100%", "punkte": ["Verpackung unbeschädigt", "Keine Vorbeschädigungen", "Richtige Farbe/Typ"]},
+        {"typ": "Funktionsprüfung n=3", "punkte": ["Testschrumpfung bei Nenntemperatur", "Schrumpfverhältnis erreicht", "Keine Risse nach Schrumpfen"]}
+      ]
+    },
+    "F-05": {
+      "titel": "Wareneingangsprüfung Geflecht VG 96936",
+      "dokumentennummer_format": "WE-XXXXXX",
+      "beschreibung": "Prüfung von Abschirmgeflechten gemäß VG 96936",
+      "materialdaten": ["Artikelnummer", "VG-Typ", "Größe (Nenndurchmesser)", "Material (CuSn/CuNi/Edelstahl)", "Menge (m)", "Chargennummer"],
+      "pruefungen": [
+        {"typ": "Dokumentenprüfung", "punkte": ["Konformitätserklärung VG 96936", "Materialzertifikat", "Bedeckungsgrad-Angabe"]},
+        {"typ": "Sichtprüfung 100%", "punkte": ["Gleichmäßige Flechtung", "Keine gebrochenen Drähte", "Keine Oxidation"]},
+        {"typ": "Maßprüfung n=5", "punkte": ["Innendurchmesser", "Außendurchmesser", "Wandstärke"]}
+      ]
+    },
+    "F-06": {
+      "titel": "Fertigungsbegleitblatt",
+      "beschreibung": "Vollständige Dokumentation eines Fertigungsauftrags",
+      "kopfdaten": ["Auftragsnummer", "Zeichnungs-Nr.", "Artikelnummer", "Revision", "Bezeichnung", "Stückzahl", "Liefertermin"],
+      "materialentnahme": {
+        "komponenten": [
+          "Leitung",
+          "Stecker A",
+          "Stecker B",
+          "Kontakte",
+          "Schrumpfschlauch",
+          "Geflecht",
+          "Backshell A",
+          "Backshell B",
+          "Sonstiges"
+        ],
+        "pro_komponente": ["Charge-Nr.", "Menge/Visum"],
+        "freigabe": "Material entnommen durch: Name, Datum"
+      },
+      "fertigungsschritte": [
+        {"nr": 1, "schritt": "Schneiden"},
+        {"nr": 2, "schritt": "Abisolieren Mantel"},
+        {"nr": 3, "schritt": "Abisolieren Adern"},
+        {"nr": 4, "schritt": "Schrumpfschläuche auf"},
+        {"nr": 5, "schritt": "Crimpen/Löten Seite A"},
+        {"nr": 6, "schritt": "Crimpen/Löten Seite B"},
+        {"nr": 7, "schritt": "Zwischenprüfung"},
+        {"nr": 8, "schritt": "Kontakteinbau Seite A"},
+        {"nr": 9, "schritt": "Kontakteinbau Seite B"},
+        {"nr": 10, "schritt": "Backshell-Montage"},
+        {"nr": 11, "schritt": "Schirmanbindung"},
+        {"nr": 12, "schritt": "Schrumpfen"},
+        {"nr": 13, "schritt": "Beschriftung"},
+        {"nr": 14, "schritt": "Endprüfung"},
+        {"nr": 15, "schritt": "Verpackung"}
+      ],
+      "pro_schritt": ["Werker", "Datum", "Zeit", "Visum"],
+      "stueckzahlverfolgung": {
+        "felder": ["Auftragsmenge", "Gefertigte Menge i.O.", "Ausschuss", "Nacharbeit"],
+        "ausschussgrund": "Freitext bei Bedarf"
+      },
+      "freigaben": [
+        "Freigabe zur Endprüfung durch: Name, Datum",
+        "Endprüfung bestanden durch: Name, Datum",
+        "Freigabe zur Lieferung durch: Name, Datum"
+      ]
+    },
+    "F-07": {
+      "titel": "Crimp-Prüfprotokoll",
+      "beschreibung": "Dokumentation der Crimpqualität nach IPC/WHMA-A-620 Klasse 3",
+      "kopfdaten": ["Auftrag", "Datum", "Artikel", "Stückzahl"],
+      "crimpwerkzeug": {
+        "felder": ["Hersteller/Typ", "Inventar-Nr.", "Kalibriert bis", "Locator", "Kontaktgröße"]
+      },
+      "optische_crimpkontrolle": {
+        "umfang": "100%",
+        "standard": "IPC/WHMA-A-620 Klasse 3",
+        "pruefpunkte": [
+          {"punkt": "Bellmouth vorhanden (beide Seiten)", "optionen": ["OK", "NOK"], "menge": ""},
+          {"punkt": "Litze im Inspektionsloch sichtbar", "optionen": ["OK", "NOK"], "menge": ""},
+          {"punkt": "Litze steht nicht über", "optionen": ["OK", "NOK"], "menge": ""},
+          {"punkt": "Isolierung NICHT im Leitercrimpbereich", "optionen": ["OK", "NOK"], "menge": ""},
+          {"punkt": "Crimp symmetrisch", "optionen": ["OK", "NOK"], "menge": ""},
+          {"punkt": "Keine Risse im Crimpbereich", "optionen": ["OK", "NOK"], "menge": ""},
+          {"punkt": "Keine abgetrennten Einzeldrähte", "optionen": ["OK", "NOK"], "menge": ""},
+          {"punkt": "Isolationscrimp hält Isolierung", "optionen": ["OK", "NOK"], "menge": ""}
+        ]
+      },
+      "zugpruefung": {
+        "umfang": "Stichprobe oder 100%",
+        "felder": ["Prüfgerät", "Inventar-Nr.", "Kontaktgröße", "Min. Zugkraft (N)"],
+        "messungen": 5,
+        "auswertung": ["Minimum gemessen", "Maximum gemessen", "Mittelwert"]
+      },
+      "widerstandspruefung": {
+        "umfang": "Stichprobe",
+        "grenzwert": "≤ 3,0 mΩ",
+        "messungen": 3
+      },
+      "gesamtergebnis": {
+        "felder": ["Geprüfte Crimps", "Davon i.O.", "Davon n.i.O. (nachgearbeitet/Ausschuss)"],
+        "optionen": [
+          "ALLE CRIMPS I.O. - Freigabe für nächsten Arbeitsschritt",
+          "FEHLER GEFUNDEN - Nacharbeit erfolgt, erneut geprüft",
+          "FEHLER GEFUNDEN - Ausschuss dokumentiert"
+        ]
+      }
+    },
+    "F-08": {
+      "titel": "Elektrisches Prüfprotokoll",
+      "beschreibung": "Dokumentation aller elektrischen Prüfungen einer Kabelgarnitur",
+      "kopfdaten": ["Auftrag", "Datum", "Artikel", "Serien-Nr.", "Zeichnung", "Revision"],
+      "pruefung_1_durchgang": {
+        "titel": "DURCHGANG",
+        "felder": ["Prüfgerät", "Inventar-Nr.", "Garniturenlänge (m)"],
+        "formel": "Grenzwert R = (Ω/km × Länge/1000) + 0,020 Ω",
+        "messungen": {
+          "pro_ader": ["Ader-Nr.", "Pin A", "Pin B", "R gemessen (Ω)", "Ergebnis OK/NOK"],
+          "schirm_inkludiert": true
+        }
+      },
+      "pruefung_2_isolation": {
+        "titel": "ISOLATIONSWIDERSTAND",
+        "pruefspannung": "500V DC",
+        "messzeit": "60 Sekunden",
+        "grenzwert": "≥ 100 MΩ",
+        "messpunkte": [
+          "Alle Adern gegen Schirm",
+          "Ader 1 gegen Ader 2",
+          "Ader 1 gegen Ader 3",
+          "Ader 2 gegen Ader 3",
+          "weitere nach Bedarf"
+        ]
+      },
+      "pruefung_3_hipot": {
+        "titel": "HOCHSPANNUNG (HIPOT)",
+        "warnung": "⚠️ ACHTUNG: HOCHSPANNUNG - SICHERHEITSREGELN BEACHTEN!",
+        "felder": ["Prüfgerät", "Inventar-Nr.", "Prüfspannung (V AC)", "Dauer (60s)", "Grenzwert Leckstrom (mA)"],
+        "messpunkte": ["Alle Adern gegen Schirm"],
+        "kriterien": ["Kein Durchschlag", "Durchschlag aufgetreten"]
+      },
+      "pruefung_4_schirmwiderstand": {
+        "titel": "SCHIRMWIDERSTAND",
+        "hinweis": "falls zutreffend",
+        "grenzwert": "≤ 2,5 mΩ (Geflecht zu Backshell)",
+        "messpunkte": [
+          "Geflecht - Backshell A",
+          "Geflecht - Backshell B",
+          "Backshell A - Backshell B"
+        ]
+      },
+      "gesamtergebnis": {
+        "optionen": [
+          "ALLE PRÜFUNGEN BESTANDEN - Freigabe für optische Endprüfung",
+          "PRÜFUNG NICHT BESTANDEN - Fehleranalyse erforderlich"
+        ]
+      }
+    },
+    "F-09": {
+      "titel": "Endprüfprotokoll Kabelgarnitur VG 96927",
+      "beschreibung": "Vollständiges Endprüfprotokoll mit allen Prüfungen",
+      "protokoll_nr_format": "EP-XXXXXX",
+      "kopfdaten": ["Auftrag", "Kunde", "Artikel-Nr.", "Bezeichnung", "Zeichnung", "Rev.", "Serien-Nr.", "Stückzahl", "Datum"],
+      "materialrueckverfolgung": {
+        "komponenten": ["Leitung", "Steckverbinder A", "Steckverbinder B", "Kontakte", "Schrumpfschlauch", "Geflecht"],
+        "pro_komponente": "Chargennummer"
+      },
+      "elektrische_pruefung": {
+        "durchgang": {
+          "kriterium": "alle Adern < Grenzwert",
+          "felder": ["Prüfgerät", "Inventar-Nr."]
+        },
+        "isolationswiderstand": {
+          "spannung": "500V DC",
+          "grenzwert": "≥ 100 MΩ",
+          "feld": "Min. Messwert (MΩ)"
+        },
+        "hochspannung": {
+          "felder": ["Prüfspannung (V AC)", "Dauer (60s)", "Grenzwert Strom (mA)"]
+        },
+        "schirmwiderstand": {
+          "grenzwert": "≤ 2,5 mΩ",
+          "optional": true
+        }
+      },
+      "mechanische_pruefung": {
+        "laenge": {
+          "felder": ["Sollwert (mm)", "Toleranz (± mm)", "Istwert (mm)"]
+        },
+        "zugpruefung_kabel": {
+          "beschreibung": "Kabel im Backshell",
+          "felder": ["Prüfkraft (N)", "Dauer (60s)"],
+          "kriterium": "keine Verschiebung"
+        }
+      },
+      "optische_pruefung": {
+        "pruefpunkte": [
+          {"punkt": "Alle Kontakte korrekt bestückt", "optionen": ["OK", "NOK", "N/A"]},
+          {"punkt": "Kontakte in richtigen Kavitäten", "optionen": ["OK", "NOK", "N/A"]},
+          {"punkt": "Keine überstehenden Litzen", "optionen": ["OK", "NOK", "N/A"]},
+          {"punkt": "Steckverbinder unbeschädigt", "optionen": ["OK", "NOK", "N/A"]},
+          {"punkt": "Gewinde unbeschädigt", "optionen": ["OK", "NOK", "N/A"]},
+          {"punkt": "Kupplungsmutter frei drehbar", "optionen": ["OK", "NOK", "N/A"]},
+          {"punkt": "Dichtung korrekt positioniert", "optionen": ["OK", "NOK", "N/A"]},
+          {"punkt": "Backshell fest montiert", "optionen": ["OK", "NOK", "N/A"]},
+          {"punkt": "Schirmanbindung 360° (EMI-Backshell)", "optionen": ["OK", "NOK", "N/A"]},
+          {"punkt": "Schrumpfschläuche eng anliegend", "optionen": ["OK", "NOK", "N/A"]},
+          {"punkt": "Keine Luftblasen in Schrumpfschläuchen", "optionen": ["OK", "NOK", "N/A"]},
+          {"punkt": "Keine verbrannten Stellen", "optionen": ["OK", "NOK", "N/A"]},
+          {"punkt": "Kabel unbeschädigt", "optionen": ["OK", "NOK", "N/A"]},
+          {"punkt": "Keine Knicke im Kabel", "optionen": ["OK", "NOK", "N/A"]},
+          {"punkt": "Beschriftung vorhanden und lesbar", "optionen": ["OK", "NOK", "N/A"]},
+          {"punkt": "Beschriftung korrekt (lt. Zeichnung)", "optionen": ["OK", "NOK", "N/A"]}
+        ]
+      },
+      "gesamtergebnis": {
+        "optionen": [
+          {"status": "FREIGEGEBEN", "zusatz": "für Lieferung"},
+          {"status": "NICHT FREIGEGEBEN", "massnahmen": ["Nacharbeit", "Sonderfreigabe", "Ausschuss"]}
+        ]
+      },
+      "unterschriften": ["Prüfer + Datum", "QS-Freigabe + Datum"]
+    },
+    "F-10": {
+      "titel": "AQL-Prüfprotokoll",
+      "beschreibung": "Protokoll für Stichprobenprüfung nach ISO 2859-1",
+      "kopfdaten": ["Los-Nr.", "Artikel", "Losgröße", "Prüfdatum"],
+      "aql_festlegung": {
+        "felder": ["AQL-Wert", "Prüfniveau (I/II/III/S-1 bis S-4)", "Stichprobencode", "Stichprobenumfang"],
+        "tabellen_referenz": "ISO 2859-1 Tabelle 1 und 2-A"
+      },
+      "pruefergebnis": {
+        "felder": ["Geprüfte Einheiten", "Fehlerhafte Einheiten gefunden", "Ac (Annahmezahl)", "Re (Rückweisezahl)"],
+        "entscheidung": ["LOS ANGENOMMEN (Fehler ≤ Ac)", "LOS ZURÜCKGEWIESEN (Fehler ≥ Re)"]
+      },
+      "fehlerklassifizierung": {
+        "klassen": [
+          {"klasse": "Kritisch", "beschreibung": "Sicherheitsrelevant", "aql": "0"},
+          {"klasse": "Hauptfehler", "beschreibung": "Funktionseinschränkung", "aql": "1.0-2.5"},
+          {"klasse": "Nebenfehler", "beschreibung": "Optisch/geringfügig", "aql": "4.0-6.5"}
+        ]
+      }
+    },
+    "F-11": {
+      "titel": "Fehlersammelkarte",
+      "beschreibung": "Monatliche Erfassung aller Fehler zur Pareto-Analyse",
+      "kopfdaten": ["Monat", "Jahr", "Artikel", "Arbeitsplatz"],
+      "fehlerarten": [
+        {"kategorie": "Schneidefehler", "beispiele": "Länge, Schnitt"},
+        {"kategorie": "Abisolierfehler", "beispiele": "Litze beschädigt"},
+        {"kategorie": "Crimpfehler", "beispiele": "optisch, mechanisch"},
+        {"kategorie": "Lötfehler", "beispiele": "kalt, zu viel/wenig"},
+        {"kategorie": "Falsche Kavität", "beispiele": "Pinbelegung"},
+        {"kategorie": "Kontakt hält nicht", "beispiele": ""},
+        {"kategorie": "Schrumpffehler", "beispiele": "Blasen, verbrannt"},
+        {"kategorie": "Schirmungsfehler", "beispiele": "nicht 360°"},
+        {"kategorie": "Durchgang n.i.O.", "beispiele": "Unterbrechung"},
+        {"kategorie": "Isolation n.i.O.", "beispiele": "< 100 MΩ"},
+        {"kategorie": "Hipot n.i.O.", "beispiele": "Durchschlag"},
+        {"kategorie": "Maßabweichung", "beispiele": "Länge außer Toleranz"},
+        {"kategorie": "Beschädigung", "beispiele": "Kratzer, Knicke"},
+        {"kategorie": "Beschriftungsfehler", "beispiele": ""},
+        {"kategorie": "Sonstiges", "beispiele": ""}
+      ],
+      "erfassung": {
+        "methode": "Strichliste",
+        "spalten": ["W1", "W2", "W3", "W4", "W5", "GESAMT"],
+        "hinweis": "IIII = 4, IIII̅ = 5"
+      },
+      "kennzahlen": {
+        "felder": ["Gesamtstückzahl gefertigt", "Gesamtanzahl Fehler", "Ausschuss (nicht reparierbar)", "Nacharbeit (repariert)"],
+        "formel": "FEHLERQUOTE = (Anzahl Fehler / Gesamtstückzahl) × 100",
+        "zielwert": "< 2,0%"
+      },
+      "pareto_analyse": {
+        "beschreibung": "TOP 3 FEHLERARTEN nach Häufigkeit",
+        "felder_pro_rang": ["Fehlerart", "Anzahl Fehler", "Prozent"]
+      },
+      "massnahmen": {
+        "trigger": "Bei Überschreitung Zielwert oder häufigem Fehler",
+        "felder": ["Maßnahme", "Verantwortlich", "Termin"]
+      }
+    },
+    "F-12": {
+      "titel": "Sonderfreigabe",
+      "sonderfreigabe_nr_format": "SF-XXXXXX",
+      "beschreibung": "Genehmigung für Produkte mit Abweichungen von der Spezifikation",
+      "betroffenes_produkt": ["Auftrag", "Artikel-Nr.", "Bezeichnung", "Stückzahl", "Serien-Nr."],
+      "abweichungsbeschreibung": {
+        "arten": ["Maßabweichung", "Optischer Mangel", "Materialabweichung", "Prozessabweichung", "Sonstiges"],
+        "felder": ["Detaillierte Beschreibung", "Sollwert lt. Spezifikation", "Istwert (Abweichung)", "Differenz"]
+      },
+      "risikobeurteilung": {
+        "funktion": {
+          "optionen": ["Keine Auswirkung", "Geringfügige Auswirkung (beschreiben)", "Erhebliche Auswirkung (beschreiben)"]
+        },
+        "sicherheit": {
+          "optionen": ["Keine Auswirkung", "Potenzielle Auswirkung (beschreiben)"]
+        },
+        "lebensdauer": {
+          "optionen": ["Keine Auswirkung", "Potenzielle Auswirkung (beschreiben)"]
+        }
+      },
+      "entscheidung": {
+        "optionen": [
+          {"status": "SONDERFREIGABE ERTEILT", "feld": "Einschränkungen"},
+          {"status": "SONDERFREIGABE ABGELEHNT", "felder": ["Begründung"], "massnahmen": ["Nacharbeit", "Ausschuss", "Rückgabe an Lieferant"]},
+          {"status": "KUNDENFREIGABE ERFORDERLICH", "felder": ["Kunde informiert am", "Kundenentscheidung"]}
+        ]
+      },
+      "genehmigungen": {
+        "pflicht": ["Antragsteller (Name, Unterschrift, Datum)", "QS-Leitung (Name, Unterschrift, Datum)"],
+        "optional": ["Technische Leitung (bei Klasse A/B Fehlern)", "Kundenfreigabe (falls erforderlich)"]
+      },
+      "nachverfolgung": {
+        "felder": ["Korrekturmaßnahme eingeleitet (Ja/Nein)", "Maßnahme", "Verantwortlich", "Termin", "Wirksamkeit geprüft (Ja/Nein)", "Datum"]
+      }
+    },
+    "F-13": {
+      "titel": "Prüfmittelkarte",
+      "beschreibung": "Stammdaten und Kalibrierhistorie eines Prüfmittels",
+      "stammdaten": {
+        "felder": ["Inventar-Nr.", "Bezeichnung", "Hersteller", "Typ/Modell", "Seriennummer", "Messbereich", "Genauigkeit", "Anschaffungsdatum", "Standort"]
+      },
+      "kalibrierhistorie": {
+        "intervall_feld": "Kalibrierintervall (Monate)",
+        "eintraege": {
+          "felder": ["Datum", "Ergebnis (i.O./n.i.O.)", "Abweichung", "Nächste Kalibrierung", "Visum"]
+        }
+      },
+      "wartung_reparatur": {
+        "eintraege": {
+          "felder": ["Datum", "Maßnahme", "Visum"]
+        }
+      },
+      "status": {
+        "optionen": [
+          {"status": "EINSATZBEREIT", "beschreibung": "Kalibrierung gültig"},
+          {"status": "GESPERRT", "beschreibung": "Kalibrierung abgelaufen"},
+          {"status": "IN KALIBRIERUNG", "beschreibung": ""},
+          {"status": "IN REPARATUR", "beschreibung": ""},
+          {"status": "AUSGESONDERT", "beschreibung": ""}
+        ]
+      }
+    },
+    "F-14": {
+      "titel": "Werkerselbstprüfung",
+      "beschreibung": "Selbstkontrolle durch den Werker nach jedem Arbeitsschritt",
+      "kopfdaten": ["Werker", "Datum", "Auftrag", "Artikel"],
+      "arbeitsschritte": {
+        "schneiden": {
+          "pruefpunkte": [
+            {"punkt": "Länge korrekt (gemessen: ___ mm)", "optionen": ["OK", "NOK"]},
+            {"punkt": "Schnitt gerade und sauber", "optionen": ["OK", "NOK"]},
+            {"punkt": "Kabel nicht gequetscht", "optionen": ["OK", "NOK"]}
+          ]
+        },
+        "abisolieren": {
+          "pruefpunkte": [
+            {"punkt": "Abisolierlänge korrekt (___ mm)", "optionen": ["OK", "NOK"]},
+            {"punkt": "Litze NICHT beschädigt (Lupe geprüft)", "optionen": ["OK", "NOK"]},
+            {"punkt": "Isolierung sauber abgetrennt", "optionen": ["OK", "NOK"]},
+            {"punkt": "Geflecht korrekt vorbereitet", "optionen": ["OK", "NOK"]}
+          ]
+        },
+        "schrumpfschlaeuche_aufgeschoben": {
+          "pruefpunkte": [
+            {"punkt": "Alle Schläuche in richtiger Reihenfolge", "optionen": ["OK", "NOK"]},
+            {"punkt": "Richtige Größen verwendet", "optionen": ["OK", "NOK"]}
+          ]
+        },
+        "crimpen_seite_a": {
+          "pruefpunkte": [
+            {"punkt": "Richtiges Werkzeug (Inv.-Nr.: ___)", "optionen": ["OK", "NOK"]},
+            {"punkt": "Richtige Kontakte verwendet", "optionen": ["OK", "NOK"]},
+            {"punkt": "Bellmouth vorhanden", "optionen": ["OK", "NOK"]},
+            {"punkt": "Litze im Inspektionsloch sichtbar", "optionen": ["OK", "NOK"]},
+            {"punkt": "Isolierung NICHT im Crimpbereich", "optionen": ["OK", "NOK"]},
+            {"punkt": "Keine Risse", "optionen": ["OK", "NOK"]}
+          ]
+        },
+        "crimpen_seite_b": {
+          "pruefpunkte": [
+            {"punkt": "Bellmouth vorhanden", "optionen": ["OK", "NOK"]},
+            {"punkt": "Litze im Inspektionsloch sichtbar", "optionen": ["OK", "NOK"]},
+            {"punkt": "Isolierung NICHT im Crimpbereich", "optionen": ["OK", "NOK"]},
+            {"punkt": "Keine Risse", "optionen": ["OK", "NOK"]}
+          ]
+        },
+        "kontakteinbau": {
+          "pruefpunkte": [
+            {"punkt": "Richtige Kavitäten (lt. Zeichnung)", "optionen": ["OK", "NOK"]},
+            {"punkt": "Alle Kontakte eingerastet (\"Klick\")", "optionen": ["OK", "NOK"]},
+            {"punkt": "Zugtest: Kontakte halten", "optionen": ["OK", "NOK"]}
+          ]
+        },
+        "backshell_montage": {
+          "pruefpunkte": [
+            {"punkt": "Backshell fest montiert", "optionen": ["OK", "NOK"]},
+            {"punkt": "Drehmoment korrekt (___ Nm)", "optionen": ["OK", "NOK"]},
+            {"punkt": "Schirm 360° angebunden (falls EMI)", "optionen": ["OK", "NOK"]},
+            {"punkt": "Dichtung nicht beschädigt", "optionen": ["OK", "NOK"]}
+          ]
+        },
+        "schrumpfen": {
+          "pruefpunkte": [
+            {"punkt": "Schlauch eng anliegend", "optionen": ["OK", "NOK"]},
+            {"punkt": "Keine Luftblasen", "optionen": ["OK", "NOK"]},
+            {"punkt": "Keine verbrannten Stellen", "optionen": ["OK", "NOK"]},
+            {"punkt": "Kleber ausgetreten (bei Type H)", "optionen": ["OK", "NOK"]}
+          ]
+        },
+        "beschriftung": {
+          "pruefpunkte": [
+            {"punkt": "Beschriftung angebracht", "optionen": ["OK", "NOK"]},
+            {"punkt": "Beschriftung korrekt (lt. Zeichnung)", "optionen": ["OK", "NOK"]},
+            {"punkt": "Beschriftung lesbar", "optionen": ["OK", "NOK"]}
+          ]
+        }
+      },
+      "abschluss": {
+        "optionen": [
+          "Alle Prüfpunkte OK - Freigabe zur Endprüfung",
+          "Fehler gefunden - Meldung an Meister/QS"
+        ],
+        "bei_fehler": ["Art des Fehlers", "Maßnahme"]
+      }
+    },
+    "F-15": {
+      "titel": "Lieferantenüberwachung",
+      "beschreibung": "Jährliche Bewertung und Historie eines Lieferanten",
+      "lieferantendaten": {
+        "felder": ["Lieferant", "Lieferanten-Nr.", "Adresse", "Ansprechpartner", "Telefon/E-Mail", "Artikel", "Artikelnummer"]
+      },
+      "lieferhistorie": {
+        "jahr_feld": true,
+        "eintraege_max": 12,
+        "pro_eintrag": ["Lfd. Nr.", "Datum", "Liefermenge", "Stichprobe", "Fehler gefunden", "Ergebnis (A/Z)", "Prüfniveau (I/II/III)"],
+        "legende": "A = Angenommen, Z = Zurückgewiesen"
+      },
+      "jahresauswertung": {
+        "felder": ["Gesamtanzahl Lieferungen", "Angenommene Lieferungen", "Zurückgewiesene Lieferungen"],
+        "formel": "LIEFERQUALITÄTSRATE = (Angenommen / Gesamt) × 100",
+        "zielwert": "≥ 98%"
+      },
+      "lieferantenbewertung": {
+        "kriterien": [
+          {"kriterium": "Produktqualität", "max_punkte": 5},
+          {"kriterium": "Termintreue", "max_punkte": 5},
+          {"kriterium": "Mengentreue", "max_punkte": 5},
+          {"kriterium": "Dokumentation vollständig", "max_punkte": 5},
+          {"kriterium": "Reaktion bei Reklamation", "max_punkte": 5},
+          {"kriterium": "Preis-Leistung", "max_punkte": 5}
+        ],
+        "max_gesamtpunktzahl": 30,
+        "bewertung": [
+          {"klasse": "A-Lieferant", "punkte": "≥ 26", "beschreibung": "Bevorzugter Lieferant"},
+          {"klasse": "B-Lieferant", "punkte": "20-25", "beschreibung": "Akzeptabler Lieferant"},
+          {"klasse": "C-Lieferant", "punkte": "< 20", "beschreibung": "Verbesserung erforderlich"}
+        ]
+      },
+      "massnahmen": {
+        "trigger": "Bei C-Bewertung oder häufigen Zurückweisungen",
+        "felder": ["Maßnahme", "Termin", "Verantwortlich"],
+        "lieferantengespraech": ["Durchgeführt am", "Teilnehmer", "Ergebnis"]
+      }
+    }
+  },
+  "schnellreferenz": {
+    "kategorien": {
+      "wareneingangspruefung": {
+        "beschreibung": "Eingangskontrolle aller Materialien",
+        "formulare": [
+          {"nr": "F-01", "anwendung": "Leitungen VG 95218"},
+          {"nr": "F-02", "anwendung": "Steckverbinder VG 95319"},
+          {"nr": "F-03", "anwendung": "Kontakte VG 95319-1009"},
+          {"nr": "F-04", "anwendung": "Schrumpfschläuche VG 95343"},
+          {"nr": "F-05", "anwendung": "Geflecht VG 96936"}
+        ]
+      },
+      "fertigung": {
+        "beschreibung": "Begleitende Dokumentation während Produktion",
+        "formulare": [
+          {"nr": "F-06", "anwendung": "Fertigungsbegleitblatt"},
+          {"nr": "F-14", "anwendung": "Werkerselbstprüfung"}
+        ]
+      },
+      "pruefung": {
+        "beschreibung": "Zwischen- und Endprüfung",
+        "formulare": [
+          {"nr": "F-07", "anwendung": "Crimp-Prüfprotokoll"},
+          {"nr": "F-08", "anwendung": "Elektrisches Prüfprotokoll"},
+          {"nr": "F-09", "anwendung": "Endprüfprotokoll komplett"},
+          {"nr": "F-10", "anwendung": "AQL-Prüfprotokoll"}
+        ]
+      },
+      "qualitaetsmanagement": {
+        "beschreibung": "Qualitätssicherung und -dokumentation",
+        "formulare": [
+          {"nr": "F-11", "anwendung": "Fehlersammelkarte"},
+          {"nr": "F-12", "anwendung": "Sonderfreigabe"},
+          {"nr": "F-13", "anwendung": "Prüfmittelkarte"},
+          {"nr": "F-15", "anwendung": "Lieferantenüberwachung"}
+        ]
+      }
+    }
+  },
+  "quellen": [
+    "IPC/WHMA-A-620E Documentation Requirements",
+    "ISO 9001:2015 Documented Information",
+    "VG 96927-2:2024-10 Quality Documentation",
+    "DIN EN ISO/IEC 17025 Calibration Records"
+  ]
+}

@@ -943,6 +943,29 @@ a:hover {
   border-radius: var(--radius-sm);
 }
 
+.info-box-highlight {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-success) 100%);
+  border: 2px solid var(--color-primary-dark);
+}
+
+.info-box .btn-link {
+  background: rgba(255,255,255,0.2);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  margin-top: 10px;
+  display: inline-block;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.info-box .btn-link:hover {
+  background: rgba(255,255,255,0.3);
+}
+
 .documents-list {
   display: flex;
   flex-direction: column;
@@ -1260,6 +1283,35 @@ a:hover {
   font-weight: 700;
   min-height: 60px;
   margin-bottom: var(--spacing-xl);
+}
+
+.voice-transcript .final {
+  color: var(--color-text);
+}
+
+.voice-transcript .interim {
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+/* Voice button animation when listening */
+.voice-btn.listening {
+  background: var(--color-danger) !important;
+  animation: voice-pulse 1s infinite;
+}
+
+.voice-btn.listening .icon {
+  animation: mic-bounce 0.5s infinite alternate;
+}
+
+@keyframes voice-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4); }
+  50% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+}
+
+@keyframes mic-bounce {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.2); }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════

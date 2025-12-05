@@ -6,6 +6,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
   <title>VG-Normen Wissenssystem</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/import.css">
 </head>
 <body class="font-normal">
   
@@ -276,6 +277,11 @@
       </div>
       
       <div class="documents-actions">
+        <div class="action-card" onclick="navigateTo('import')">
+          <span class="icon">📥</span>
+          <span class="title">DOKUMENT IMPORTIEREN</span>
+          <span class="subtitle">PDF, DOCX, Bilder mit OCR</span>
+        </div>
         <div class="action-card" onclick="openDocumentsFolder()">
           <span class="icon">📂</span>
           <span class="title">ORDNER ÖFFNEN</span>
@@ -286,27 +292,29 @@
           <span class="title">NEUE DATEIEN LADEN</span>
           <span class="subtitle">Ordner nach neuen Dateien scannen</span>
         </div>
-        <div class="action-card" onclick="addDocuments()">
-          <span class="icon">➕</span>
-          <span class="title">DATEIEN HINZUFÜGEN</span>
-          <span class="subtitle">Neue Dateien auswählen</span>
-        </div>
       </div>
 
-      <div class="info-box">
-        <h4>💡 Tipp: Dateinamen richtig benennen!</h4>
+      <div class="info-box info-box-highlight">
+        <h4>📥 NEU: Dokument-Import mit OCR!</h4>
         <p>
-          <strong>✅ Gut:</strong> <code>Crimp_Fehler_Kontakt16.jpg</code><br>
-          <strong>❌ Schlecht:</strong> <code>IMG_4523.jpg</code>
+          Importieren Sie <strong>PDF, Word, JPEG, PNG</strong> Dateien.<br>
+          Text wird automatisch erkannt (auch aus Scans!)<br>
+          <button class="btn-link" onclick="navigateTo('import')">→ Jetzt Dokument importieren</button>
         </p>
-        <p>Aussagekräftige Namen helfen beim Suchen!</p>
       </div>
 
       <div id="userDocumentsContent" class="documents-list">
         <div class="empty-state">
           <span class="icon">📁</span>
-          <p>Noch keine Dokumente. Klicken Sie auf "DATEIEN HINZUFÜGEN" oder kopieren Sie Dateien in den Dokumenten-Ordner.</p>
+          <p>Noch keine Dokumente. Klicken Sie auf "DOKUMENT IMPORTIEREN" um zu starten.</p>
         </div>
+      </div>
+    </section>
+
+    <!-- IMPORT PAGE -->
+    <section id="page-import" class="page">
+      <div id="importPageContent">
+        <!-- Wird dynamisch durch documentImporter.renderImportPage() gefüllt -->
       </div>
     </section>
 
@@ -472,6 +480,8 @@
   <script src="js/pdf-extractor.js"></script>
   <script src="js/docx-extractor.js"></script>
   <script src="js/document-analyzer.js"></script>
+  <script src="js/document-importer.js"></script>
+  <script src="js/wissensbasis-loader.js"></script>
   <script src="js/app.js"></script>
 
 </body>

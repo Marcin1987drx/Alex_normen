@@ -21,7 +21,9 @@
     "electron-builder": "^24.9.1"
   },
   "dependencies": {
-    "pdf-parse": "^1.1.1"
+    "mammoth": "^1.11.0",
+    "pdf-parse": "^1.1.4",
+    "tesseract.js": "^6.0.1"
   },
   "build": {
     "appId": "com.quality.vg-normen",
@@ -35,11 +37,15 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         },
         {
           "target": "portable",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ],
       "artifactName": "${productName}-Setup-${version}.${ext}"
@@ -47,7 +53,9 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "installerLanguages": ["de"],
+      "installerLanguages": [
+        "de"
+      ],
       "language": "1031",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
@@ -65,7 +73,9 @@
       {
         "from": "app/user_documents",
         "to": "user_documents",
-        "filter": ["**/*"]
+        "filter": [
+          "**/*"
+        ]
       }
     ]
   }

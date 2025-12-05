@@ -1,0 +1,253 @@
+{
+  "teil": 9,
+  "titel": "Stichprobenplan AQL - ISO 2859-1",
+  "version": "1.0",
+  "letzte_aktualisierung": "2024-01-15",
+  "beschreibung": "Stichprobenprüfung nach Attributen gemäß ISO 2859-1",
+
+  "grundlagen": {
+    "aql_definition": "AQL (Acceptable Quality Limit / Annehmbare Qualitätsgrenzlage) ist der maximale Prozentsatz fehlerhafter Einheiten, der bei der Stichprobenprüfung als akzeptabel angesehen wird.",
+    "ursprung": ["Entwickelt vom US-Militär (MIL-STD-105)", "Heute international: ISO 2859-1", "Entspricht: ANSI/ASQ Z1.4 (USA), DIN ISO 2859-1 (Deutschland)"],
+    "prinzip": {
+      "beschreibung": "Aus dem Gesamtlos (N Stück) wird eine Stichprobe (n Stück) gezogen und geprüft",
+      "entscheidung": "Fehler ≤ Ac → ANNEHMEN, Fehler ≥ Re → ZURÜCKWEISEN",
+      "legende": {
+        "ac": "Annahmezahl (Accept)",
+        "re": "Rückweisezahl (Reject)"
+      }
+    }
+  },
+
+  "fehlerklassifizierung": [
+    { "klasse": "Kritisch", "bezeichnung": "Critical", "definition": "Gefahr für Personen, Totalausfall", "typischer_aql": "0 (100% Prüfung)" },
+    { "klasse": "Hauptfehler", "bezeichnung": "Major", "definition": "Funktionsbeeinträchtigung", "typischer_aql": "1,0 - 2,5" },
+    { "klasse": "Nebenfehler", "bezeichnung": "Minor", "definition": "Optisch, keine Funktionsbeeinträchtigung", "typischer_aql": "4,0 - 6,5" }
+  ],
+
+  "aql_werte_vg96927": {
+    "hinweis": "WICHTIG FÜR MILITÄRPRODUKTE: Kritische Fehler werden IMMER 100% geprüft! AQL-Stichproben nur für Haupt- und Nebenfehler!",
+    "kritische_fehler": {
+      "aql": "0 (100% Prüfung)",
+      "beispiele": ["Durchschlag bei Hipot-Test", "Kurzschluss", "Unterbrechung", "Falsche Pinbelegung"]
+    },
+    "hauptfehler": {
+      "aql": "1,0 - 2,5",
+      "beispiele": [
+        { "fehler": "Isolationswiderstand < Grenzwert", "aql": "1,0" },
+        { "fehler": "Crimpfehler (mechanisch i.O.)", "aql": "1,0" },
+        { "fehler": "Schirmung nicht 360°", "aql": "1,0" },
+        { "fehler": "Maßabweichung außer Toleranz", "aql": "2,5" }
+      ]
+    },
+    "nebenfehler": {
+      "aql": "4,0 - 6,5",
+      "beispiele": [
+        { "fehler": "Optische Mängel", "aql": "4,0" },
+        { "fehler": "Beschriftung unleserlich", "aql": "4,0" },
+        { "fehler": "Leichte Kratzer", "aql": "6,5" }
+      ]
+    }
+  },
+
+  "pruefniveaus": {
+    "uebersicht": [
+      { "niveau": "S-1", "bezeichnung": "Reduziert Spezial", "stichprobengroesse": "Sehr klein", "anwendung": "Zerstörende Prüfung" },
+      { "niveau": "S-2", "bezeichnung": "Reduziert Spezial", "stichprobengroesse": "Sehr klein", "anwendung": "Zerstörende Prüfung" },
+      { "niveau": "S-3", "bezeichnung": "Reduziert Spezial", "stichprobengroesse": "Klein", "anwendung": "Aufwendige Prüfung" },
+      { "niveau": "S-4", "bezeichnung": "Reduziert Spezial", "stichprobengroesse": "Klein", "anwendung": "Aufwendige Prüfung" },
+      { "niveau": "I", "bezeichnung": "Reduziert", "stichprobengroesse": "Kleiner", "anwendung": "Bewährte Lieferanten" },
+      { "niveau": "II", "bezeichnung": "Normal", "stichprobengroesse": "Standard", "anwendung": "STANDARDNIVEAU" },
+      { "niveau": "III", "bezeichnung": "Verschärft", "stichprobengroesse": "Größer", "anwendung": "Neue Lieferanten, kritisch" }
+    ],
+    "entscheidungsbaum": [
+      { "frage": "Zerstörende Prüfung?", "ja": "S-1 bis S-4 (Spezialniveaus)" },
+      { "frage": "Erstlieferung / Neuer Lieferant?", "ja": "NIVEAU III (Verschärft)" },
+      { "frage": "Probleme in letzten 5 Lieferungen?", "ja": "NIVEAU III (Verschärft)" },
+      { "frage": "10 aufeinanderfolgende Lose angenommen?", "ja": "NIVEAU I möglich (Reduziert)" },
+      { "frage": "Standardsituation?", "ja": "NIVEAU II (Normal) - STANDARD" }
+    ],
+    "wechselregeln": {
+      "verschaerft_zu_normal": "5 aufeinanderfolgende Lose angenommen",
+      "normal_zu_reduziert": "10 aufeinanderfolgende Lose angenommen UND Produktion stabil",
+      "normal_zu_verschaerft": "2 von 5 Losen zurückgewiesen",
+      "reduziert_zu_normal": "1 Los zurückgewiesen ODER Produktion instabil"
+    }
+  },
+
+  "stichprobentabellen": {
+    "tabelle_1_kennbuchstabe": {
+      "beschreibung": "Kennbuchstabe nach Losgröße und Prüfniveau",
+      "anwendung": "1. Losgröße finden, 2. Prüfniveau wählen (Standard=II), 3. Kennbuchstabe ablesen, 4. Mit Kennbuchstabe in Tabelle 2",
+      "tabelle": [
+        { "losgroesse": "2-8", "s1": "A", "s2": "A", "s3": "A", "s4": "A", "I": "A", "II": "A", "III": "B" },
+        { "losgroesse": "9-15", "s1": "A", "s2": "A", "s3": "A", "s4": "A", "I": "A", "II": "B", "III": "C" },
+        { "losgroesse": "16-25", "s1": "A", "s2": "A", "s3": "B", "s4": "B", "I": "B", "II": "C", "III": "D" },
+        { "losgroesse": "26-50", "s1": "A", "s2": "B", "s3": "B", "s4": "C", "I": "C", "II": "D", "III": "E" },
+        { "losgroesse": "51-90", "s1": "B", "s2": "B", "s3": "C", "s4": "C", "I": "C", "II": "E", "III": "F" },
+        { "losgroesse": "91-150", "s1": "B", "s2": "B", "s3": "C", "s4": "D", "I": "D", "II": "F", "III": "G" },
+        { "losgroesse": "151-280", "s1": "B", "s2": "C", "s3": "D", "s4": "E", "I": "E", "II": "G", "III": "H" },
+        { "losgroesse": "281-500", "s1": "B", "s2": "C", "s3": "D", "s4": "E", "I": "F", "II": "H", "III": "J" },
+        { "losgroesse": "501-1200", "s1": "C", "s2": "C", "s3": "E", "s4": "F", "I": "G", "II": "J", "III": "K" },
+        { "losgroesse": "1201-3200", "s1": "C", "s2": "D", "s3": "E", "s4": "G", "I": "H", "II": "K", "III": "L" },
+        { "losgroesse": "3201-10000", "s1": "C", "s2": "D", "s3": "F", "s4": "G", "I": "J", "II": "L", "III": "M" },
+        { "losgroesse": "10001-35000", "s1": "C", "s2": "D", "s3": "F", "s4": "H", "I": "K", "II": "M", "III": "N" },
+        { "losgroesse": "35001-150000", "s1": "D", "s2": "E", "s3": "G", "s4": "J", "I": "L", "II": "N", "III": "P" },
+        { "losgroesse": "150001-500000", "s1": "D", "s2": "E", "s3": "G", "s4": "J", "I": "M", "II": "P", "III": "Q" },
+        { "losgroesse": "500001+", "s1": "D", "s2": "E", "s3": "H", "s4": "K", "I": "N", "II": "Q", "III": "R" }
+      ]
+    },
+    "tabelle_2_einfach_stichprobenplan": {
+      "beschreibung": "Einfach-Stichprobenplan - Normale Prüfung",
+      "legende": {
+        "n": "Stichprobenumfang",
+        "ac": "Annahmezahl (höchstens so viele Fehler → Los annehmen)",
+        "re": "Rückweisezahl (mindestens so viele Fehler → Los zurückweisen)",
+        "pfeil": "↓ = Ersten Stichprobenplan unterhalb des Pfeils benutzen"
+      },
+      "tabelle": [
+        { "kennbuchstabe": "A", "n": 2, "aql_0_65": {"ac": "↓", "re": ""}, "aql_1_0": {"ac": "↓", "re": ""}, "aql_1_5": {"ac": "↓", "re": ""}, "aql_2_5": {"ac": "↓", "re": ""}, "aql_4_0": {"ac": "↓", "re": ""}, "aql_6_5": {"ac": 0, "re": 1}, "aql_10": {"ac": 0, "re": 1} },
+        { "kennbuchstabe": "B", "n": 3, "aql_0_65": {"ac": "↓", "re": ""}, "aql_1_0": {"ac": "↓", "re": ""}, "aql_1_5": {"ac": "↓", "re": ""}, "aql_2_5": {"ac": "↓", "re": ""}, "aql_4_0": {"ac": 0, "re": 1}, "aql_6_5": {"ac": 0, "re": 1}, "aql_10": {"ac": 1, "re": 2} },
+        { "kennbuchstabe": "C", "n": 5, "aql_0_65": {"ac": "↓", "re": ""}, "aql_1_0": {"ac": "↓", "re": ""}, "aql_1_5": {"ac": "↓", "re": ""}, "aql_2_5": {"ac": 0, "re": 1}, "aql_4_0": {"ac": 0, "re": 1}, "aql_6_5": {"ac": 1, "re": 2}, "aql_10": {"ac": 1, "re": 2} },
+        { "kennbuchstabe": "D", "n": 8, "aql_0_65": {"ac": "↓", "re": ""}, "aql_1_0": {"ac": "↓", "re": ""}, "aql_1_5": {"ac": 0, "re": 1}, "aql_2_5": {"ac": 0, "re": 1}, "aql_4_0": {"ac": 1, "re": 2}, "aql_6_5": {"ac": 1, "re": 2}, "aql_10": {"ac": 2, "re": 3} },
+        { "kennbuchstabe": "E", "n": 13, "aql_0_65": {"ac": "↓", "re": ""}, "aql_1_0": {"ac": 0, "re": 1}, "aql_1_5": {"ac": 0, "re": 1}, "aql_2_5": {"ac": 1, "re": 2}, "aql_4_0": {"ac": 1, "re": 2}, "aql_6_5": {"ac": 2, "re": 3}, "aql_10": {"ac": 3, "re": 4} },
+        { "kennbuchstabe": "F", "n": 20, "aql_0_65": {"ac": 0, "re": 1}, "aql_1_0": {"ac": 0, "re": 1}, "aql_1_5": {"ac": 1, "re": 2}, "aql_2_5": {"ac": 1, "re": 2}, "aql_4_0": {"ac": 2, "re": 3}, "aql_6_5": {"ac": 3, "re": 4}, "aql_10": {"ac": 5, "re": 6} },
+        { "kennbuchstabe": "G", "n": 32, "aql_0_65": {"ac": 0, "re": 1}, "aql_1_0": {"ac": 1, "re": 2}, "aql_1_5": {"ac": 1, "re": 2}, "aql_2_5": {"ac": 2, "re": 3}, "aql_4_0": {"ac": 3, "re": 4}, "aql_6_5": {"ac": 5, "re": 6}, "aql_10": {"ac": 7, "re": 8} },
+        { "kennbuchstabe": "H", "n": 50, "aql_0_65": {"ac": 1, "re": 2}, "aql_1_0": {"ac": 1, "re": 2}, "aql_1_5": {"ac": 2, "re": 3}, "aql_2_5": {"ac": 3, "re": 4}, "aql_4_0": {"ac": 5, "re": 6}, "aql_6_5": {"ac": 7, "re": 8}, "aql_10": {"ac": 10, "re": 11} },
+        { "kennbuchstabe": "J", "n": 80, "aql_0_65": {"ac": 1, "re": 2}, "aql_1_0": {"ac": 2, "re": 3}, "aql_1_5": {"ac": 3, "re": 4}, "aql_2_5": {"ac": 5, "re": 6}, "aql_4_0": {"ac": 7, "re": 8}, "aql_6_5": {"ac": 10, "re": 11}, "aql_10": {"ac": 14, "re": 15} },
+        { "kennbuchstabe": "K", "n": 125, "aql_0_65": {"ac": 2, "re": 3}, "aql_1_0": {"ac": 3, "re": 4}, "aql_1_5": {"ac": 5, "re": 6}, "aql_2_5": {"ac": 7, "re": 8}, "aql_4_0": {"ac": 10, "re": 11}, "aql_6_5": {"ac": 14, "re": 15}, "aql_10": {"ac": 21, "re": 22} },
+        { "kennbuchstabe": "L", "n": 200, "aql_0_65": {"ac": 3, "re": 4}, "aql_1_0": {"ac": 5, "re": 6}, "aql_1_5": {"ac": 7, "re": 8}, "aql_2_5": {"ac": 10, "re": 11}, "aql_4_0": {"ac": 14, "re": 15}, "aql_6_5": {"ac": 21, "re": 22}, "aql_10": {"ac": 21, "re": 22} },
+        { "kennbuchstabe": "M", "n": 315, "aql_0_65": {"ac": 5, "re": 6}, "aql_1_0": {"ac": 7, "re": 8}, "aql_1_5": {"ac": 10, "re": 11}, "aql_2_5": {"ac": 14, "re": 15}, "aql_4_0": {"ac": 21, "re": 22}, "aql_6_5": {"ac": 21, "re": 22}, "aql_10": {"ac": 21, "re": 22} },
+        { "kennbuchstabe": "N", "n": 500, "aql_0_65": {"ac": 7, "re": 8}, "aql_1_0": {"ac": 10, "re": 11}, "aql_1_5": {"ac": 14, "re": 15}, "aql_2_5": {"ac": 21, "re": 22}, "aql_4_0": {"ac": 21, "re": 22}, "aql_6_5": {"ac": 21, "re": 22}, "aql_10": {"ac": 21, "re": 22} },
+        { "kennbuchstabe": "P", "n": 800, "aql_0_65": {"ac": 10, "re": 11}, "aql_1_0": {"ac": 14, "re": 15}, "aql_1_5": {"ac": 21, "re": 22}, "aql_2_5": {"ac": 21, "re": 22}, "aql_4_0": {"ac": 21, "re": 22}, "aql_6_5": {"ac": 21, "re": 22}, "aql_10": {"ac": 21, "re": 22} },
+        { "kennbuchstabe": "Q", "n": 1250, "aql_0_65": {"ac": 14, "re": 15}, "aql_1_0": {"ac": 21, "re": 22}, "aql_1_5": {"ac": 21, "re": 22}, "aql_2_5": {"ac": 21, "re": 22}, "aql_4_0": {"ac": 21, "re": 22}, "aql_6_5": {"ac": 21, "re": 22}, "aql_10": {"ac": 21, "re": 22} },
+        { "kennbuchstabe": "R", "n": 2000, "aql_0_65": {"ac": 21, "re": 22}, "aql_1_0": {"ac": 21, "re": 22}, "aql_1_5": {"ac": 21, "re": 22}, "aql_2_5": {"ac": 21, "re": 22}, "aql_4_0": {"ac": 21, "re": 22}, "aql_6_5": {"ac": 21, "re": 22}, "aql_10": {"ac": 21, "re": 22} }
+      ]
+    },
+    "schnellreferenz_niveau_II": {
+      "beschreibung": "Schnellreferenz für häufige Losgrößen - Prüfniveau II (Normal)",
+      "tabelle": [
+        { "losgroesse": "2-8", "n": 2, "aql_1_0": {"ac": "↓", "re": "↓"}, "aql_2_5": {"ac": "↓", "re": "↓"}, "aql_4_0": {"ac": "↓", "re": "↓"} },
+        { "losgroesse": "9-15", "n": 3, "aql_1_0": {"ac": "↓", "re": "↓"}, "aql_2_5": {"ac": "↓", "re": "↓"}, "aql_4_0": {"ac": 0, "re": 1} },
+        { "losgroesse": "16-25", "n": 5, "aql_1_0": {"ac": "↓", "re": "↓"}, "aql_2_5": {"ac": 0, "re": 1}, "aql_4_0": {"ac": 0, "re": 1} },
+        { "losgroesse": "26-50", "n": 8, "aql_1_0": {"ac": "↓", "re": "↓"}, "aql_2_5": {"ac": 0, "re": 1}, "aql_4_0": {"ac": 1, "re": 2} },
+        { "losgroesse": "51-90", "n": 13, "aql_1_0": {"ac": 0, "re": 1}, "aql_2_5": {"ac": 1, "re": 2}, "aql_4_0": {"ac": 1, "re": 2} },
+        { "losgroesse": "91-150", "n": 20, "aql_1_0": {"ac": 0, "re": 1}, "aql_2_5": {"ac": 1, "re": 2}, "aql_4_0": {"ac": 2, "re": 3} },
+        { "losgroesse": "151-280", "n": 32, "aql_1_0": {"ac": 1, "re": 2}, "aql_2_5": {"ac": 2, "re": 3}, "aql_4_0": {"ac": 3, "re": 4} },
+        { "losgroesse": "281-500", "n": 50, "aql_1_0": {"ac": 1, "re": 2}, "aql_2_5": {"ac": 3, "re": 4}, "aql_4_0": {"ac": 5, "re": 6} },
+        { "losgroesse": "501-1200", "n": 80, "aql_1_0": {"ac": 2, "re": 3}, "aql_2_5": {"ac": 5, "re": 6}, "aql_4_0": {"ac": 7, "re": 8} },
+        { "losgroesse": "1201-3200", "n": 125, "aql_1_0": {"ac": 3, "re": 4}, "aql_2_5": {"ac": 7, "re": 8}, "aql_4_0": {"ac": 10, "re": 11} }
+      ]
+    }
+  },
+
+  "praktische_anwendung": {
+    "schritt_fuer_schritt": [
+      { "schritt": 1, "bezeichnung": "KENNBUCHSTABE ERMITTELN", "beschreibung": "Losgröße + Prüfniveau → Tabelle 1 → Kennbuchstabe" },
+      { "schritt": 2, "bezeichnung": "STICHPROBENUMFANG ABLESEN", "beschreibung": "Kennbuchstabe → Tabelle 2 → Stichprobenumfang n" },
+      { "schritt": 3, "bezeichnung": "ANNAHME-/RÜCKWEISEZAHLEN ABLESEN", "beschreibung": "Kennbuchstabe + AQL-Wert → Ac und Re" },
+      { "schritt": 4, "bezeichnung": "STICHPROBE ZIEHEN", "beschreibung": "n Stück ZUFÄLLIG aus dem Los entnehmen" },
+      { "schritt": 5, "bezeichnung": "PRÜFEN UND BEWERTEN", "beschreibung": "Fehler zählen, mit Ac/Re vergleichen" },
+      { "schritt": 6, "bezeichnung": "ENTSCHEIDUNG", "beschreibung": "Alle Prüfungen ANGENOMMEN → Los freigeben, Eine/beide ZURÜCKGEWIESEN → Los sperren" }
+    ],
+    "beispiel": {
+      "situation": "Los mit 200 Kabelgarnituren, Prüfniveau II (Normal), AQL Hauptfehler 1,0, AQL Nebenfehler 4,0",
+      "schritt_1": "Losgröße 200 (Bereich 151-280), Prüfniveau II → Kennbuchstabe G",
+      "schritt_2": "Kennbuchstabe G → Stichprobenumfang n = 32",
+      "schritt_3_hauptfehler": "G + AQL 1,0 → Ac = 1, Re = 2",
+      "schritt_3_nebenfehler": "G + AQL 4,0 → Ac = 3, Re = 4",
+      "schritt_4": "32 Garnituren ZUFÄLLIG entnehmen (z.B. jede 6. Garnitur)",
+      "bewertung": "Hauptfehler gefunden ≤ 1 → ANGENOMMEN, ≥ 2 → ZURÜCKGEWIESEN; Nebenfehler gefunden ≤ 3 → ANGENOMMEN, ≥ 4 → ZURÜCKGEWIESEN"
+    },
+    "stichprobenziehung_methoden": [
+      { "methode": "Systematische Auswahl", "beschreibung": "Intervall = Losgröße ÷ Stichprobenumfang, Startpunkt zufällig wählen" },
+      { "methode": "Zufallszahlen", "beschreibung": "Zufallszahlentabelle oder Generator verwenden" },
+      { "methode": "Geschichtete Stichprobe", "beschreibung": "Bei mehreren Kartons/Gebinden: Aus jedem proportional entnehmen" }
+    ],
+    "verboten": [
+      "Nur 'gute' Teile auswählen",
+      "Nur obere Schicht prüfen",
+      "Beschädigte Teile auslassen",
+      "Immer dieselben Positionen prüfen"
+    ]
+  },
+
+  "sonderfaelle": {
+    "hundert_prozent_pruefung": {
+      "beschreibung": "100%-Prüfung obligatorisch für:",
+      "faelle": [
+        "Kritische Fehler (Sicherheit, Funktion) → Durchgang, Isolation, Hipot IMMER 100%!",
+        "Kleine Losgrößen (N < 10) → Stichprobe nicht sinnvoll",
+        "Kundenanforderung → Wenn vertraglich vereinbart",
+        "Nach Zurückweisung eines Loses → 100% Sortierprüfung vor erneuter Vorlage",
+        "Sicherheitskritische Produkte → Luftfahrt, Medizin, Kernkraft"
+      ]
+    },
+    "skip_lot": {
+      "beschreibung": "Bei nachgewiesener hoher Qualität können Lose ohne Prüfung freigegeben werden",
+      "voraussetzungen": [
+        "Mindestens 10 aufeinanderfolgende Lose angenommen",
+        "Qualitätsniveau stabil",
+        "Keine Prozessänderungen",
+        "Genehmigung durch QS-Leitung"
+      ],
+      "warnung": "FÜR VG-PRODUKTE: Skip-Lot nur mit ausdrücklicher Kundengenehmigung! Kritische Merkmale IMMER 100% prüfen!"
+    },
+    "doppelstichprobe": {
+      "beschreibung": "Bei grenzwertigen Ergebnissen kann eine zweite Stichprobe gezogen werden",
+      "beispiel_aql_2_5_J": {
+        "erste_stichprobe": { "n": 50, "ac": 2, "re": 5 },
+        "entscheidung_1": "0-2 Fehler → ANNEHMEN, 5+ Fehler → ZURÜCKWEISEN, 3-4 Fehler → ZWEITE STICHPROBE",
+        "zweite_stichprobe": { "n_zusaetzlich": 50, "n_kombiniert": 100, "ac": 6, "re": 7 },
+        "entscheidung_2": "Gesamt 0-6 Fehler → ANNEHMEN, 7+ Fehler → ZURÜCKWEISEN"
+      }
+    }
+  },
+
+  "dokumentation": {
+    "aql_pruefprotokoll_felder": [
+      "Protokoll-Nr., Datum",
+      "Lieferant, Lieferschein-Nr.",
+      "Artikelnummer, Bezeichnung",
+      "Losgröße (N), Charge",
+      "Prüfniveau (I/II/III)",
+      "Kennbuchstabe, Stichprobenumfang (n)",
+      "AQL-Werte und Grenzwerte (Ac/Re) für jede Fehlerart",
+      "Stichprobenziehungsmethode",
+      "Prüfergebnis je Fehlerart",
+      "Gesamtentscheidung (ANGENOMMEN/ZURÜCKGEWIESEN)",
+      "Maßnahmen bei Zurückweisung",
+      "Fehlerdetails",
+      "Prüfer, QS-Freigabe, Unterschriften"
+    ],
+    "lieferantenueberwachung": {
+      "felder": ["Lfd. Nr.", "Datum", "Losgröße", "Stichprobe", "Fehler gefunden", "Ergebnis (A/Z)", "Prüfniveau nächstes"],
+      "auswertung": ["Angenommene Lose in Folge", "Zurückgewiesene Lose (letzte 10)", "Nächstes Prüfniveau"]
+    }
+  },
+
+  "schnellreferenz_taschenformat": {
+    "niveau_II_normal": [
+      { "losgroesse": "26-50", "n": 8, "aql_1_0": "Ac=0 Re=1", "aql_2_5": "Ac=0 Re=1", "aql_4_0": "Ac=1 Re=2" },
+      { "losgroesse": "51-90", "n": 13, "aql_1_0": "Ac=0 Re=1", "aql_2_5": "Ac=1 Re=2", "aql_4_0": "Ac=1 Re=2" },
+      { "losgroesse": "91-150", "n": 20, "aql_1_0": "Ac=0 Re=1", "aql_2_5": "Ac=1 Re=2", "aql_4_0": "Ac=2 Re=3" },
+      { "losgroesse": "151-280", "n": 32, "aql_1_0": "Ac=1 Re=2", "aql_2_5": "Ac=2 Re=3", "aql_4_0": "Ac=3 Re=4" },
+      { "losgroesse": "281-500", "n": 50, "aql_1_0": "Ac=1 Re=2", "aql_2_5": "Ac=3 Re=4", "aql_4_0": "Ac=5 Re=6" },
+      { "losgroesse": "501-1200", "n": 80, "aql_1_0": "Ac=2 Re=3", "aql_2_5": "Ac=5 Re=6", "aql_4_0": "Ac=7 Re=8" },
+      { "losgroesse": "1201-3200", "n": 125, "aql_1_0": "Ac=3 Re=4", "aql_2_5": "Ac=7 Re=8", "aql_4_0": "Ac=10 Re=11" }
+    ],
+    "entscheidungshilfe": {
+      "frage_1": "Wie viele Teile im Los?",
+      "frage_2": "Welches Prüfniveau? (I=Reduziert, II=Normal, III=Verschärft)",
+      "frage_3": "Welcher AQL-Wert? (1,0=Hauptfehler, 2,5=Standard, 4,0=Nebenfehler)"
+    }
+  },
+
+  "quellen": [
+    { "quelle": "ISO 2859-1:1999", "url": "https://pppars.com/wp-content/uploads/2021/07/ISO-2859-1-1999.pdf" },
+    { "quelle": "AQL Inspection Levels", "url": "https://qualityinspection.org/inspection-level/" },
+    { "quelle": "AQL Table Calculator", "url": "https://aqiservice.com/quality-inspection-standard/aql-table/" },
+    { "quelle": "AQL Sampling Guide", "url": "https://insight-quality.com/what-is-aql-and-what-do-you-need-to-know-about-it/" },
+    { "quelle": "QIMA AQL Guide", "url": "https://www.qima.com/aql-acceptable-quality-limit" },
+    { "quelle": "4EasyReg ISO 2859 Methodology", "url": "https://4easyreg.com/iso-2859-aql/" }
+  ]
+}

@@ -1,0 +1,256 @@
+{
+  "meta": {
+    "teil": 1,
+    "title": "Einführung und Übersicht",
+    "version": "1.0",
+    "datum": "Dezember 2025",
+    "status": "Gültig für Produktion",
+    "geltungsbereich": "Militärische Kabel- und Leitungsproduktion nach VG-Normen"
+  },
+  "kapitel": [
+    {
+      "id": "1.1",
+      "title": "Zweck dieses Handbuchs",
+      "content": "Dieses Produktionshandbuch dient als umfassende Referenz für alle Mitarbeiter, die an der Herstellung, Prüfung und Qualitätskontrolle von militärischen Kabelgarnituren nach VG-Normen beteiligt sind.",
+      "zielgruppen": [
+        {"gruppe": "Produktionsmitarbeiter", "aufgaben": "Montage, Crimp, Löten, Schrumpfen"},
+        {"gruppe": "Qualitätsprüfer", "aufgaben": "Eingangs-, Zwischen- und Endprüfung"},
+        {"gruppe": "Fertigungsleiter", "aufgaben": "Prozessüberwachung"},
+        {"gruppe": "Technische Einkäufer", "aufgaben": "Komponentenbeschaffung"},
+        {"gruppe": "Kunden und Auditoren", "aufgaben": "Referenzdokumentation"}
+      ]
+    },
+    {
+      "id": "1.2",
+      "title": "Struktur des Handbuchs",
+      "teile": [
+        {"teil": 1, "title": "Einführung und Übersicht", "beschreibung": "Dieses Dokument"},
+        {"teil": 2, "title": "VG 95218 – Drähte und Leitungen", "inhalt": ["Typen A, E, G, H", "Querschnitte, Widerstände, Temperaturen"]},
+        {"teil": 3, "title": "VG 96927 – Kabelgarnituren", "inhalt": ["Temperatursysteme 25, 100, 200", "Elektrische Prüfungen", "Brandverhalten"]},
+        {"teil": 4, "title": "VG 95319 – Steckverbinder", "inhalt": ["Baugrößen und Kontaktanordnungen", "Crimpspezifikationen", "MIL-SPEC Kompatibilität"]},
+        {"teil": 5, "title": "VG 96936 – Abschirmung (Geflechte)", "inhalt": ["EMI/RFI-Schutz", "Materialspezifikationen"]},
+        {"teil": 6, "title": "VG 95343 – Schrumpfschläuche", "inhalt": ["Typen A bis H", "Schrumpftemperaturen"]},
+        {"teil": 7, "title": "IPC/WHMA-A-620 – Produktionsverfahren", "inhalt": ["Crimpkriterien Klasse 3", "Mindestzugkräfte"]},
+        {"teil": 8, "title": "Qualitätsmanagement", "inhalt": ["Prozessqualifizierung", "Fertigungsüberwachung"]},
+        {"teil": 9, "title": "AQL Stichprobenplan (ISO 2859-1)", "inhalt": ["Prüfniveaus", "Stichprobentabellen"]},
+        {"teil": 10, "title": "Prüfkarten und Formulare", "inhalt": ["Wareneingangsprüfung", "Fertigungsbegleitblätter", "Endprüfprotokolle"]}
+      ]
+    },
+    {
+      "id": "1.3",
+      "title": "VG-Normensystem – Hierarchie",
+      "sections": [
+        {
+          "id": "1.3.1",
+          "title": "Was sind VG-Normen?",
+          "definition": "VG = Verteidigungsgeräte (Defense Equipment Standards)",
+          "beschreibung": "VG-Normen sind deutsche Militärstandards, herausgegeben vom BAAINBw (Bundesamt für Ausrüstung, Informationstechnik und Nutzung der Bundeswehr).",
+          "anwendungsbereiche": [
+            "Kabel und Leitungen",
+            "Steckverbinder",
+            "Kabelgarnituren",
+            "Zubehör (Schläuche, Geflechte)"
+          ]
+        },
+        {
+          "id": "1.3.2",
+          "title": "Hierarchische Struktur",
+          "ebenen": {
+            "oberste_ebene": {
+              "name": "Grundnormen",
+              "normen": [
+                {"norm": "VG 95218-2", "beschreibung": "Fachgrundnorm für Kabel und Leitungen"},
+                {"norm": "VG 96927-2", "beschreibung": "Generischer Standard für Kabelgarnituren"},
+                {"norm": "VG 95319-100", "beschreibung": "Fachgrundnorm für Steckverbinder"}
+              ]
+            },
+            "mittlere_ebene": {
+              "name": "Detailnormen",
+              "normen": [
+                {"norm": "VG 95218-20", "beschreibung": "Einadrige Leitungen (Type A, E, G, H)"},
+                {"norm": "VG 95218-21", "beschreibung": "Einadrige Leitungen (Spezialtypen)"},
+                {"norm": "VG 96927-12", "beschreibung": "2-Ader Kabelgarnituren"},
+                {"norm": "VG 96927-15", "beschreibung": "5-Ader Kabelgarnituren"},
+                {"norm": "VG 96927-17", "beschreibung": "7-Ader Kabelgarnituren"},
+                {"norm": "VG 95319-1006", "beschreibung": "Rundsteckverbinder (Gewindekupplung)"},
+                {"norm": "VG 95319-1007", "beschreibung": "Rundsteckverbinder (Bajonettkupplung)"},
+                {"norm": "VG 95319-1009", "beschreibung": "Kontakte (Crimp/Löt)"}
+              ]
+            },
+            "untere_ebene": {
+              "name": "Zugehörige Normen",
+              "normen": [
+                {"norm": "VG 95343", "beschreibung": "Schrumpfschläuche und Formteile"},
+                {"norm": "VG 96936", "beschreibung": "Abschirmgeflechte und Schutzschläuche"},
+                {"norm": "VG 95212", "beschreibung": "Zulassungsregister"}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "1.4",
+      "title": "Temperatursysteme – Übersicht",
+      "beschreibung": "Die VG-Normen definieren drei Haupttemperatursysteme für unterschiedliche Einsatzbedingungen",
+      "systeme": [
+        {
+          "system": "System 25",
+          "bezeichnung": "FR (Flame Retardant)",
+          "betriebstemperatur": "-75°C bis +150°C",
+          "kurzzeitgrenze": "+200°C (5 min)",
+          "halogenfrei": false,
+          "hauptanwendung": "Fahrzeuge, Flugzeuge"
+        },
+        {
+          "system": "System 100",
+          "bezeichnung": "LFH (Low Fire Hazard)",
+          "betriebstemperatur": "-40°C bis +105°C",
+          "kurzzeitgrenze": "+125°C (1h)",
+          "halogenfrei": true,
+          "lszh": true,
+          "hauptanwendung": "Schiffe, U-Boote, Bahn"
+        },
+        {
+          "system": "System 200",
+          "bezeichnung": "HFR (High Flame Retardant)",
+          "betriebstemperatur": "-55°C bis +200°C",
+          "kurzzeitgrenze": "+250°C (5 min)",
+          "halogenfrei": false,
+          "hauptanwendung": "Triebwerke, Aerospace"
+        }
+      ],
+      "entscheidungshilfe": {
+        "geschlossener_raum": "SYSTEM 100 (halogenfrei, geringer Rauch) - für Schiff, U-Boot, Bahn",
+        "extreme_temperatur_ueber_150": "SYSTEM 200 (bis +200°C)",
+        "standardanwendung": "SYSTEM 25 (universell) - für Fahrzeug, Flugzeug"
+      },
+      "warnung": "WICHTIG: Systeme NICHT mischen! Jedes System hat eigene Materialien, Farben, Temperaturen."
+    },
+    {
+      "id": "1.5",
+      "title": "Zugelassene Hersteller",
+      "beschreibung": "Für VG-Produkte sind nur zugelassene Hersteller (QPL – Qualified Products List) zu verwenden.",
+      "hauptlieferanten": [
+        {"hersteller": "TE Connectivity / Raychem", "produktbereich": "Leitungen, Schrumpfschläuche", "zulassung": "BAAINBw"},
+        {"hersteller": "Amphenol-Air LB", "produktbereich": "Steckverbinder, Kontakte", "zulassung": "BAAINBw"},
+        {"hersteller": "Prysmian Group", "produktbereich": "Kabel und Leitungen", "zulassung": "BAAINBw"},
+        {"hersteller": "HellermannTyton", "produktbereich": "Geflechte, Schrumpfschläuche", "zulassung": "BAAINBw"},
+        {"hersteller": "Glenair", "produktbereich": "Steckverbinder, Backshells", "zulassung": "MIL-QPL"},
+        {"hersteller": "Habia Cables", "produktbereich": "Spezialkabel", "zulassung": "BAAINBw"},
+        {"hersteller": "MIL Kabel Systems", "produktbereich": "VG-konforme Kabel", "zulassung": "BAAINBw"}
+      ],
+      "bezugsquellen_normentexte": [
+        {"quelle": "DIN Media", "url": "www.dinmedia.de", "anmerkung": "Offizielle VG-Normen"},
+        {"quelle": "AFNOR", "url": "www.boutique.afnor.org", "anmerkung": "Internationale Ausgaben"},
+        {"quelle": "GlobalSpec", "url": "standards.globalspec.com", "anmerkung": "Recherche und Übersicht"},
+        {"quelle": "Intertek Inform", "url": "www.intertekinform.com", "anmerkung": "Aktuelle Ausgaben"}
+      ]
+    },
+    {
+      "id": "1.6",
+      "title": "MIL-SPEC Kompatibilität",
+      "beschreibung": "VG-Normen sind weitgehend kompatibel mit US-amerikanischen MIL-Specifications",
+      "kreuzreferenz": [
+        {"vg_norm": "VG 95218", "mil_spec": "MIL-DTL-22759", "produktbereich": "Leitungen"},
+        {"vg_norm": "VG 96927", "mil_spec": "MIL-DTL-27500", "produktbereich": "Kabelgarnituren"},
+        {"vg_norm": "VG 95319-1006", "mil_spec": "MIL-DTL-38999 Series III", "produktbereich": "Rundsteckverbinder"},
+        {"vg_norm": "VG 95319-1007", "mil_spec": "MIL-DTL-38999 Series I/II", "produktbereich": "Bajonettsteckverbinder"},
+        {"vg_norm": "VG 95319-1009", "mil_spec": "MIL-PRF-29504", "produktbereich": "Crimpkontakte"},
+        {"vg_norm": "VG 95343", "mil_spec": "MIL-DTL-23053", "produktbereich": "Schrumpfschläuche"},
+        {"vg_norm": "VG 96936", "mil_spec": "—", "produktbereich": "Abschirmgeflechte"}
+      ]
+    },
+    {
+      "id": "1.7",
+      "title": "Zulassungsverfahren",
+      "prozess": [
+        {
+          "schritt": 1,
+          "name": "Erstprüfung",
+          "aktivitaeten": [
+            "Laborprüfung der Muster",
+            "Vor-Ort-Audit durch VDE",
+            "Typenprüfung (Grundtypen)"
+          ]
+        },
+        {
+          "schritt": 2,
+          "name": "Temporäre Zulassung",
+          "aktivitaeten": [
+            "Gültig für 2 Jahre",
+            "Produktionsüberwachung"
+          ]
+        },
+        {
+          "schritt": 3,
+          "name": "Dauerhafte Zulassung",
+          "aktivitaeten": [
+            "Eintragung in VG 95212 Register",
+            "Regelmäßige Requalifizierung (alle 3-5 Jahre)"
+          ]
+        }
+      ],
+      "zertifizierungsstelle": "VDE Prüf- und Zertifizierungsinstitut"
+    },
+    {
+      "id": "1.8",
+      "title": "Dokumentationsanforderungen",
+      "pflichtdokumentation": [
+        {"dokument": "Materialzertifikat 3.1", "inhalt": "Prüfergebnisse, Chargennummer", "aufbewahrung": "10 Jahre"},
+        {"dokument": "Konformitätserklärung", "inhalt": "Übereinstimmung mit VG-Norm", "aufbewahrung": "10 Jahre"},
+        {"dokument": "Prüfprotokoll", "inhalt": "Elektrische/mechanische Werte", "aufbewahrung": "10 Jahre"},
+        {"dokument": "Rückverfolgbarkeit", "inhalt": "Los-/Chargennummer", "aufbewahrung": "10 Jahre"}
+      ],
+      "rueckverfolgbarkeitskette": [
+        "Rohstoff (Kupfer, Isolierung) → Losnummer Hersteller",
+        "Chargennummer Leitung",
+        "Fertigungsauftrag Garnitur",
+        "Prüfprotokoll",
+        "Lieferschein Kunde",
+        "Seriennummer Endgerät"
+      ],
+      "hinweis": "Jeder Schritt muss dokumentiert und 10 Jahre aufbewahrt werden!"
+    },
+    {
+      "id": "1.9",
+      "title": "Symbole und Abkürzungen",
+      "allgemeine_abkuerzungen": [
+        {"abkuerzung": "VG", "bedeutung": "Verteidigungsgeräte (Defense Equipment)"},
+        {"abkuerzung": "BAAINBw", "bedeutung": "Bundesamt für Ausrüstung der Bundeswehr"},
+        {"abkuerzung": "QPL", "bedeutung": "Qualified Products List"},
+        {"abkuerzung": "FR", "bedeutung": "Flame Retardant (flammhemmend)"},
+        {"abkuerzung": "LFH", "bedeutung": "Low Fire Hazard (halogenfrei)"},
+        {"abkuerzung": "HFR", "bedeutung": "High Flame Retardant"},
+        {"abkuerzung": "LSZH", "bedeutung": "Low Smoke Zero Halogen"},
+        {"abkuerzung": "EMI", "bedeutung": "Electromagnetic Interference"},
+        {"abkuerzung": "RFI", "bedeutung": "Radio Frequency Interference"},
+        {"abkuerzung": "AQL", "bedeutung": "Acceptable Quality Level"},
+        {"abkuerzung": "Hipot", "bedeutung": "High Potential Test (Spannungsprüfung)"}
+      ],
+      "pruefsymbole": [
+        {"symbol": "✓", "bedeutung": "Bestanden / OK"},
+        {"symbol": "✗", "bedeutung": "Nicht bestanden / NOK"},
+        {"symbol": "⚠️", "bedeutung": "Warnung / Achtung"},
+        {"symbol": "☐", "bedeutung": "Prüfpunkt (auszufüllen)"}
+      ]
+    },
+    {
+      "id": "1.10",
+      "title": "Kontakte und Support",
+      "technische_anfragen": [
+        {"bereich": "Normenauskunft", "kontakt": "DIN Media: info@dinmedia.de"},
+        {"bereich": "Zulassungsfragen", "kontakt": "VDE Prüfinstitut"},
+        {"bereich": "Technischer Support", "kontakt": "Jeweiliger Komponentenhersteller"}
+      ],
+      "weblinks": [
+        {"name": "VG-Normen kaufen", "url": "www.dinmedia.de"},
+        {"name": "GlobalSpec Standards", "url": "standards.globalspec.com"},
+        {"name": "TE Connectivity", "url": "www.te.com"},
+        {"name": "Amphenol-Air LB", "url": "amphenol-airlb.de"},
+        {"name": "HellermannTyton", "url": "www.hellermanntyton.com"}
+      ]
+    }
+  ],
+  "keywords": ["VG-Normen", "Einführung", "Übersicht", "BAAINBw", "Temperatursystem", "System 25", "System 100", "System 200", "FR", "LFH", "HFR", "LSZH", "halogenfrei", "Zulassung", "QPL", "MIL-SPEC", "Hierarchie", "Dokumentation", "Rückverfolgbarkeit"]
+}

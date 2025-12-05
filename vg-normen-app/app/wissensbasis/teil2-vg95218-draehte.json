@@ -1,0 +1,404 @@
+{
+  "meta": {
+    "teil": 2,
+    "title": "VG 95218 – Drähte und Leitungen",
+    "version": "1.0",
+    "datum": "Dezember 2025",
+    "geltende_norm": "VG 95218-20:2024-12",
+    "geltungsbereich": "Einadrige isolierte Leitungen für Verteidigungsanwendungen"
+  },
+  "kapitel": [
+    {
+      "id": "2.1",
+      "title": "Normübersicht",
+      "aufbau_normenreihe": [
+        {"teil": "VG 95218-2", "bezeichnung": "Fachgrundnorm", "beschreibung": "Allgemeine Anforderungen für alle Kabel und Leitungen"},
+        {"teil": "VG 95218-20", "bezeichnung": "Einadrige Leitungen", "beschreibung": "Detailstandard für Type A, E, G, H"},
+        {"teil": "VG 95218-21", "bezeichnung": "Einadrige Leitungen (Spezial)", "beschreibung": "Zusätzliche Typen"},
+        {"teil": "VG 95218-22", "bezeichnung": "Mehradrige Leitungen", "beschreibung": "Mehrere Adern in einem Mantel"},
+        {"teil": "VG 95218-23", "bezeichnung": "Symmetrische Paare", "beschreibung": "Verdrillte Paare"},
+        {"teil": "VG 95218-24", "bezeichnung": "Koaxialleitungen", "beschreibung": "HF-Anwendungen"},
+        {"teil": "VG 95218-28", "bezeichnung": "Datenleitungen", "beschreibung": "Digitale Übertragung"}
+      ],
+      "anwendungsbereiche": [
+        "Bundeswehr (Siły Zbrojne Niemiec)",
+        "NATO-Streitkräfte",
+        "Marine- und U-Boot-Systeme",
+        "Luft- und Raumfahrt",
+        "Fahrzeugtechnik",
+        "Extreme Umgebungsbedingungen"
+      ]
+    },
+    {
+      "id": "2.2",
+      "title": "Typenübersicht",
+      "haupttypen": [
+        {"typ": "A", "bezeichnung": "Standard Universal", "temperaturbereich": "-40°C bis +105°C", "beschichtung": "Zinn (Sn)", "hauptanwendung": "Fahrzeuge, Steuerungen"},
+        {"typ": "E", "bezeichnung": "Leichtbau (Lightweight)", "temperaturbereich": "-55°C bis +125°C", "beschichtung": "Zinn (Sn)", "hauptanwendung": "Luftfahrt, Drohnen"},
+        {"typ": "G", "bezeichnung": "Hochtemperatur", "temperaturbereich": "-40°C bis +150°C", "beschichtung": "Silber (Ag)", "hauptanwendung": "Motoren, HF-Anwendungen"},
+        {"typ": "H", "bezeichnung": "Extrem-Hochtemperatur", "temperaturbereich": "-40°C bis +180°C", "beschichtung": "Silber (Ag) 2µm", "hauptanwendung": "Aerospace, Triebwerke"}
+      ],
+      "vergleichstabelle": {
+        "headers": ["Parameter", "TYP A", "TYP E", "TYP G", "TYP H"],
+        "rows": [
+          {"parameter": "Max. Dauertemperatur", "A": "+105°C", "E": "+125°C", "G": "+150°C", "H": "+180°C"},
+          {"parameter": "Min. Temperatur", "A": "-40°C", "E": "-55°C", "G": "-40°C", "H": "-40°C"},
+          {"parameter": "Kurzzeit-Maximum", "A": "+250°C", "E": "+250°C", "G": "+250°C", "H": "+250°C"},
+          {"parameter": "Leiterbeschichtung", "A": "Zinn (Sn)", "E": "Zinn (Sn)", "G": "Silber (Ag) 1µm", "H": "Silber (Ag) 2µm"},
+          {"parameter": "Isolationsmaterial", "A": "EPR/EPDM", "E": "EPR/EPDM", "G": "Fluoropolymer", "H": "Fluoropolymer"},
+          {"parameter": "Wandstärke", "A": "Standard", "E": "Dünn (-30%)", "G": "Standard", "H": "Dick (+10%)"},
+          {"parameter": "Gewicht", "A": "100%", "E": "70%", "G": "90%", "H": "95%"},
+          {"parameter": "Relativer Preis", "A": "€€", "E": "€€€", "G": "€€€€", "H": "€€€€€"},
+          {"parameter": "Flexibilität", "A": "Mittel", "E": "Hoch", "G": "Mittel", "H": "Mittel"}
+        ]
+      },
+      "entscheidungshilfe": {
+        "unter_105C": "TYP A (Standard, günstigster)",
+        "105_bis_125C": "TYP E (Leichtbau) - besonders wenn gewichtskritisch",
+        "125_bis_150C": "TYP G (Silberbeschichtet) - besonders für HF-Anwendung",
+        "ueber_150C": "TYP H (Extrem) - für Aerospace"
+      }
+    },
+    {
+      "id": "2.3",
+      "title": "TYP A – Standard (Detailspezifikation)",
+      "technische_daten": {
+        "normbezeichnung": "VG 95218-T020 Type A",
+        "temperaturbereich": "-40°C bis +105°C",
+        "kurzzeit_30s": "+250°C",
+        "nennspannung": "600V AC / 900V DC",
+        "pruefspannung": "2500V AC (1 Minute)",
+        "isolationsmaterial": "EPR (Ethylen-Propylen-Kautschuk)",
+        "leiterbeschichtung": "Zinn (Sn), 5-10 µm",
+        "leiteraufbau": "Kupfer, weich, verseilt"
+      },
+      "dimensionstabelle": [
+        {"kode": "A016", "querschnitt_mm2": 0.25, "leiteraufbau": "19×0,16", "leiter_durchmesser_mm": 0.58, "isolationsdicke_mm": 0.40, "aussen_durchmesser_max_mm": 1.30, "widerstand_ohm_km": 86.0, "gewicht_kg_km": 2.99},
+        {"kode": "A001", "querschnitt_mm2": 0.40, "leiteraufbau": "19×0,16", "leiter_durchmesser_mm": 0.74, "isolationsdicke_mm": 0.40, "aussen_durchmesser_max_mm": 1.45, "widerstand_ohm_km": 53.1, "gewicht_kg_km": 4.40},
+        {"kode": "A002", "querschnitt_mm2": 0.50, "leiteraufbau": "19×0,16", "leiter_durchmesser_mm": 0.83, "isolationsdicke_mm": 0.40, "aussen_durchmesser_max_mm": 1.60, "widerstand_ohm_km": 42.3, "gewicht_kg_km": 5.47},
+        {"kode": "A003", "querschnitt_mm2": 0.60, "leiteraufbau": "19×0,20", "leiter_durchmesser_mm": 0.93, "isolationsdicke_mm": 0.45, "aussen_durchmesser_max_mm": 1.75, "widerstand_ohm_km": 33.5, "gewicht_kg_km": 6.60},
+        {"kode": "A004", "querschnitt_mm2": 0.75, "leiteraufbau": "19×0,20", "leiter_durchmesser_mm": 1.03, "isolationsdicke_mm": 0.45, "aussen_durchmesser_max_mm": 1.90, "widerstand_ohm_km": 26.6, "gewicht_kg_km": 8.25},
+        {"kode": "A005", "querschnitt_mm2": 1.00, "leiteraufbau": "37×0,16", "leiter_durchmesser_mm": 1.18, "isolationsdicke_mm": 0.45, "aussen_durchmesser_max_mm": 2.10, "widerstand_ohm_km": 21.0, "gewicht_kg_km": 10.29},
+        {"kode": "A006", "querschnitt_mm2": 1.20, "leiteraufbau": "37×0,18", "leiter_durchmesser_mm": 1.34, "isolationsdicke_mm": 0.50, "aussen_durchmesser_max_mm": 2.35, "widerstand_ohm_km": 16.4, "gewicht_kg_km": 12.84},
+        {"kode": "A007", "querschnitt_mm2": 1.50, "leiteraufbau": "37×0,20", "leiter_durchmesser_mm": 1.49, "isolationsdicke_mm": 0.50, "aussen_durchmesser_max_mm": 2.60, "widerstand_ohm_km": 13.5, "gewicht_kg_km": 15.85},
+        {"kode": "A008", "querschnitt_mm2": 2.50, "leiteraufbau": "37×0,23", "leiter_durchmesser_mm": 1.85, "isolationsdicke_mm": 0.50, "aussen_durchmesser_max_mm": 3.20, "widerstand_ohm_km": 8.2, "gewicht_kg_km": 24.08},
+        {"kode": "A017", "querschnitt_mm2": 3.00, "leiteraufbau": "37×0,29", "leiter_durchmesser_mm": 2.13, "isolationsdicke_mm": 0.60, "aussen_durchmesser_max_mm": 3.50, "widerstand_ohm_km": 6.63, "gewicht_kg_km": 30.09},
+        {"kode": "A009", "querschnitt_mm2": 4.00, "leiteraufbau": "37×0,32", "leiter_durchmesser_mm": 2.65, "isolationsdicke_mm": 0.60, "aussen_durchmesser_max_mm": 4.00, "widerstand_ohm_km": 5.09, "gewicht_kg_km": 58.00},
+        {"kode": "A010", "querschnitt_mm2": 6.00, "leiteraufbau": "7×33×0,16", "leiter_durchmesser_mm": 3.35, "isolationsdicke_mm": 0.60, "aussen_durchmesser_max_mm": 5.00, "widerstand_ohm_km": 3.39, "gewicht_kg_km": 79.00},
+        {"kode": "A011", "querschnitt_mm2": 10.00, "leiteraufbau": "7×27×0,21", "leiter_durchmesser_mm": 4.30, "isolationsdicke_mm": 0.60, "aussen_durchmesser_max_mm": 6.00, "widerstand_ohm_km": 1.95, "gewicht_kg_km": 124.00},
+        {"kode": "A012", "querschnitt_mm2": 16.00, "leiteraufbau": "19×17×0,21", "leiter_durchmesser_mm": 5.20, "isolationsdicke_mm": 0.60, "aussen_durchmesser_max_mm": 7.00, "widerstand_ohm_km": 1.24, "gewicht_kg_km": 188.00}
+      ],
+      "grenzwerte_durchgang": {
+        "headers": ["Länge", "0,25 mm²", "0,40 mm²", "1,00 mm²", "2,50 mm²", "4,00 mm²"],
+        "rows": [
+          {"laenge": "1 m", "0.25": "0,086 Ω", "0.40": "0,053 Ω", "1.00": "0,021 Ω", "2.50": "0,008 Ω", "4.00": "0,005 Ω"},
+          {"laenge": "5 m", "0.25": "0,43 Ω", "0.40": "0,27 Ω", "1.00": "0,11 Ω", "2.50": "0,04 Ω", "4.00": "0,03 Ω"},
+          {"laenge": "10 m", "0.25": "0,86 Ω", "0.40": "0,53 Ω", "1.00": "0,21 Ω", "2.50": "0,08 Ω", "4.00": "0,05 Ω"},
+          {"laenge": "20 m", "0.25": "1,72 Ω", "0.40": "1,06 Ω", "1.00": "0,42 Ω", "2.50": "0,16 Ω", "4.00": "0,10 Ω"}
+        ]
+      }
+    },
+    {
+      "id": "2.4",
+      "title": "TYP E – Leichtbau (Detailspezifikation)",
+      "technische_daten": {
+        "normbezeichnung": "VG 95218-T020 Type E",
+        "temperaturbereich": "-55°C bis +125°C",
+        "nennspannung": "600V AC / 900V DC",
+        "isolationsmaterial": "EPR (dünnwandig)",
+        "leiterbeschichtung": "Zinn (Sn)",
+        "gewichtsvorteil": "ca. 30% leichter als Typ A",
+        "durchmesservorteil": "ca. 40% kleiner als Typ A"
+      },
+      "dimensionstabelle": [
+        {"kode": "E12", "querschnitt_mm2": 0.15, "leiter_durchmesser_mm": 0.45, "isolationsdicke_mm": 0.20, "aussen_durchmesser_max_mm": 0.90, "widerstand_ohm_km": 135.0, "gewicht_kg_km": 2.59},
+        {"kode": "E01", "querschnitt_mm2": 0.25, "leiter_durchmesser_mm": 0.56, "isolationsdicke_mm": 0.25, "aussen_durchmesser_max_mm": 1.10, "widerstand_ohm_km": 84.4, "gewicht_kg_km": 3.59},
+        {"kode": "E02", "querschnitt_mm2": 0.40, "leiter_durchmesser_mm": 0.74, "isolationsdicke_mm": 0.25, "aussen_durchmesser_max_mm": 1.20, "widerstand_ohm_km": 50.5, "gewicht_kg_km": 5.18},
+        {"kode": "E03", "querschnitt_mm2": 0.50, "leiter_durchmesser_mm": 0.83, "isolationsdicke_mm": 0.30, "aussen_durchmesser_max_mm": 1.45, "widerstand_ohm_km": 40.1, "gewicht_kg_km": 6.60},
+        {"kode": "E04", "querschnitt_mm2": 0.60, "leiter_durchmesser_mm": 0.95, "isolationsdicke_mm": 0.30, "aussen_durchmesser_max_mm": 1.55, "widerstand_ohm_km": 31.1, "gewicht_kg_km": 7.40},
+        {"kode": "E05", "querschnitt_mm2": 0.75, "leiter_durchmesser_mm": 1.04, "isolationsdicke_mm": 0.30, "aussen_durchmesser_max_mm": 1.65, "widerstand_ohm_km": 26.7, "gewicht_kg_km": 8.90},
+        {"kode": "E06", "querschnitt_mm2": 1.00, "leiter_durchmesser_mm": 1.17, "isolationsdicke_mm": 0.30, "aussen_durchmesser_max_mm": 1.85, "widerstand_ohm_km": 20.0, "gewicht_kg_km": 10.70},
+        {"kode": "E07", "querschnitt_mm2": 1.20, "leiter_durchmesser_mm": 1.32, "isolationsdicke_mm": 0.35, "aussen_durchmesser_max_mm": 2.10, "widerstand_ohm_km": 15.3, "gewicht_kg_km": 13.60},
+        {"kode": "E08", "querschnitt_mm2": 1.50, "leiter_durchmesser_mm": 1.46, "isolationsdicke_mm": 0.35, "aussen_durchmesser_max_mm": 2.30, "widerstand_ohm_km": 13.7, "gewicht_kg_km": 16.00},
+        {"kode": "E09", "querschnitt_mm2": 2.00, "leiter_durchmesser_mm": 1.68, "isolationsdicke_mm": 0.35, "aussen_durchmesser_max_mm": 2.80, "widerstand_ohm_km": 10.5, "gewicht_kg_km": 20.30},
+        {"kode": "E10", "querschnitt_mm2": 2.50, "leiter_durchmesser_mm": 1.85, "isolationsdicke_mm": 0.35, "aussen_durchmesser_max_mm": 2.80, "widerstand_ohm_km": 8.21, "gewicht_kg_km": 25.70},
+        {"kode": "E11", "querschnitt_mm2": 3.00, "leiter_durchmesser_mm": 2.12, "isolationsdicke_mm": 0.40, "aussen_durchmesser_max_mm": 3.40, "widerstand_ohm_km": 6.58, "gewicht_kg_km": 31.00}
+      ]
+    },
+    {
+      "id": "2.5",
+      "title": "TYP G – Hochtemperatur (Detailspezifikation)",
+      "technische_daten": {
+        "normbezeichnung": "VG 95218-T020 Type G",
+        "temperaturbereich": "-40°C bis +150°C",
+        "nennspannung": "600V AC / 900V DC",
+        "isolationsmaterial": "Fluoropolymer (PTFE/PVDF)",
+        "leiterbeschichtung": "Silber (Ag), min. 1,0 µm",
+        "chemikalienbestaendigkeit": "Sehr hoch",
+        "besonderheit": "Oxidationsbeständig bis 200°C"
+      },
+      "dimensionstabelle": [
+        {"kode": "G01", "querschnitt_mm2": 0.25, "leiter_durchmesser_mm": 0.56, "isolationsdicke_mm": 0.30, "aussen_durchmesser_max_mm": 1.20, "widerstand_ohm_km": 74.0, "ag_schicht_um": 1.0},
+        {"kode": "G02", "querschnitt_mm2": 0.34, "leiter_durchmesser_mm": 0.65, "isolationsdicke_mm": 0.30, "aussen_durchmesser_max_mm": 1.35, "widerstand_ohm_km": 54.0, "ag_schicht_um": 1.0},
+        {"kode": "G03", "querschnitt_mm2": 0.50, "leiter_durchmesser_mm": 0.80, "isolationsdicke_mm": 0.35, "aussen_durchmesser_max_mm": 1.60, "widerstand_ohm_km": 37.0, "ag_schicht_um": 1.0},
+        {"kode": "G04", "querschnitt_mm2": 0.75, "leiter_durchmesser_mm": 0.98, "isolationsdicke_mm": 0.35, "aussen_durchmesser_max_mm": 1.85, "widerstand_ohm_km": 24.7, "ag_schicht_um": 1.0},
+        {"kode": "G05", "querschnitt_mm2": 1.00, "leiter_durchmesser_mm": 1.13, "isolationsdicke_mm": 0.40, "aussen_durchmesser_max_mm": 2.10, "widerstand_ohm_km": 18.5, "ag_schicht_um": 1.0},
+        {"kode": "G06", "querschnitt_mm2": 1.50, "leiter_durchmesser_mm": 1.38, "isolationsdicke_mm": 0.40, "aussen_durchmesser_max_mm": 2.45, "widerstand_ohm_km": 12.4, "ag_schicht_um": 1.0},
+        {"kode": "G07", "querschnitt_mm2": 2.50, "leiter_durchmesser_mm": 1.78, "isolationsdicke_mm": 0.45, "aussen_durchmesser_max_mm": 3.00, "widerstand_ohm_km": 7.41, "ag_schicht_um": 1.0},
+        {"kode": "G08", "querschnitt_mm2": 4.00, "leiter_durchmesser_mm": 2.26, "isolationsdicke_mm": 0.50, "aussen_durchmesser_max_mm": 3.70, "widerstand_ohm_km": 4.62, "ag_schicht_um": 1.0}
+      ]
+    },
+    {
+      "id": "2.6",
+      "title": "TYP H – Extrem-Hochtemperatur (Detailspezifikation)",
+      "technische_daten": {
+        "normbezeichnung": "VG 95218-T020 Type H",
+        "temperaturbereich": "-40°C bis +180°C",
+        "kurzzeittemperatur": "+220°C (kurzzeitig)",
+        "nennspannung": "600V AC / 900V DC",
+        "isolationsmaterial": "Spezial-Fluoropolymer",
+        "leiterbeschichtung": "Silber (Ag), min. 2,0 µm",
+        "anwendung": "Aerospace, Triebwerknähe"
+      },
+      "dimensionstabelle": [
+        {"kode": "H01", "querschnitt_mm2": 0.34, "leiter_durchmesser_mm": 0.65, "isolationsdicke_mm": 0.35, "aussen_durchmesser_max_mm": 1.50, "widerstand_ohm_km": 54.0, "ag_schicht_um": 2.0},
+        {"kode": "H02", "querschnitt_mm2": 0.50, "leiter_durchmesser_mm": 0.80, "isolationsdicke_mm": 0.40, "aussen_durchmesser_max_mm": 1.75, "widerstand_ohm_km": 37.0, "ag_schicht_um": 2.0},
+        {"kode": "H03", "querschnitt_mm2": 1.00, "leiter_durchmesser_mm": 1.13, "isolationsdicke_mm": 0.45, "aussen_durchmesser_max_mm": 2.35, "widerstand_ohm_km": 18.5, "ag_schicht_um": 2.0},
+        {"kode": "H04", "querschnitt_mm2": 1.50, "leiter_durchmesser_mm": 1.38, "isolationsdicke_mm": 0.50, "aussen_durchmesser_max_mm": 2.75, "widerstand_ohm_km": 12.4, "ag_schicht_um": 2.0},
+        {"kode": "H05", "querschnitt_mm2": 2.50, "leiter_durchmesser_mm": 1.78, "isolationsdicke_mm": 0.50, "aussen_durchmesser_max_mm": 3.35, "widerstand_ohm_km": 7.41, "ag_schicht_um": 2.0}
+      ]
+    },
+    {
+      "id": "2.7",
+      "title": "Materialspezifikationen",
+      "leitermaterial": {
+        "zinn_beschichtung": {
+          "typen": ["A", "E"],
+          "grundmaterial": "Elektrolytkupfer (E-Cu)",
+          "reinheit": "min. 99,95%",
+          "norm": "IEC 60228",
+          "beschichtung": "Zinn (Sn)",
+          "schichtdicke": "5-10 µm",
+          "schmelzpunkt": "+232°C",
+          "loetbarkeit": "Sehr gut",
+          "max_einsatztemperatur": "+125°C"
+        },
+        "silber_beschichtung": {
+          "typen": ["G", "H"],
+          "grundmaterial": "Elektrolytkupfer (E-Cu)",
+          "reinheit": "min. 99,95%",
+          "norm": "IEC 60228",
+          "beschichtung": "Silber (Ag)",
+          "schichtdicke": "1-2 µm",
+          "schmelzpunkt": "+960°C",
+          "loetbarkeit": "Sehr gut",
+          "max_einsatztemperatur": "+200°C"
+        }
+      },
+      "isolationsmaterial": {
+        "epr": {
+          "typen": ["A", "E"],
+          "chemische_bezeichnung": "Ethylen-Propylen-Kautschuk",
+          "max_temperatur": "+125°C",
+          "oelbestaendigkeit": "Hoch",
+          "wasserbestaendigkeit": "Sehr gut",
+          "elastizitaet_kaelte": "Gut (-55°C)",
+          "dielektrische_festigkeit": "≥ 30 kV/mm",
+          "referenznorm": "EN 60811-404"
+        },
+        "fluoropolymer": {
+          "typen": ["G", "H"],
+          "chemische_bezeichnung": "PTFE/PVDF",
+          "max_temperatur": "+180°C",
+          "oelbestaendigkeit": "Sehr hoch",
+          "wasserbestaendigkeit": "Ausgezeichnet",
+          "elastizitaet_kaelte": "Mittel (-40°C)",
+          "dielektrische_festigkeit": "≥ 40 kV/mm",
+          "referenznorm": "DIN VDE 0472"
+        }
+      }
+    },
+    {
+      "id": "2.8",
+      "title": "Elektrische Prüfungen",
+      "uebersicht": [
+        {"pruefung": "Gleichstromwiderstand", "pruefwert": "@20°C", "grenzwert": "gem. Tabelle", "pruefmittel": "Milliohmmeter"},
+        {"pruefung": "Isolationswiderstand", "pruefwert": "500V DC, 60s", "grenzwert": "≥ 10¹¹ Ω·km", "pruefmittel": "Megaohmmeter"},
+        {"pruefung": "Spannungsfestigkeit", "pruefwert": "2500-3000V AC", "grenzwert": "60s ohne Durchschlag", "pruefmittel": "AC-Prüfgerät"},
+        {"pruefung": "Kapazität", "pruefwert": "—", "grenzwert": "≤ 100 pF/m", "pruefmittel": "LCR-Meter"}
+      ],
+      "widerstandsmessung_verfahren": {
+        "vorbereitung": [
+          "Temperatur: 20°C ±5°C",
+          "Wartezeit: 24h unter Normalbedingungen",
+          "Messmethode: 4-Leiter (Kelvin) empfohlen"
+        ],
+        "durchfuehrung": [
+          "Leiterlänge dokumentieren (z.B. 100 m)",
+          "Enden reinigen (keine Oxidation)",
+          "Prüfspitzen anschließen",
+          "Drei Messungen durchführen",
+          "Mittelwert bilden"
+        ],
+        "umrechnung_20C": {
+          "formel": "R₂₀ = Rₜ / (1 + α × (t - 20))",
+          "alpha": "0,00393 K⁻¹ (für Kupfer)"
+        },
+        "grenzwertberechnung": "R_max = (Ω/km aus Tabelle) × (Länge in km) + 5%"
+      },
+      "isolationspruefung_verfahren": {
+        "pruefgeraet": ["Megaohmmeter (Fluke 1507, Kyoritsu 3022)", "Prüfspannung: 500V DC"],
+        "vorbereitung": [
+          "Leitung völlig trocken",
+          "Temperatur: 20-25°C",
+          "Luftfeuchtigkeit: 45-75% RH"
+        ],
+        "messpunkte": [
+          "Leiter ↔ Wasser (bei Wasserbadmethode)",
+          "Leiter ↔ Metallfolie (bei Folienmethode)"
+        ],
+        "durchfuehrung": [
+          "Spannung anlegen",
+          "60 Sekunden warten (Stabilisierung)",
+          "Wert ablesen"
+        ],
+        "umrechnung": "R_norm = R_gemessen × L(km)",
+        "grenzwert": "≥ 1 × 10¹¹ Ω·km (alle Typen)"
+      }
+    },
+    {
+      "id": "2.9",
+      "title": "Mechanische Prüfungen",
+      "zugfestigkeit": {
+        "vor_alterung": {"zugfestigkeit": "≥ 5,0 N/mm²", "bruchdehnung": "≥ 200%"},
+        "nach_alterung": {"zugfestigkeit": "≥ 5,0 N/mm²", "bruchdehnung": "≥ 200%"},
+        "verfahren": {
+          "probenherstellung": ["5 Proben à 250 mm entnehmen", "Leiter vorsichtig entfernen", "Nur Isolation prüfen"],
+          "pruefgeraet": "Zugprüfmaschine",
+          "pruefgeschwindigkeit": "50 mm/min",
+          "ausgangslaenge": "100 mm",
+          "berechnung_zugfestigkeit": "σ = F_max / A [N/mm²]",
+          "berechnung_bruchdehnung": "ε = (L_f - L_0) / L_0 × 100%"
+        }
+      },
+      "kaltbiegepruefung": {
+        "prueftemperatur_typ_a_g": "-30°C",
+        "prueftemperatur_typ_e": "-55°C",
+        "konditionierung": "30 Minuten bei Prüftemperatur",
+        "biegedorn": "5× Außendurchmesser",
+        "biegezyklen": "5× um 180°",
+        "kriterium": "Keine sichtbaren Risse"
+      }
+    },
+    {
+      "id": "2.10",
+      "title": "Farbkodierung",
+      "system_25": {
+        "typen": ["A", "G"],
+        "farben": [
+          {"farbe": "Weiß", "kode": "0", "ader_nr": "—"},
+          {"farbe": "Rot", "kode": "A", "ader_nr": "1"},
+          {"farbe": "Blau", "kode": "B", "ader_nr": "2"},
+          {"farbe": "Gelb", "kode": "C", "ader_nr": "3"},
+          {"farbe": "Grün", "kode": "D", "ader_nr": "4"},
+          {"farbe": "Schwarz", "kode": "F", "ader_nr": "5"},
+          {"farbe": "Braun", "kode": "G", "ader_nr": "6"},
+          {"farbe": "Orange", "kode": "H", "ader_nr": "7"},
+          {"farbe": "Violett", "kode": "J", "ader_nr": "8"},
+          {"farbe": "Grau", "kode": "K", "ader_nr": "9"}
+        ]
+      },
+      "system_100": {
+        "typen": ["E"],
+        "farben": [
+          {"nummer": "0", "farbe": "Schwarz"},
+          {"nummer": "1", "farbe": "Braun"},
+          {"nummer": "2", "farbe": "Rot"},
+          {"nummer": "3", "farbe": "Orange"},
+          {"nummer": "4", "farbe": "Gelb"},
+          {"nummer": "5", "farbe": "Grün"},
+          {"nummer": "6", "farbe": "Blau"},
+          {"nummer": "7", "farbe": "Violett"},
+          {"nummer": "8", "farbe": "Grau"},
+          {"nummer": "9", "farbe": "Weiß"},
+          {"nummer": "G", "farbe": "Grün/Gelb (PE)"}
+        ]
+      }
+    },
+    {
+      "id": "2.11",
+      "title": "Toleranzen und Prüfkriterien",
+      "dimensionstoleranzen": [
+        {"parameter": "Leiterdurchmesser", "toleranz": "±0,05 mm"},
+        {"parameter": "Isolationsdicke", "toleranz": "±0,05 mm"},
+        {"parameter": "Außendurchmesser", "toleranz": "±0,1 mm"},
+        {"parameter": "Längenmessung", "toleranz": "±5%"},
+        {"parameter": "Masse pro km", "toleranz": "±10%"},
+        {"parameter": "Widerstand", "toleranz": "±5% vom Tabellenwert"}
+      ],
+      "automatische_ablehnkriterien": [
+        {"kriterium": "Außendurchmesser außer Toleranz", "grund": "Passt nicht in Steckverbinder"},
+        {"kriterium": "Isolationswiderstand < 10¹¹ Ω·km", "grund": "Isolationsdefekt"},
+        {"kriterium": "Zugfestigkeit < 5,0 N/mm²", "grund": "Mechanisch zu schwach"},
+        {"kriterium": "Kaltbiegeprüfung: Risse", "grund": "Bruchgefahr bei Kälte"},
+        {"kriterium": "Spannungsfestigkeit: Durchschlag", "grund": "Isolationsversagen"}
+      ]
+    },
+    {
+      "id": "2.12",
+      "title": "Lagerung und Handhabung",
+      "lagerbedingungen": [
+        {"parameter": "Temperatur", "wert": "+5°C bis +25°C"},
+        {"parameter": "Luftfeuchtigkeit", "wert": "45-75% RH"},
+        {"parameter": "Lichtschutz", "wert": "Vor UV schützen"},
+        {"parameter": "Ozonschutz", "wert": "Von Ozonerzeugern fernhalten"},
+        {"parameter": "Lagerdauer (versiegelt)", "wert": "Max. 5 Jahre"},
+        {"parameter": "Lagerdauer (geöffnet)", "wert": "Max. 6 Monate"}
+      ],
+      "handhabungshinweise": [
+        "Verpackung vor Öffnung auf Beschädigung prüfen",
+        "Nur mit sauberen Handschuhen handhaben",
+        "Knicke und scharfe Biegungen vermeiden",
+        "Mindestbiegeradius: 5× Außendurchmesser",
+        "Nach Gebrauch wieder verpacken",
+        "Chargennummer dokumentieren"
+      ],
+      "warnung": "Beschädigte Isolation führt zu AUSSCHUSS!"
+    },
+    {
+      "id": "2.13",
+      "title": "Zugehörige Normen",
+      "normen": [
+        {"norm": "VG 95218-2", "beschreibung": "Fachgrundnorm (allgemeine Anforderungen)"},
+        {"norm": "IEC 60228", "beschreibung": "Leiterquerschnitte und Widerstände"},
+        {"norm": "DIN VDE 0472-602", "beschreibung": "Zugfestigkeit der Isolation"},
+        {"norm": "DIN VDE 0472-509", "beschreibung": "Spannungsfestigkeit"},
+        {"norm": "EN 60811-404", "beschreibung": "Mechanische Prüfungen Elastomere"},
+        {"norm": "EN 60811-1-1", "beschreibung": "Allgemeine Prüfverfahren"}
+      ]
+    },
+    {
+      "id": "2.14",
+      "title": "Schnellreferenz – Häufigste Querschnitte",
+      "typ_a_system_25": {
+        "beschreibung": "Grenzwerte @ 20°C für 5 Meter Garnitur",
+        "werte": [
+          {"querschnitt": "0,25 mm²", "kode": "A016", "grenzwert": "< 0,43 Ω", "anwendung": "Signale"},
+          {"querschnitt": "0,40 mm²", "kode": "A001", "grenzwert": "< 0,27 Ω", "anwendung": "Strom"},
+          {"querschnitt": "1,00 mm²", "kode": "A005", "grenzwert": "< 0,11 Ω", "anwendung": "Strom", "hinweis": "HÄUFIGSTER"},
+          {"querschnitt": "4,00 mm²", "kode": "A009", "grenzwert": "< 0,03 Ω", "anwendung": "Hochstrom"}
+        ]
+      },
+      "typ_e_system_100": {
+        "beschreibung": "Grenzwerte @ 20°C für 5 Meter Garnitur",
+        "werte": [
+          {"querschnitt": "0,25 mm²", "kode": "E01", "grenzwert": "< 0,42 Ω", "anwendung": "Signale"},
+          {"querschnitt": "0,75 mm²", "kode": "E05", "grenzwert": "< 0,13 Ω", "anwendung": "Marine"},
+          {"querschnitt": "1,00 mm²", "kode": "E06", "grenzwert": "< 0,10 Ω", "anwendung": "Marine"},
+          {"querschnitt": "2,00 mm²", "kode": "E09", "grenzwert": "< 0,05 Ω", "anwendung": "Strom"}
+        ]
+      }
+    }
+  ],
+  "keywords": ["VG 95218", "Drähte", "Leitungen", "Typ A", "Typ E", "Typ G", "Typ H", "Querschnitt", "Widerstand", "Temperatur", "Zinn", "Silber", "EPR", "Fluoropolymer", "PTFE", "Isolation", "Farbkodierung", "AWG", "mm²", "Leiter", "Kupfer", "Dimensionstabelle"]
+}
