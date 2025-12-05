@@ -259,8 +259,10 @@ const UI = {
     container.innerHTML = '';
     results.forEach(item => {
       const card = this.renderCard(item, () => {
-        if (item.source === 'meine_dokumente') {
+        if (item.source === 'meine_dokumente' && item.fileName) {
           openUserDocument(item.fileName);
+        } else if (item.type === 'imported' || item.id?.startsWith('imported_')) {
+          openItem(item.id, 'imported');
         } else {
           openItem(item.id, item.type);
         }
@@ -269,10 +271,26 @@ const UI = {
       // Source-Badge hinzufügen
       const badge = document.createElement('span');
       badge.className = 'tag';
-      badge.style.background = item.source === 'meine_dokumente' ? 'var(--color-cat-formular)' : 'var(--color-primary)';
-      badge.style.color = 'white';
-      badge.textContent = item.source === 'meine_dokumente' ? 'Mein Dokument' : 'Wissensbasis';
-      card.querySelector('.card-header').appendChild(badge);
+      
+      // Determine badge color and text based on source/type
+      if (item.type === 'imported' || item.source === 'Importierte Dokumente') {
+        badge.style.background = '#22c55e'; // Green
+        badge.style.color = 'white';
+        badge.textContent = '📄 Importiert';
+      } else if (item.source === 'meine_dokumente') {
+        badge.style.background = 'var(--color-cat-formular)';
+        badge.style.color = 'white';
+        badge.textContent = '📁 Mein Dokument';
+      } else {
+        badge.style.background = 'var(--color-primary)';
+        badge.style.color = 'white';
+        badge.textContent = item.source || '📚 Wissensbasis';
+      }
+      
+      const header = card.querySelector('.card-header');
+      if (header) {
+        header.appendChild(badge);
+      }
       
       container.appendChild(card);
     });

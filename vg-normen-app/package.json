@@ -21,7 +21,11 @@
     "electron-builder": "^24.9.1"
   },
   "dependencies": {
+    "compromise": "^14.14.4",
+    "flexsearch": "^0.8.212",
+    "lunr": "^2.3.9",
     "mammoth": "^1.11.0",
+    "mark.js": "^8.11.1",
     "pdf-parse": "^1.1.4",
     "tesseract.js": "^6.0.1"
   },

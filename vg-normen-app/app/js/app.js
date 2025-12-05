@@ -57,13 +57,29 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function loadWissensbasis() {
   try {
-    // Ładuj pełną wissensbasis z plików TEIL JSON
-    if (window.WissensbasisLoader) {
+    // PRIORYTET 1: Ładuj z plików Markdown (PEŁNA treść!)
+    if (window.MarkdownLoader) {
+      console.log('📖 Ładowanie pełnych plików Markdown...');
+      App.wissensbasis = await MarkdownLoader.ladeDaten();
+      App.mdSektionen = MarkdownLoader.sektionen;
+      App.mdTeilInhalte = MarkdownLoader.teilInhalte;
+      console.log(`📚 ${App.wissensbasis.length} Sektionen z Markdown geladen`);
+      console.log(`📊 Pełne TEILs: ${Object.keys(App.mdTeilInhalte).length}`);
+      
+      // Uzupełnij też starą strukturę wissensbasis (kompatybilność)
+      if (window.WissensbasisLoader) {
+        await WissensbasisLoader.ladeDaten();
+        App.teilDaten = WissensbasisLoader.teilDaten;
+      }
+    }
+    // PRIORYTET 2: Ładuj z JSON TEIL
+    else if (window.WissensbasisLoader) {
       App.wissensbasis = await WissensbasisLoader.ladeDaten();
       App.teilDaten = WissensbasisLoader.teilDaten;
       console.log(`📚 ${App.wissensbasis.length} Wissenskarten aus TEIL-Dateien geladen`);
-    } else {
-      // Fallback do starego karten.json
+    } 
+    // PRIORYTET 3: Fallback do starego karten.json
+    else {
       const response = await fetch('wissensbasis/karten.json');
       App.wissensbasis = await response.json();
       console.log(`📚 ${App.wissensbasis.length} Wissenskarten geladen (Fallback)`);
@@ -129,6 +145,32 @@ function initializeUI() {
   const backBtn = document.getElementById('btnBack');
   if (backBtn) {
     backBtn.style.display = 'none';
+  }
+  
+  // Status połączenia
+  updateConnectionStatus();
+  window.addEventListener('online', updateConnectionStatus);
+  window.addEventListener('offline', updateConnectionStatus);
+}
+
+// Aktualizuj wskaźnik połączenia
+function updateConnectionStatus() {
+  const statusEl = document.getElementById('connectionStatus');
+  if (!statusEl) return;
+  
+  const dot = statusEl.querySelector('.status-dot');
+  const text = statusEl.querySelector('.status-text');
+  
+  if (navigator.onLine) {
+    statusEl.classList.remove('offline');
+    statusEl.classList.add('online');
+    if (dot) dot.style.background = '#4CAF50'; // zielony
+    if (text) text.textContent = 'Online';
+  } else {
+    statusEl.classList.remove('online');
+    statusEl.classList.add('offline');
+    if (dot) dot.style.background = '#FF9800'; // pomarańczowy
+    if (text) text.textContent = 'Offline OK';
   }
 }
 
@@ -253,6 +295,11 @@ function navigateTo(page, subCategory) {
         { title: '📥 Import' }
       ]);
       break;
+      
+    case 'teil':
+      // Teil-Nummer jest przekazywana jako subCategory
+      renderTeilPage(subCategory);
+      break;
   }
   
   UI.showPage(page);
@@ -263,6 +310,198 @@ function goBack() {
     navigateTo('home');
   }
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ENCYCLOPEDIA - Widok pełnego TEILa
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function renderEncyclopediaGrid() {
+  const container = document.getElementById('encyclopediaGrid');
+  if (!container || !window.MarkdownLoader) return;
+  
+  const teile = MarkdownLoader.teilDateien;
+  
+  let html = '';
+  
+  teile.forEach(teil => {
+    const teilData = MarkdownLoader.teilInhalte[`teil${teil.teil}`];
+    const sektionenCount = teilData?.sektionen?.length || 0;
+    const charCount = teilData?.markdown?.length || 0;
+    
+    html += `
+      <div class="teil-card" data-category="${teil.category}" onclick="openTeil(${teil.teil})">
+        <span class="teil-number">TEIL ${teil.teil}</span>
+        <span class="teil-icon">${teil.icon}</span>
+        <span class="teil-title">${teil.title}</span>
+        <span class="teil-norm">${teil.norm}</span>
+        <div class="teil-stats">
+          <span>📄 ${sektionenCount} Abschnitte</span>
+          <span>📝 ${Math.round(charCount/1000)}k Zeichen</span>
+        </div>
+      </div>
+    `;
+  });
+  
+  container.innerHTML = html;
+}
+
+function openTeil(teilNummer) {
+  navigateTo('teil', teilNummer);
+}
+
+function renderTeilPage(teilNummer) {
+  if (!window.MarkdownLoader) {
+    console.error('MarkdownLoader nicht verfügbar');
+    return;
+  }
+  
+  const teilKey = `teil${teilNummer}`;
+  const teilData = MarkdownLoader.teilInhalte[teilKey];
+  
+  if (!teilData) {
+    console.error(`TEIL ${teilNummer} nicht gefunden`);
+    return;
+  }
+  
+  // Breadcrumbs
+  UI.updateBreadcrumbs([
+    { title: `📖 TEIL ${teilNummer}: ${teilData.title}` }
+  ]);
+  
+  // Header
+  const headerEl = document.getElementById('teilHeader');
+  headerEl.innerHTML = `
+    <h1>${teilData.icon} TEIL ${teilNummer}: ${teilData.title}</h1>
+    <div class="teil-meta">
+      <span>📋 Norm: <strong>${teilData.norm}</strong></span>
+      <span>📂 Kategorie: ${CONFIG.categories[teilData.category]?.title || teilData.category}</span>
+      <span>📝 ${Math.round(teilData.markdown?.length/1000 || 0)}k Zeichen</span>
+    </div>
+    <div style="margin-top: var(--spacing-md);">
+      <button class="btn-secondary" onclick="printTeil(${teilNummer})" style="background: rgba(255,255,255,0.2); border-color: white; color: white;">
+        🖨️ Diesen TEIL drucken
+      </button>
+    </div>
+  `;
+  
+  // Spis treści (TOC)
+  const tocEl = document.getElementById('teilToc');
+  let tocHtml = '';
+  
+  if (teilData.sektionen?.length) {
+    teilData.sektionen.forEach((sektion, index) => {
+      const level = sektion.level || 2;
+      const levelClass = `level-${level - 1}`;
+      tocHtml += `
+        <a href="#sektion-${index}" class="${levelClass}" onclick="scrollToSektion(${index}); return false;">
+          ${sektion.nummer || ''} ${sektion.title || sektion.fullTitle}
+        </a>
+      `;
+    });
+  }
+  
+  tocEl.innerHTML = tocHtml;
+  
+  // Treść główna
+  const contentEl = document.getElementById('teilContent');
+  
+  // Użyj pełnego HTML z Markdown
+  let contentHtml = teilData.html || '';
+  
+  // Dodaj ID do sekcji dla nawigacji
+  if (teilData.sektionen?.length) {
+    teilData.sektionen.forEach((sektion, index) => {
+      if (sektion.html) {
+        contentHtml = contentHtml.replace(
+          sektion.html.substring(0, 100),
+          `<div id="sektion-${index}" class="teil-sektion">${sektion.html.substring(0, 100)}`
+        );
+      }
+    });
+  }
+  
+  contentEl.innerHTML = contentHtml;
+  
+  // Scroll tracking dla TOC
+  setupTocScrollTracking();
+}
+
+function scrollToSektion(index) {
+  const element = document.getElementById(`sektion-${index}`);
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  
+  // Zaznacz aktywny link w TOC
+  document.querySelectorAll('.teil-toc a').forEach((a, i) => {
+    a.classList.toggle('active', i === index);
+  });
+}
+
+function setupTocScrollTracking() {
+  const container = document.getElementById('teilMain');
+  if (!container) return;
+  
+  container.addEventListener('scroll', () => {
+    const sektionen = container.querySelectorAll('[id^="sektion-"]');
+    let activeIndex = 0;
+    
+    sektionen.forEach((sektion, index) => {
+      const rect = sektion.getBoundingClientRect();
+      if (rect.top <= 200) {
+        activeIndex = index;
+      }
+    });
+    
+    document.querySelectorAll('.teil-toc a').forEach((a, i) => {
+      a.classList.toggle('active', i === activeIndex);
+    });
+  });
+}
+
+function printTeil(teilNummer) {
+  const teilKey = `teil${teilNummer}`;
+  const teilData = MarkdownLoader.teilInhalte[teilKey];
+  if (!teilData) return;
+  
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>TEIL ${teilNummer}: ${teilData.title}</title>
+      <style>
+        body { font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.6; padding: 20mm; max-width: 210mm; margin: 0 auto; }
+        h1 { color: #1565C0; border-bottom: 2px solid #1565C0; padding-bottom: 8px; }
+        h2 { color: #1565C0; margin-top: 24px; }
+        h3 { color: #333; margin-top: 16px; }
+        table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 10pt; }
+        th { background: #1565C0; color: white; padding: 8px; text-align: left; }
+        td { border: 1px solid #ddd; padding: 6px 8px; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        ul, ol { margin-left: 20px; }
+        .header { display: flex; justify-content: space-between; border-bottom: 2px solid #1565C0; padding-bottom: 8px; margin-bottom: 24px; }
+        @media print { body { padding: 15mm; } @page { margin: 15mm; } }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <strong>📚 VG-Normen Produktionshandbuch</strong>
+        <span>Gedruckt: ${new Date().toLocaleDateString('de-DE')}</span>
+      </div>
+      <h1>${teilData.icon} TEIL ${teilNummer}: ${teilData.title}</h1>
+      <p><strong>Norm:</strong> ${teilData.norm}</p>
+      ${teilData.html}
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
+  setTimeout(() => printWindow.print(), 300);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CATEGORY & ITEM FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════════════════
 
 function openCategory(categoryKey) {
   const category = CONFIG.categories[categoryKey];
@@ -286,8 +525,35 @@ function openCategory(categoryKey) {
 }
 
 function openItem(itemId, type) {
-  const item = App.wissensbasis.find(i => i.id === itemId);
-  if (!item) return;
+  // PRIORYTET 0: Sprawdź czy to zaimportowany dokument
+  if (itemId?.startsWith('imported_') || type === 'imported') {
+    const importedDoc = SearchEngine.getImportedDocById(itemId);
+    if (importedDoc) {
+      console.log(`📄 Otwieranie zaimportowanego dokumentu: ${importedDoc.title}`);
+      openImportedDocument(importedDoc);
+      return;
+    }
+  }
+  
+  // PRIORYTET 1: Szukaj w MarkdownLoader (pełne dane)
+  let item = null;
+  
+  if (window.MarkdownLoader && MarkdownLoader.sektionen?.length) {
+    item = MarkdownLoader.sektionen.find(s => s.id === itemId);
+    if (item) {
+      console.log(`📖 Znaleziono w Markdown: ${item.title}`);
+    }
+  }
+  
+  // PRIORYTET 2: Szukaj w wissensbasis (kompatybilność)
+  if (!item) {
+    item = App.wissensbasis.find(i => i.id === itemId);
+  }
+  
+  if (!item) {
+    console.warn(`⚠️ Nie znaleziono: ${itemId}`);
+    return;
+  }
   
   // Historie aktualisieren
   Storage.addToHistory({
@@ -311,11 +577,250 @@ function openItem(itemId, type) {
   UI.renderHistory();
 }
 
+/**
+ * Otwiera zaimportowany dokument w widoku encyklopedycznym
+ */
+function openImportedDocument(doc) {
+  // Konwertuj zaimportowany dokument na format encyklopedii
+  const item = {
+    id: `imported_${doc.id}`,
+    title: doc.title,
+    icon: doc.formatIcon || '📄',
+    description: `Importiert am ${new Date(doc.importDate).toLocaleDateString('de-DE')} | ${doc.formatName || 'Dokument'}`,
+    keywords: doc.tags || [],
+    category: doc.category,
+    norm: null, // Zaimportowane dokumenty nie mają normy
+    teil: null,
+    content: doc.content,
+    html: formatImportedDocContent(doc),
+    type: 'imported',
+    source: 'meine_dokumente',
+    originalDoc: doc
+  };
+  
+  // Historie aktualisieren
+  Storage.addToHistory({
+    id: item.id,
+    title: item.title,
+    type: 'imported',
+    icon: item.icon
+  });
+  
+  // Detail-Seite rendern
+  renderDetailPage(item);
+  
+  // Breadcrumbs
+  const categoryInfo = documentImporter?.categories?.find(c => c.id === doc.category);
+  UI.updateBreadcrumbs([
+    { title: 'Meine Dokumente', action: () => navigateTo('meine-dokumente') },
+    { title: categoryInfo?.name || 'Dokument', action: () => {} },
+    { title: doc.title }
+  ]);
+  
+  UI.showPage('detail');
+  UI.renderHistory();
+}
+
+/**
+ * Formatuje treść zaimportowanego dokumentu jako HTML
+ */
+function formatImportedDocContent(doc) {
+  let html = '';
+  
+  // Nagłówek z informacjami o pliku
+  html += `
+    <div class="imported-doc-header">
+      <div class="doc-info-grid">
+        <div class="info-item">
+          <span class="info-label">📁 Originaldatei:</span>
+          <span class="info-value">${doc.filename}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">📊 Format:</span>
+          <span class="info-value">${doc.formatIcon} ${doc.formatName}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">📅 Importiert:</span>
+          <span class="info-value">${new Date(doc.importDate).toLocaleDateString('de-DE', { 
+            year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+          })}</span>
+        </div>
+        ${doc.fileSize ? `
+        <div class="info-item">
+          <span class="info-label">💾 Größe:</span>
+          <span class="info-value">${formatFileSize(doc.fileSize)}</span>
+        </div>
+        ` : ''}
+      </div>
+      ${doc.hasOriginalFile ? `
+        <div class="doc-actions-bar">
+          <button class="btn btn-secondary" onclick="downloadImportedFile(${doc.id})">
+            ⬇️ Original herunterladen
+          </button>
+        </div>
+      ` : ''}
+    </div>
+  `;
+  
+  // Główna treść dokumentu
+  if (doc.content) {
+    // Sprawdź czy to markdown
+    if (doc.fileType === 'text/markdown' || doc.filename?.endsWith('.md')) {
+      html += `<div class="doc-content markdown-content">${marked ? marked.parse(doc.content) : escapeHtml(doc.content)}</div>`;
+    } else {
+      // Zwykły tekst - zachowaj formatowanie
+      html += `<div class="doc-content plain-text"><pre>${escapeHtml(doc.content)}</pre></div>`;
+    }
+  } else {
+    html += `<div class="doc-content empty-content">
+      <p>⚠️ Kein extrahierter Text verfügbar.</p>
+      ${doc.hasOriginalFile ? '<p>Sie können die Originaldatei herunterladen.</p>' : ''}
+    </div>`;
+  }
+  
+  return html;
+}
+
+/**
+ * Escapuje HTML
+ */
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+/**
+ * Formatuje rozmiar pliku
+ */
+function formatFileSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+/**
+ * Pobiera oryginalny plik zaimportowanego dokumentu
+ */
+async function downloadImportedFile(docId) {
+  if (typeof documentImporter !== 'undefined' && documentImporter.downloadOriginalFile) {
+    await documentImporter.downloadOriginalFile(docId);
+  } else {
+    UI.showToast('Download nicht verfügbar', 'error');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DOCUMENT INTELLIGENCE UI FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Otwiera widok analizy zaimportowanego dokumentu
+ */
+function openAnalyzedDocument(analysisId) {
+  if (typeof documentIntelligence === 'undefined') {
+    UI.showToast('Document Intelligence nicht verfügbar', 'error');
+    return;
+  }
+  
+  const analysis = documentIntelligence.analyzedDocuments.get(analysisId);
+  if (!analysis) {
+    UI.showToast('Analyse nicht gefunden', 'error');
+    return;
+  }
+  
+  // Renderuj widok analizy
+  const container = document.getElementById('mainContent');
+  container.innerHTML = documentIntelligence.renderAnalysisView(analysis);
+  
+  // Breadcrumbs
+  UI.updateBreadcrumbs([
+    { title: 'Meine Dokumente', action: () => navigateTo('meine-dokumente') },
+    { title: 'Dokumentanalyse', action: () => {} },
+    { title: analysis.filename }
+  ]);
+  
+  UI.showPage('main');
+}
+
+/**
+ * Otwiera analizę dla zaimportowanego dokumentu (jeśli istnieje)
+ */
+function viewDocumentAnalysis(docId) {
+  if (typeof documentIntelligence === 'undefined') {
+    UI.showToast('Document Intelligence nicht verfügbar', 'error');
+    return;
+  }
+  
+  // Szukaj analizy po ID dokumentu
+  let analysis = null;
+  documentIntelligence.analyzedDocuments.forEach((a, id) => {
+    if (a.id === docId || a.id === `doc_${docId}`) {
+      analysis = a;
+    }
+  });
+  
+  if (analysis) {
+    openAnalyzedDocument(analysis.id);
+  } else {
+    UI.showToast('Keine Analyse für dieses Dokument vorhanden', 'warning');
+  }
+}
+
+/**
+ * Uruchamia analizę dla istniejącego dokumentu
+ */
+async function analyzeExistingDocument(docId) {
+  if (typeof documentIntelligence === 'undefined' || typeof documentImporter === 'undefined') {
+    UI.showToast('Analyse nicht verfügbar', 'error');
+    return;
+  }
+  
+  const doc = documentImporter.importedDocuments.find(d => d.id === docId);
+  if (!doc) {
+    UI.showToast('Dokument nicht gefunden', 'error');
+    return;
+  }
+  
+  UI.showToast('🧠 Analyse wird gestartet...', 'info');
+  
+  try {
+    const analysis = await documentIntelligence.analyzeDocument(doc.content, {
+      id: docId,
+      filename: doc.filename,
+      fileType: doc.fileType,
+      fileSize: doc.fileSize
+    });
+    
+    UI.showToast('✅ Analyse abgeschlossen!', 'success');
+    
+    // Otwórz widok analizy
+    openAnalyzedDocument(analysis.id);
+  } catch (error) {
+    console.error('Analyse fehlgeschlagen:', error);
+    UI.showToast('Analyse fehlgeschlagen', 'error');
+  }
+}
+
+/**
+ * Wyszukaj z tagu słowa kluczowego
+ */
+function performSearchFromTag(keyword) {
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.value = keyword;
+  }
+  handleSearch(keyword);
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // HOME PAGE RENDERING
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function renderHomePage() {
+  // ENCYKLOPEDIA - Renderuj siatkę TEILów
+  renderEncyclopediaGrid();
+  
   // Quick Access Tiles aktualisieren
   document.querySelectorAll('.quick-tile').forEach(tile => {
     const category = tile.dataset.category;
@@ -395,68 +900,241 @@ function renderCategoryPage(category, cards) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// DETAIL PAGE RENDERING
+// DETAIL PAGE RENDERING (ULEPSZONA ENCYKLOPEDIA)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function renderDetailPage(item) {
   const container = document.getElementById('detailContent');
   if (!container) return;
   
+  App.currentDetailItem = item; // Zapamiętaj dla drukowania
+  
   const isFav = Storage.isFavorite(item.id);
   
-  // Sprawdź czy element ma pełne dane TEIL
-  let contentHtml = item.content || '';
+  // PRIORYTET 1: Pełna zawartość HTML z MarkdownLoader (KAŻDA LITERKA!)
+  let contentHtml = '';
   
-  // Jeśli ma teilDaten, wygeneruj bogatszą zawartość
-  if (item.teilDaten) {
+  if (item.html) {
+    contentHtml = item.html;
+    console.log(`📖 Renderowanie pełnego HTML z Markdown (${item.html.length} znaków)`);
+  } else if (item.content) {
+    contentHtml = item.content;
+  } else if (item.teilDaten) {
     contentHtml = renderTeilDatenContent(item);
-  }
-  
-  // Jeśli ma formularDaten, wygeneruj widok formularza
-  if (item.formularDaten) {
+  } else if (item.formularDaten) {
     contentHtml = renderFormularContent(item.formularDaten);
   }
   
-  container.innerHTML = `
-    <article class="detail-article">
-      <header class="detail-header">
-        <h1>${item.icon || '📄'} ${item.title}</h1>
-        <div class="detail-actions">
-          <button class="btn btn-icon ${isFav ? 'active' : ''}" onclick="toggleFavorite('${item.id}')" title="Favorit">
-            ${isFav ? '⭐' : '☆'}
-          </button>
-          <button class="btn btn-icon" onclick="printItem('${item.id}')" title="Drucken">🖨️</button>
-        </div>
-      </header>
-      
-      ${item.norm ? `<div class="detail-norm">Norm: ${item.norm}</div>` : ''}
-      
-      ${item.description ? `<p class="detail-description">${item.description}</p>` : ''}
-      
-      <div class="detail-content">
-        ${contentHtml}
+  // Metadane
+  const metaEl = document.getElementById('detailMeta');
+  if (metaEl) {
+    let metaHtml = '';
+    if (item.norm) {
+      metaHtml += `<span class="meta-badge norm">📋 ${item.norm}</span>`;
+    }
+    if (item.teil) {
+      metaHtml += `<span class="meta-badge teil" onclick="openTeil(${item.teil})" style="cursor:pointer;">📚 TEIL ${item.teil}</span>`;
+    }
+    if (item.category && CONFIG.categories[item.category]) {
+      metaHtml += `<span class="meta-badge">${CONFIG.categories[item.category].icon} ${CONFIG.categories[item.category].title}</span>`;
+    }
+    metaEl.innerHTML = metaHtml;
+  }
+  
+  // Tytuł
+  const titleEl = document.getElementById('detailTitle');
+  if (titleEl) {
+    titleEl.innerHTML = `${item.icon || '📄'} ${item.title}`;
+  }
+  
+  // Główna treść
+  container.innerHTML = contentHtml;
+  
+  // Słowa kluczowe
+  const keywordsEl = document.getElementById('detailKeywords');
+  if (keywordsEl && item.keywords?.length) {
+    keywordsEl.innerHTML = `
+      <h4>🔍 Schlagworte</h4>
+      <div class="tags">
+        ${item.keywords.map(k => `<span class="tag" onclick="performSearchFromTag('${k}')" style="cursor:pointer;">${k}</span>`).join('')}
       </div>
+    `;
+  } else if (keywordsEl) {
+    keywordsEl.innerHTML = '';
+  }
+  
+  // SIDEBAR: Powiązane tematy
+  renderDetailSidebar(item);
+  
+  // Aktualizuj przycisk favoriten
+  const favBtn = document.getElementById('btnFavorite');
+  if (favBtn) {
+    favBtn.innerHTML = `<span class="icon">${isFav ? '⭐' : '☆'}</span>`;
+    favBtn.onclick = () => toggleFavorite(item.id);
+  }
+  
+  // Scroll na górę
+  container.scrollTop = 0;
+}
+
+function renderDetailSidebar(item) {
+  const isImported = item.type === 'imported' || item.id?.startsWith('imported_');
+  
+  // 1. Powiązane tematy (verwandt)
+  const relatedEl = document.getElementById('relatedList');
+  if (relatedEl) {
+    if (isImported) {
+      // Dla zaimportowanych dokumentów - pokaż inne z tej samej kategorii
+      const sameCategory = SearchEngine.getImportedDocsByCategory(item.category)
+        .filter(d => `imported_${d.id}` !== item.id)
+        .slice(0, 5);
       
-      ${item.keywords?.length ? `
-        <div class="detail-keywords">
-          <strong>Schlagworte:</strong>
-          ${item.keywords.map(k => `<span class="tag">${k}</span>`).join('')}
-        </div>
-      ` : ''}
-      
-      ${item.related?.length ? `
-        <div class="detail-related">
-          <h3>Verwandte Themen</h3>
-          <div class="related-links">
-            ${item.related.map(relId => {
-              const rel = App.wissensbasis.find(r => r.id === relId);
-              return rel ? `<a href="#" onclick="openItem('${rel.id}')">${rel.title}</a>` : '';
-            }).join('')}
+      if (sameCategory.length) {
+        relatedEl.innerHTML = sameCategory.map(doc => `
+          <div class="related-link" onclick="openItem('imported_${doc.id}', 'imported')">
+            <span class="link-icon">${doc.formatIcon || '📄'}</span>
+            <span class="link-title">${doc.title}</span>
+            <span class="link-arrow">→</span>
           </div>
-        </div>
-      ` : ''}
-    </article>
-  `;
+        `).join('');
+      } else {
+        relatedEl.innerHTML = '<p style="color: var(--color-text-secondary); font-size: var(--font-size-sm);">Keine ähnlichen Dokumente</p>';
+      }
+    } else if (window.MarkdownLoader) {
+      // Dla dokumentów z Markdown - oryginalna logika
+      const verwandt = MarkdownLoader.getVerwandteThemen(item.id);
+      if (verwandt?.length) {
+        relatedEl.innerHTML = verwandt.slice(0, 5).map(rel => `
+          <div class="related-link" onclick="openItem('${rel.id}')">
+            <span class="link-icon">${rel.icon || '📄'}</span>
+            <span class="link-title">${rel.title}</span>
+            <span class="link-arrow">→</span>
+          </div>
+        `).join('');
+      } else {
+        relatedEl.innerHTML = '<p style="color: var(--color-text-secondary); font-size: var(--font-size-sm);">Keine verwandten Themen</p>';
+      }
+    }
+  }
+  
+  // 2. Inne sekcje z tego samego TEILa / kategorii importu
+  const sameTeilEl = document.getElementById('sameTeilList');
+  if (sameTeilEl) {
+    if (isImported) {
+      // Dla zaimportowanych - pokaż inne importy
+      const allImports = SearchEngine.getAllImportedDocs()
+        .filter(d => `imported_${d.id}` !== item.id)
+        .slice(0, 5);
+      
+      if (allImports.length) {
+        sameTeilEl.innerHTML = allImports.map(doc => `
+          <div class="related-link" onclick="openItem('imported_${doc.id}', 'imported')">
+            <span class="link-icon">${doc.formatIcon || '📄'}</span>
+            <span class="link-title">${doc.title}</span>
+            <span class="link-arrow">→</span>
+          </div>
+        `).join('');
+        
+        // Link do wszystkich importów
+        sameTeilEl.innerHTML += `
+          <div class="related-link" onclick="navigateTo('import')" style="background: var(--color-primary-bg);">
+            <span class="link-icon">📥</span>
+            <span class="link-title">Alle importierten Dokumente</span>
+            <span class="link-arrow">→</span>
+          </div>
+        `;
+      } else {
+        sameTeilEl.innerHTML = '';
+      }
+    } else if (window.MarkdownLoader && item.teil) {
+      // Dla Markdown - sekcje z tego samego TEILa
+      const sameTeil = MarkdownLoader.getTeilSektionen(item.teil)
+        .filter(s => s.id !== item.id && s.type !== 'overview')
+        .slice(0, 5);
+      
+      if (sameTeil?.length) {
+        sameTeilEl.innerHTML = sameTeil.map(s => `
+          <div class="related-link" onclick="openItem('${s.id}')">
+            <span class="link-icon">${s.icon || '📄'}</span>
+            <span class="link-title">${s.nummer || ''} ${s.title}</span>
+            <span class="link-arrow">→</span>
+          </div>
+        `).join('');
+        
+        // Dodaj link do pełnego TEILa
+        sameTeilEl.innerHTML += `
+          <div class="related-link" onclick="openTeil(${item.teil})" style="background: var(--color-primary-bg);">
+            <span class="link-icon">📖</span>
+            <span class="link-title">Ganzen TEIL ${item.teil} lesen</span>
+            <span class="link-arrow">→</span>
+          </div>
+        `;
+      } else {
+        sameTeilEl.innerHTML = '';
+      }
+    } else {
+      sameTeilEl.innerHTML = '';
+    }
+  }
+  
+  // 3. Podobne kategorie / typy dokumentów
+  const similarEl = document.getElementById('similarCategoriesList');
+  if (similarEl) {
+    if (isImported) {
+      // Dla importów - pokaż kategorie z dokumentImporter
+      const categories = documentImporter?.categories || [];
+      const otherCats = categories.filter(c => c.id !== item.category).slice(0, 4);
+      
+      if (otherCats.length) {
+        similarEl.innerHTML = otherCats.map(cat => `
+          <div class="related-link" onclick="filterImportsByCategory('${cat.id}')">
+            <span class="link-icon">${cat.icon}</span>
+            <span class="link-title">${cat.name}</span>
+            <span class="link-arrow">→</span>
+          </div>
+        `).join('');
+      }
+    } else if (item.category) {
+      // Dla Markdown - inne kategorie
+      const otherCats = Object.entries(CONFIG.categories)
+        .filter(([key]) => key !== item.category && key !== 'formulare' && key !== 'tabellen')
+        .slice(0, 4);
+      
+      if (otherCats.length) {
+        similarEl.innerHTML = otherCats.map(([key, cat]) => `
+          <div class="related-link" onclick="navigateTo('wissensbasis', '${key}')">
+            <span class="link-icon">${cat.icon}</span>
+            <span class="link-title">${cat.title}</span>
+            <span class="link-arrow">→</span>
+          </div>
+        `).join('');
+      }
+    }
+  }
+}
+
+/**
+ * Filtruje zaimportowane dokumenty według kategorii
+ */
+function filterImportsByCategory(category) {
+  navigateTo('import');
+  setTimeout(() => {
+    const filter = document.getElementById('docsFilter');
+    if (filter) {
+      filter.value = category;
+      if (typeof documentImporter !== 'undefined') {
+        documentImporter.filterDocuments();
+      }
+    }
+  }, 100);
+}
+
+// performSearchFromTag jest zdefiniowana w sekcji Document Intelligence (linia ~808)
+
+function printCurrentDetail() {
+  if (App.currentDetailItem) {
+    printItem(App.currentDetailItem.id);
+  }
 }
 
 // Renderuj zawartość z danych TEIL
@@ -598,34 +1276,64 @@ function handleSearch() {
   
   App.searchQuery = query;
   
-  // Wissensbasis durchsuchen
-  const wbResults = SearchEngine.searchWissensbasis(query, App.wissensbasis);
-  
-  // User Docs durchsuchen
-  const udResults = SearchEngine.searchUserDocs(query);
-  
-  // Importierte Dokumente durchsuchen
-  let importResults = [];
-  if (typeof documentImporter !== 'undefined') {
-    const importedMatches = documentImporter.searchDocuments(query);
-    importResults = importedMatches.map(doc => ({
-      id: `import-${doc.id}`,
-      title: doc.title,
-      type: 'imported',
-      icon: doc.formatIcon || '📄',
-      source: 'Importierte Dokumente',
-      preview: doc.content.substring(0, 200) + '...',
-      tags: doc.tags,
-      category: doc.category,
-      onclick: `documentImporter.viewDocument(${documentImporter.importedDocuments.indexOf(doc)})`
+  // PRIORYTET 1: Szukaj w MarkdownLoader (pełny tekst!)
+  let wbResults = [];
+  if (window.MarkdownLoader && MarkdownLoader.suchIndex?.length) {
+    const mdResults = MarkdownLoader.suche(query);
+    wbResults = mdResults.map(r => ({
+      ...r,
+      type: 'markdown',
+      source: `TEIL ${r.teil}`,
+      preview: r.text ? r.text.substring(0, 200) + '...' : '',
+      score: r.score
     }));
+    console.log(`🔍 Markdown-Suche: ${wbResults.length} Ergebnisse für "${query}"`);
+  } 
+  // PRIORYTET 2: Szukaj za pomocą SearchEngine (unified search)
+  else if (typeof SearchEngine !== 'undefined') {
+    wbResults = SearchEngine.search(query);
   }
   
-  // Ergebnisse zusammenführen
-  const results = [...wbResults, ...udResults, ...importResults];
+  // Importierte Dokumente są już w SearchEngine.search(), 
+  // ale dodajemy też bezpośrednie wyszukiwanie dla pewności
+  let importResults = [];
+  if (typeof SearchEngine !== 'undefined' && SearchEngine.data?.importedDocs?.length) {
+    // Importowane dokumenty już są w wynikach SearchEngine.search()
+    // Sprawdźmy czy trzeba je dodać
+    const hasImported = wbResults.some(r => r.type === 'imported');
+    if (!hasImported) {
+      const normalizedQuery = query.toLowerCase();
+      importResults = SearchEngine.data.importedDocs
+        .filter(doc => {
+          const title = (doc.title || '').toLowerCase();
+          const content = (doc.content || '').toLowerCase();
+          const tags = (doc.tags || []).join(' ').toLowerCase();
+          return title.includes(normalizedQuery) || 
+                 content.includes(normalizedQuery) || 
+                 tags.includes(normalizedQuery);
+        })
+        .map(doc => ({
+          id: `imported_${doc.id}`,
+          title: doc.title,
+          type: 'imported',
+          icon: doc.formatIcon || '📄',
+          source: 'Importierte Dokumente',
+          preview: doc.content ? doc.content.substring(0, 200) + '...' : '',
+          keywords: doc.tags || [],
+          category: doc.category,
+          importedDoc: doc
+        }));
+    }
+  }
+  
+  // Ergebnisse zusammenführen (bez duplikatów)
+  const allResults = [...wbResults, ...importResults];
+  const uniqueResults = allResults.filter((item, index, self) => 
+    index === self.findIndex(t => t.id === item.id)
+  );
   
   // Ergebnisse anzeigen
-  UI.renderSearchResults(results, query);
+  UI.renderSearchResults(uniqueResults, query);
   
   // Zur Suchseite wechseln
   UI.showPage('search');
@@ -656,6 +1364,25 @@ function clearSearch() {
 let currentRecognition = null;
 
 function startVoiceSearch() {
+  // ZAWSZE pokaż Schnellsuche UI - niezależnie od stanu sieci
+  // (Speech Recognition wymaga internetu, więc dajemy prostą alternatywę)
+  if (window.OfflineVoice) {
+    OfflineVoice.showOfflineVoiceUI();
+    return;
+  }
+  
+  // Fallback - jeśli OfflineVoice nie jest załadowane
+  // Sprawdź czy jest połączenie z internetem
+  if (!navigator.onLine) {
+    UI.showToast('Sprachsuche benötigt Internetverbindung. Nutzen Sie die Textsuche.', 'warning');
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+      searchInput.focus();
+      searchInput.placeholder = 'Hier tippen... (offline)';
+    }
+    return;
+  }
+  
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
     UI.showToast('Sprachsuche wird von diesem Browser nicht unterstützt. Nutzen Sie Chrome oder Edge.', 'error');
     return;
@@ -726,6 +1453,8 @@ function startVoiceSearch() {
     console.error('Voice recognition error:', event.error);
     
     let errorMsg = 'Spracherkennung fehlgeschlagen';
+    let errorType = 'error';
+    
     switch(event.error) {
       case 'no-speech':
         errorMsg = 'Keine Sprache erkannt. Bitte sprechen Sie lauter.';
@@ -734,14 +1463,27 @@ function startVoiceSearch() {
         errorMsg = 'Kein Mikrofon gefunden. Prüfen Sie die Mikrofoneinstellungen.';
         break;
       case 'not-allowed':
-        errorMsg = 'Mikrofonzugriff verweigert. Bitte erlauben Sie den Zugriff.';
+        errorMsg = 'Mikrofonzugriff verweigert. Bitte erlauben Sie den Zugriff in den Einstellungen.';
         break;
       case 'network':
-        errorMsg = 'Netzwerkfehler bei der Spracherkennung.';
+        errorMsg = 'Keine Internetverbindung für Sprachsuche. Nutzen Sie die Textsuche!';
+        errorType = 'warning';
+        // Fokus na tekstową wyszukiwarkę
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+          searchInput.focus();
+        }
+        break;
+      case 'aborted':
+        errorMsg = 'Sprachsuche abgebrochen';
+        errorType = 'info';
+        break;
+      case 'service-not-allowed':
+        errorMsg = 'Sprachdienst nicht verfügbar. Nutzen Sie die Textsuche.';
         break;
     }
     
-    UI.showToast(errorMsg, 'error');
+    UI.showToast(errorMsg, errorType);
     if (voiceModal) voiceModal.classList.remove('active');
   };
   
@@ -755,7 +1497,7 @@ function startVoiceSearch() {
     recognition.start();
   } catch (e) {
     console.error('Fehler beim Starten der Spracherkennung:', e);
-    UI.showToast('Spracherkennung konnte nicht gestartet werden', 'error');
+    UI.showToast('Spracherkennung konnte nicht gestartet werden. Nutzen Sie die Textsuche.', 'error');
   }
 }
 
@@ -963,41 +1705,136 @@ function printCurrentPage() {
 }
 
 function printItem(itemId) {
-  const item = App.wissensbasis.find(i => i.id === itemId);
-  if (!item) return;
+  // Szukaj w MarkdownLoader (pełne dane)
+  let item = null;
+  if (window.MarkdownLoader && MarkdownLoader.sektionen?.length) {
+    item = MarkdownLoader.sektionen.find(s => s.id === itemId);
+  }
+  if (!item) {
+    item = App.wissensbasis.find(i => i.id === itemId);
+  }
+  if (!item) {
+    UI.showToast('Element nicht gefunden', 'error');
+    return;
+  }
   
-  // Druckfenster mit Inhalt
+  // Pobierz pełną zawartość HTML
+  const contentHtml = item.html || item.content || item.description || '';
+  
+  // Druckfenster z pełną zawartością
   const printWindow = window.open('', '_blank');
   printWindow.document.write(`
     <!DOCTYPE html>
     <html>
     <head>
-      <title>${item.title}</title>
+      <title>${item.title} - VG-Normen Wissenssystem</title>
       <style>
-        body { font-family: Arial, sans-serif; font-size: 12pt; line-height: 1.6; padding: 20mm; }
-        h1 { font-size: 18pt; margin-bottom: 10mm; }
-        .norm { color: #666; margin-bottom: 5mm; }
-        .content { margin: 10mm 0; }
-        .keywords { margin-top: 10mm; padding-top: 5mm; border-top: 1px solid #ccc; }
-        .tag { display: inline-block; background: #e0e0e0; padding: 2px 8px; margin: 2px; border-radius: 3px; }
-        @media print { body { padding: 0; } }
+        body { 
+          font-family: Arial, sans-serif; 
+          font-size: 11pt; 
+          line-height: 1.5; 
+          padding: 15mm;
+          max-width: 210mm;
+        }
+        h1 { font-size: 16pt; margin-bottom: 8mm; color: #003366; }
+        h2 { font-size: 14pt; margin-top: 8mm; margin-bottom: 4mm; color: #003366; }
+        h3 { font-size: 12pt; margin-top: 6mm; margin-bottom: 3mm; }
+        h4 { font-size: 11pt; margin-top: 4mm; margin-bottom: 2mm; }
+        .header { 
+          display: flex; 
+          justify-content: space-between; 
+          border-bottom: 2px solid #003366; 
+          padding-bottom: 5mm;
+          margin-bottom: 8mm;
+        }
+        .logo { font-size: 14pt; font-weight: bold; color: #003366; }
+        .date { font-size: 10pt; color: #666; }
+        .norm { 
+          background: #f0f0f0; 
+          padding: 3mm; 
+          margin-bottom: 5mm; 
+          border-left: 3px solid #003366;
+        }
+        .content { margin: 5mm 0; }
+        table { 
+          width: 100%; 
+          border-collapse: collapse; 
+          margin: 4mm 0; 
+          font-size: 10pt;
+        }
+        th { 
+          background: #003366; 
+          color: white; 
+          padding: 2mm 3mm; 
+          text-align: left;
+          font-weight: bold;
+        }
+        td { 
+          border: 1px solid #ddd; 
+          padding: 2mm 3mm; 
+        }
+        tr:nth-child(even) { background: #f8f8f8; }
+        ul, ol { margin-left: 5mm; }
+        li { margin-bottom: 2mm; }
+        .keywords { 
+          margin-top: 8mm; 
+          padding-top: 4mm; 
+          border-top: 1px solid #ccc; 
+          font-size: 10pt;
+        }
+        .tag { 
+          display: inline-block; 
+          background: #e0e0e0; 
+          padding: 1mm 3mm; 
+          margin: 1mm; 
+          border-radius: 2mm; 
+          font-size: 9pt;
+        }
+        .footer {
+          margin-top: 10mm;
+          padding-top: 4mm;
+          border-top: 1px solid #ccc;
+          font-size: 9pt;
+          color: #666;
+          text-align: center;
+        }
+        @media print { 
+          body { padding: 10mm; }
+          @page { margin: 15mm; }
+        }
       </style>
     </head>
     <body>
-      <h1>${item.title}</h1>
-      ${item.norm ? `<div class="norm">Norm: ${item.norm}</div>` : ''}
-      <div class="content">${item.content || item.description || ''}</div>
+      <div class="header">
+        <div class="logo">📚 VG-Normen Wissenssystem</div>
+        <div class="date">Gedruckt: ${new Date().toLocaleDateString('de-DE')}</div>
+      </div>
+      
+      <h1>${item.icon || '📄'} ${item.title}</h1>
+      ${item.norm ? `<div class="norm">📋 Norm: <strong>${item.norm}</strong></div>` : ''}
+      ${item.teil ? `<div class="norm">📚 TEIL ${item.teil}: ${item.teilTitle || ''}</div>` : ''}
+      
+      <div class="content">${contentHtml}</div>
+      
       ${item.keywords?.length ? `
         <div class="keywords">
-          <strong>Schlagworte:</strong>
+          <strong>🔍 Schlagworte:</strong>
           ${item.keywords.map(k => `<span class="tag">${k}</span>`).join('')}
         </div>
       ` : ''}
+      
+      <div class="footer">
+        VG-Normen Wissenssystem v${CONFIG.appVersion} | © ${new Date().getFullYear()}
+      </div>
     </body>
     </html>
   `);
   printWindow.document.close();
-  printWindow.print();
+  
+  // Poczekaj na załadowanie i drukuj
+  setTimeout(() => {
+    printWindow.print();
+  }, 250);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -1005,47 +1842,72 @@ function printItem(itemId) {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 async function createBackup() {
-  const data = {
-    version: CONFIG.appVersion,
-    date: new Date().toISOString(),
-    favorites: Storage.getFavorites(),
-    history: Storage.getHistory(),
-    settings: Storage.getSettings(),
-    userDocs: Storage.getUserDocs()
-  };
+  // Sprawdź czy mamy IndexedDB
+  const useIDB = typeof IndexedDBStorage !== 'undefined';
   
-  const json = JSON.stringify(data, null, 2);
-  const blob = new Blob([json], { type: 'application/json' });
+  let data;
+  let filename;
+  
+  if (useIDB) {
+    // Pełny backup z IndexedDB (WŁĄCZNIE z plikami!)
+    UI.showToast('Erstelle vollständiges Backup (inkl. Originaldateien)...', 'info');
+    
+    try {
+      const jsonString = await IndexedDBStorage.exportFullBackup();
+      data = jsonString;
+      filename = `VG-Normen-FULL-Backup_${Utils.dateForFileName()}.json`;
+      
+      const stats = await IndexedDBStorage.getStorageStats();
+      console.log(`📦 Backup enthält: ${stats.documents} Dokumente, ${stats.files} Dateien, ${IndexedDBStorage.formatSize(stats.totalSize)}`);
+    } catch (e) {
+      console.error('IndexedDB Backup Fehler:', e);
+      UI.showToast('Fehler beim Backup: ' + e.message, 'error');
+      return;
+    }
+  } else {
+    // Fallback: nur localStorage
+    data = JSON.stringify({
+      version: CONFIG.appVersion,
+      date: new Date().toISOString(),
+      favorites: Storage.getFavorites(),
+      history: Storage.getHistory(),
+      settings: Storage.getSettings(),
+      userDocs: Storage.getUserDocs()
+    }, null, 2);
+    filename = `VG-Normen-Backup_${Utils.dateForFileName()}.json`;
+  }
+  
+  const blob = new Blob([data], { type: 'application/json' });
   
   if (App.isElectron) {
     const filePath = await window.electronAPI.saveDialog({
       title: 'Backup speichern',
-      defaultPath: `VG-Normen-Backup_${Utils.dateForFileName()}.json`,
+      defaultPath: filename,
       filters: [{ name: 'JSON', extensions: ['json'] }]
     });
     
     if (filePath) {
-      await window.electronAPI.writeFile(filePath, json);
+      await window.electronAPI.writeFile(filePath, data);
       Storage.setLastBackup(Date.now());
       UI.updateSettingsUI();
-      UI.showToast('Backup erstellt', 'success');
+      UI.showToast('✅ Vollständiges Backup erstellt!', 'success');
     }
   } else {
     // Browser Download
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `VG-Normen-Backup_${Utils.dateForFileName()}.json`;
+    a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
     Storage.setLastBackup(Date.now());
     UI.updateSettingsUI();
-    UI.showToast('Backup heruntergeladen', 'success');
+    UI.showToast('✅ Backup heruntergeladen!', 'success');
   }
 }
 
 async function restoreBackup() {
-  let data;
+  let jsonString;
   
   if (App.isElectron) {
     const filePath = await window.electronAPI.openFileDialog({
@@ -1055,8 +1917,7 @@ async function restoreBackup() {
     
     if (!filePath || filePath.length === 0) return;
     
-    const content = await window.electronAPI.readFile(filePath[0]);
-    data = JSON.parse(content);
+    jsonString = await window.electronAPI.readFile(filePath[0]);
   } else {
     // Browser File Input
     const input = document.createElement('input');
@@ -1070,22 +1931,48 @@ async function restoreBackup() {
     
     if (!file) return;
     
-    const text = await file.text();
-    data = JSON.parse(text);
+    jsonString = await file.text();
   }
   
-  // Daten wiederherstellen
-  if (data.favorites) Storage.set('favorites', data.favorites);
-  if (data.history) Storage.set('history', data.history);
-  if (data.settings) Storage.saveSettings(data.settings);
-  if (data.userDocs) Storage.saveUserDocs(data.userDocs);
+  UI.showToast('Backup wird wiederhergestellt...', 'info');
   
-  // UI aktualisieren
-  applySettings();
-  UI.renderFavorites();
-  UI.renderHistory();
-  
-  UI.showToast('Backup wiederhergestellt', 'success');
+  try {
+    const data = JSON.parse(jsonString);
+    
+    // Sprawdź czy to pełny backup z IndexedDB
+    if (data.version?.includes('full') && typeof IndexedDBStorage !== 'undefined') {
+      await IndexedDBStorage.importData(jsonString);
+      
+      // Odśwież dokumenty w importerze
+      if (typeof documentImporter !== 'undefined') {
+        documentImporter.importedDocuments = await IndexedDBStorage.getAllDocuments();
+      }
+      
+      UI.showToast('✅ Vollständiges Backup wiederhergestellt (inkl. Dateien)!', 'success');
+    } else {
+      // Stary format lub brak IndexedDB - użyj localStorage
+      if (data.favorites) Storage.set('favorites', data.favorites);
+      if (data.history) Storage.set('history', data.history);
+      if (data.settings) Storage.saveSettings(data.settings);
+      if (data.userDocs) Storage.saveUserDocs(data.userDocs);
+      
+      // Migruj do IndexedDB jeśli dostępne
+      if (typeof IndexedDBStorage !== 'undefined' && data.documents) {
+        await IndexedDBStorage.importData(jsonString);
+      }
+      
+      UI.showToast('✅ Backup wiederhergestellt!', 'success');
+    }
+    
+    // UI aktualisieren
+    applySettings();
+    UI.renderFavorites();
+    UI.renderHistory();
+    
+  } catch (error) {
+    console.error('Backup restore error:', error);
+    UI.showToast('Fehler beim Wiederherstellen: ' + error.message, 'error');
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -1209,18 +2096,7 @@ function scanDocuments() {
   }, 2000);
 }
 
-// Backup
-function createBackup() {
-  const data = Storage.exportAllData();
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `vg-normen-backup-${new Date().toISOString().slice(0,10)}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-  UI.showToast('Backup erstellt und heruntergeladen', 'success');
-}
+// createBackup() jest zdefiniowana wcześniej w sekcji BACKUP & EXPORT (linia ~1852)
 
 function loadBackup() {
   const input = document.createElement('input');
@@ -1278,7 +2154,16 @@ function renderWissensbasisPage(filterCategory) {
   const container = document.getElementById('wissensbasisContent');
   if (!container) return;
   
-  let cards = App.wissensbasis || [];
+  // PRIORYTET: Pobierz dane z MarkdownLoader (pełne sekcje)
+  let cards = [];
+  
+  if (window.MarkdownLoader && MarkdownLoader.sektionen?.length) {
+    cards = MarkdownLoader.sektionen.filter(s => s.type !== 'overview');
+    console.log(`📚 Wissensbasis: ${cards.length} Sektionen aus Markdown`);
+  } else if (App.wissensbasis?.length) {
+    cards = App.wissensbasis;
+    console.log(`📚 Wissensbasis: ${cards.length} Einträge aus Cache`);
+  }
   
   // Filter by category if specified
   if (filterCategory) {
@@ -1289,50 +2174,84 @@ function renderWissensbasisPage(filterCategory) {
     container.innerHTML = `
       <div class="empty-state">
         <span class="icon">📚</span>
-        <p>Keine Wissenskarten gefunden.</p>
+        <p>Wissensbasis wird geladen...<br>Bitte warten Sie einen Moment.</p>
+        <button class="btn-primary" onclick="location.reload()">🔄 Neu laden</button>
       </div>
     `;
     return;
   }
   
-  // Group by category
-  const grouped = {};
+  // Group by TEIL (priority) then category
+  const groupedByTeil = {};
   cards.forEach(card => {
-    const cat = card.category || 'sonstiges';
-    if (!grouped[cat]) grouped[cat] = [];
-    grouped[cat].push(card);
+    const teilKey = card.teil || card.parentTeil || 'sonstiges';
+    if (!groupedByTeil[teilKey]) groupedByTeil[teilKey] = [];
+    groupedByTeil[teilKey].push(card);
   });
   
   let html = '';
   
-  Object.keys(grouped).forEach(catKey => {
-    const catInfo = CONFIG.categories[catKey] || { title: catKey, icon: '📄' };
-    const catCards = grouped[catKey];
+  // Sortiere TEILs numerisch
+  const sortedTeils = Object.keys(groupedByTeil).sort((a, b) => {
+    const numA = parseInt(a) || 999;
+    const numB = parseInt(b) || 999;
+    return numA - numB;
+  });
+  
+  sortedTeils.forEach(teilKey => {
+    const teilCards = groupedByTeil[teilKey];
+    const teilInfo = MarkdownLoader?.teilDateien?.find(t => t.teil == teilKey);
     
     html += `
       <div class="category-section">
-        <h3 class="category-title">${catInfo.icon} ${catInfo.title}</h3>
+        <div class="section-header" onclick="openTeil(${teilKey})" style="cursor:pointer;">
+          <h3 class="category-title">${teilInfo?.icon || '📄'} TEIL ${teilKey}: ${teilInfo?.title || 'Sonstiges'}</h3>
+          <span class="section-count">${teilCards.length} Abschnitte</span>
+          <span class="section-link">→ Ganzen TEIL lesen</span>
+        </div>
         <div class="cards-grid">
     `;
     
-    catCards.forEach(card => {
+    // Sortiere nach Nummer
+    teilCards.sort((a, b) => {
+      const numA = parseFloat(a.nummer) || 0;
+      const numB = parseFloat(b.nummer) || 0;
+      return numA - numB;
+    });
+    
+    teilCards.slice(0, 8).forEach(card => {  // Max 8 pro TEIL
       const isFav = Storage.isFavorite(card.id);
+      const preview = card.inhalt ? card.inhalt.substring(0, 120).replace(/<[^>]*>/g, '') + '...' : '';
+      
       html += `
-        <div class="card" onclick="openItem('${card.id}')">
+        <div class="card wissensbasis-card" onclick="openItem('${card.id}')">
           <div class="card-header">
             <span class="card-icon">${card.icon || '📄'}</span>
-            <span class="card-title">${card.title}</span>
+            <span class="card-title">${card.nummer || ''} ${card.title}</span>
             ${isFav ? '<span class="fav-star">⭐</span>' : ''}
           </div>
-          ${card.description ? `<p class="card-desc">${card.description}</p>` : ''}
-          ${card.keywords ? `
-            <div class="card-tags">
-              ${card.keywords.slice(0, 3).map(k => `<span class="tag">${k}</span>`).join('')}
-            </div>
-          ` : ''}
+          <p class="card-desc">${preview || card.description || ''}</p>
+          <div class="card-footer">
+            <span class="card-norm">${card.norm || ''}</span>
+            ${card.keywords?.length ? `
+              <div class="card-tags">
+                ${card.keywords.slice(0, 3).map(k => `<span class="tag">${k}</span>`).join('')}
+              </div>
+            ` : ''}
+          </div>
         </div>
       `;
     });
+    
+    // "Mehr anzeigen" button if more than 8
+    if (teilCards.length > 8) {
+      html += `
+        <div class="card more-card" onclick="openTeil(${teilKey})">
+          <span class="more-icon">➕</span>
+          <span class="more-text">${teilCards.length - 8} weitere Abschnitte</span>
+        </div>
+      `;
+    }
     
     html += '</div></div>';
   });
@@ -1525,36 +2444,20 @@ function renderBilderPage() {
   const container = document.getElementById('bilderContent');
   if (!container) return;
   
-  const bilder = [
-    { id: 'bild-crimp-gut', title: 'Crimp GUT', icon: '✅', desc: 'Korrekte Crimpverbindung', status: 'gut' },
-    { id: 'bild-crimp-schlecht-1', title: 'Crimp SCHLECHT - Übercrimpung', icon: '❌', desc: 'Zu stark verpresst', status: 'schlecht' },
-    { id: 'bild-crimp-schlecht-2', title: 'Crimp SCHLECHT - Untercrimpung', icon: '❌', desc: 'Zu wenig verpresst', status: 'schlecht' },
-    { id: 'bild-isolation-gut', title: 'Isolationscrimp GUT', icon: '✅', desc: 'Korrekte Isolation', status: 'gut' },
-    { id: 'bild-isolation-schlecht', title: 'Isolationscrimp SCHLECHT', icon: '❌', desc: 'Beschädigte Isolation', status: 'schlecht' },
-    { id: 'bild-litzenenden-gut', title: 'Litzenenden GUT', icon: '✅', desc: 'Korrekt abgelängt', status: 'gut' },
-    { id: 'bild-litzenenden-schlecht', title: 'Litzenenden SCHLECHT', icon: '❌', desc: 'Vorstehende Litzen', status: 'schlecht' },
-    { id: 'bild-kontakt-sitz', title: 'Kontaktsitz im Stecker', icon: '🔍', desc: 'Rastung und Position', status: 'info' }
-  ];
-  
-  let html = '<div class="images-grid">';
-  
-  bilder.forEach(bild => {
-    const statusClass = bild.status === 'gut' ? 'status-good' : bild.status === 'schlecht' ? 'status-bad' : 'status-info';
-    html += `
-      <div class="image-card ${statusClass}" onclick="openBild('${bild.id}')">
-        <div class="image-placeholder">
-          <span class="icon">${bild.icon}</span>
-        </div>
-        <div class="image-info">
-          <span class="image-title">${bild.title}</span>
-          <span class="image-desc">${bild.desc}</span>
-        </div>
+  // Użyj MediaManager do renderowania galerii
+  if (typeof mediaManager !== 'undefined') {
+    container.innerHTML = mediaManager.renderGalleryPage();
+    console.log('📷 MediaManager: Galerie gerendert');
+  } else {
+    // Fallback jeśli MediaManager nie załadowany
+    container.innerHTML = `
+      <div class="empty-state">
+        <span class="icon">⚠️</span>
+        <p>Bildergalerie nicht verfügbar</p>
+        <p>MediaManager konnte nicht geladen werden</p>
       </div>
     `;
-  });
-  
-  html += '</div>';
-  container.innerHTML = html;
+  }
 }
 
 function renderMeineDokumentePage() {
@@ -1643,13 +2546,31 @@ function getDocIcon(fileName) {
 
 // Helper functions for opening items
 function openTabelle(id) {
-  UI.showToast(`Tabelle "${id}" wird geladen...`, 'info');
-  // TODO: Implement table view
+  // Szukaj tabeli w SearchEngine lub MarkdownLoader
+  let table = null;
+  
+  if (window.MarkdownLoader) {
+    table = MarkdownLoader.sektionen.find(s => s.id === id && s.type === 'tabelle');
+  }
+  
+  if (!table && typeof SearchEngine !== 'undefined') {
+    table = SearchEngine.getById(id);
+  }
+  
+  if (table) {
+    openItem(id, 'tabelle');
+  } else {
+    UI.showToast(`Tabelle "${id}" nicht gefunden`, 'warning');
+  }
 }
 
 function openBild(id) {
-  UI.showToast(`Bild "${id}" wird geladen...`, 'info');
-  // TODO: Implement image view
+  // Użyj MediaManager do otwarcia lightbox
+  if (typeof mediaManager !== 'undefined') {
+    mediaManager.openLightbox(id);
+  } else {
+    UI.showToast(`Bild "${id}" - MediaManager nicht verfügbar`, 'warning');
+  }
 }
 
 function openUserDoc(fileName) {

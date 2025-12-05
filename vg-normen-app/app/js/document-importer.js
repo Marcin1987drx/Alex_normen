@@ -28,9 +28,30 @@ class DocumentImporter {
             { id: 'sonstiges', name: 'Sonstige Dokumente', icon: '📁' }
         ];
         
-        this.importedDocuments = this.loadImportedDocuments();
+        this.importedDocuments = []; // Będzie załadowane z IndexedDB
         this.tesseractWorker = null;
         this.isProcessing = false;
+        this.useIndexedDB = typeof IndexedDBStorage !== 'undefined';
+        
+        // Załaduj dokumenty z IndexedDB przy starcie
+        this.loadDocumentsAsync();
+    }
+    
+    /**
+     * Asynchronicznie ładuje dokumenty z IndexedDB
+     */
+    async loadDocumentsAsync() {
+        if (this.useIndexedDB) {
+            try {
+                this.importedDocuments = await IndexedDBStorage.getAllDocuments();
+                console.log(`📚 ${this.importedDocuments.length} Dokumente aus IndexedDB geladen`);
+            } catch (e) {
+                console.error('Fehler beim Laden aus IndexedDB:', e);
+                this.importedDocuments = this.loadImportedDocuments(); // Fallback
+            }
+        } else {
+            this.importedDocuments = this.loadImportedDocuments();
+        }
     }
 
     /**
@@ -184,16 +205,22 @@ class DocumentImporter {
     renderDocumentCards() {
         return this.importedDocuments.map((doc, index) => {
             const category = this.categories.find(c => c.id === doc.category) || { icon: '📁', name: 'Sonstige' };
+            const hasAnalysis = doc.analysisId || (typeof documentIntelligence !== 'undefined' && documentIntelligence.analyzedDocuments?.has(doc.id));
+            
             return `
                 <div class="doc-card" data-category="${doc.category}" data-index="${index}">
                     <div class="doc-card-header">
                         <span class="doc-icon">${doc.formatIcon || '📄'}</span>
                         <span class="doc-category">${category.icon} ${category.name}</span>
+                        ${hasAnalysis ? '<span class="analysis-badge" title="Analysiert">🧠</span>' : ''}
                     </div>
                     <h3 class="doc-title">${doc.title}</h3>
                     <p class="doc-date">Importiert: ${new Date(doc.importDate).toLocaleDateString('de-DE')}</p>
+                    ${doc.detectedNorms?.length ? `
+                        <p class="doc-norms">📐 ${doc.detectedNorms.slice(0, 2).join(', ')}</p>
+                    ` : ''}
                     <div class="doc-tags">
-                        ${(doc.tags || []).slice(0, 3).map(tag => 
+                        ${(doc.tags || doc.keywordsAuto || []).slice(0, 3).map(tag => 
                             `<span class="tag">${tag}</span>`
                         ).join('')}
                     </div>
@@ -201,6 +228,15 @@ class DocumentImporter {
                         <button class="btn-icon" onclick="documentImporter.viewDocument(${index})" title="Anzeigen">
                             👁️
                         </button>
+                        ${hasAnalysis ? `
+                            <button class="btn-icon" onclick="viewDocumentAnalysis(${doc.id})" title="Analyse anzeigen">
+                                🧠
+                            </button>
+                        ` : `
+                            <button class="btn-icon" onclick="analyzeExistingDocument(${doc.id})" title="Analysieren">
+                                🔍
+                            </button>
+                        `}
                         <button class="btn-icon" onclick="documentImporter.editDocument(${index})" title="Bearbeiten">
                             ✏️
                         </button>
@@ -486,9 +522,9 @@ class DocumentImporter {
     }
 
     /**
-     * Speichert das Dokument
+     * Speichert das Dokument (IndexedDB + Originaldatei)
      */
-    saveDocument() {
+    async saveDocument() {
         const title = document.getElementById('docTitle').value.trim();
         const category = document.getElementById('docCategory').value;
         const tags = document.getElementById('docTags').value.split(',').map(t => t.trim()).filter(t => t);
@@ -499,8 +535,9 @@ class DocumentImporter {
             return;
         }
 
-        const document = {
-            id: Date.now(),
+        const docId = Date.now();
+        const doc = {
+            id: docId,
             title: title,
             category: category,
             tags: tags,
@@ -510,23 +547,85 @@ class DocumentImporter {
             fileSize: this.currentFileInfo.size,
             formatIcon: this.currentFileInfo.formatIcon,
             formatName: this.currentFileInfo.formatName,
+            hasOriginalFile: !!this.currentFile, // Czy mamy oryginalny plik
             importDate: new Date().toISOString()
         };
 
-        this.importedDocuments.unshift(document);
-        this.saveImportedDocuments();
+        try {
+            // Zapisz do IndexedDB (jeśli dostępne)
+            if (this.useIndexedDB) {
+                await IndexedDBStorage.saveDocument(doc);
+                
+                // Zapisz oryginalny plik binarny!
+                if (this.currentFile) {
+                    await IndexedDBStorage.saveFile(docId, this.currentFile, {
+                        filename: this.currentFileInfo.name,
+                        mimeType: this.currentFileInfo.type
+                    });
+                    console.log(`📁 Originaldatei gespeichert: ${this.currentFileInfo.name}`);
+                }
+                
+                // Odśwież listę
+                this.importedDocuments = await IndexedDBStorage.getAllDocuments();
+                
+                // 🧠 Document Intelligence - Automatische Analyse
+                if (typeof documentIntelligence !== 'undefined') {
+                    try {
+                        console.log('🧠 Starte intelligente Dokumentanalyse...');
+                        const analysis = await documentIntelligence.analyzeDocument(content, {
+                            id: docId,
+                            filename: this.currentFileInfo.name,
+                            fileType: this.currentFileInfo.type,
+                            fileSize: this.currentFileInfo.size
+                        });
+                        
+                        // Speichere Analyse-ID im Dokument
+                        doc.analysisId = analysis.id;
+                        doc.mainCategory = analysis.categories[0]?.id || 'sonstiges';
+                        doc.detectedNorms = analysis.norms.slice(0, 5).map(n => n.id);
+                        doc.keywordsAuto = analysis.keywords.slice(0, 10).map(k => k.word);
+                        
+                        // Aktualisiere Dokument mit Analyse-Daten
+                        await IndexedDBStorage.saveDocument(doc);
+                        
+                        console.log(`✅ Dokumentanalyse abgeschlossen: ${analysis.structure.totalSections} Abschnitte, ${analysis.keywords.length} Keywords`);
+                    } catch (analysisError) {
+                        console.warn('Document Intelligence Analyse fehlgeschlagen:', analysisError);
+                    }
+                }
+            } else {
+                // Fallback do localStorage
+                this.importedDocuments.unshift(doc);
+                this.saveImportedDocuments();
+            }
 
-        // UI zurücksetzen und aktualisieren
-        this.cancelImport();
-        
-        // Benachrichtigung
-        this.showNotification(`✅ "${title}" erfolgreich importiert!`);
-        
-        // Seite neu rendern
-        if (typeof renderPage === 'function') {
-            renderPage('import');
-        } else {
-            location.reload();
+            // UI zurücksetzen und aktualisieren
+            this.cancelImport();
+            
+            // Benachrichtigung
+            this.showNotification(`✅ "${title}" erfolgreich importiert!`);
+            
+            // Pokaż statystyki
+            if (this.useIndexedDB) {
+                const stats = await IndexedDBStorage.getStorageStats();
+                console.log(`📊 Speicher: ${stats.documents} Dokumente, ${stats.files} Dateien, ${IndexedDBStorage.formatSize(stats.totalSize)}`);
+            }
+            
+            // WAŻNE: Odśwież SearchEngine aby nowy dokument był widoczny w wyszukiwaniu
+            if (typeof SearchEngine !== 'undefined' && SearchEngine.refreshImportedDocuments) {
+                await SearchEngine.refreshImportedDocuments();
+                console.log('🔍 SearchEngine zaktualizowany z nowym dokumentem');
+            }
+            
+            // Seite neu rendern
+            if (typeof renderPage === 'function') {
+                renderPage('import');
+            } else {
+                location.reload();
+            }
+        } catch (error) {
+            console.error('Fehler beim Speichern:', error);
+            alert(`Fehler beim Speichern: ${error.message}`);
         }
     }
 
@@ -542,12 +641,27 @@ class DocumentImporter {
     }
 
     /**
-     * Zeigt ein Dokument an
+     * Zeigt ein Dokument an - otwiera encyklopedyczny widok szczegółów
      */
     viewDocument(index) {
         const doc = this.importedDocuments[index];
         if (!doc) return;
 
+        // Użyj nowej funkcji encyklopedycznej z app.js
+        if (typeof openItem === 'function') {
+            openItem(`imported_${doc.id}`, 'imported');
+        } else {
+            // Fallback do modala jeśli openItem niedostępny
+            this.viewDocumentModal(doc);
+        }
+    }
+    
+    /**
+     * Stary widok modala - jako fallback
+     */
+    viewDocumentModal(doc) {
+        const hasFile = doc.hasOriginalFile && this.useIndexedDB;
+        
         const modal = document.createElement('div');
         modal.className = 'modal-overlay';
         modal.innerHTML = `
@@ -560,10 +674,21 @@ class DocumentImporter {
                     <span>📁 ${this.categories.find(c => c.id === doc.category)?.name || 'Sonstige'}</span>
                     <span>📅 ${new Date(doc.importDate).toLocaleDateString('de-DE')}</span>
                     <span>📄 ${doc.formatName}</span>
+                    <span>💾 ${this.formatFileSize(doc.fileSize || 0)}</span>
                 </div>
                 <div class="modal-tags">
                     ${doc.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
                 </div>
+                ${hasFile ? `
+                <div class="modal-actions-bar">
+                    <button class="btn btn-primary" onclick="documentImporter.downloadOriginalFile(${doc.id})">
+                        📥 Original-${doc.formatName} herunterladen
+                    </button>
+                    <button class="btn btn-secondary" onclick="documentImporter.openOriginalFile(${doc.id})">
+                        👁️ Im Browser öffnen
+                    </button>
+                </div>
+                ` : ''}
                 <div class="modal-body">
                     <pre class="doc-content-view">${this.escapeHtml(doc.content)}</pre>
                 </div>
@@ -573,6 +698,51 @@ class DocumentImporter {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) modal.remove();
         });
+    }
+    
+    /**
+     * Pobiera oryginalny plik z IndexedDB i oferuje do pobrania
+     */
+    async downloadOriginalFile(docId) {
+        try {
+            const fileRecord = await IndexedDBStorage.getFile(docId);
+            if (!fileRecord) {
+                alert('Originaldatei nicht gefunden!');
+                return;
+            }
+            
+            const blob = new Blob([fileRecord.data], { type: fileRecord.mimeType });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileRecord.filename;
+            a.click();
+            
+            URL.revokeObjectURL(url);
+            this.showNotification(`📥 ${fileRecord.filename} heruntergeladen`);
+        } catch (error) {
+            console.error('Download-Fehler:', error);
+            alert('Fehler beim Herunterladen: ' + error.message);
+        }
+    }
+    
+    /**
+     * Otwiera oryginalny plik w przeglądarce
+     */
+    async openOriginalFile(docId) {
+        try {
+            const url = await IndexedDBStorage.getFileAsURL(docId);
+            if (!url) {
+                alert('Originaldatei nicht gefunden!');
+                return;
+            }
+            
+            window.open(url, '_blank');
+        } catch (error) {
+            console.error('Öffnen-Fehler:', error);
+            alert('Fehler beim Öffnen: ' + error.message);
+        }
     }
 
     /**
@@ -622,9 +792,9 @@ class DocumentImporter {
     }
 
     /**
-     * Speichert die Bearbeitung
+     * Speichert die Bearbeitung (auch in IndexedDB)
      */
-    saveEdit(index) {
+    async saveEdit(index) {
         const doc = this.importedDocuments[index];
         if (!doc) return;
 
@@ -634,31 +804,51 @@ class DocumentImporter {
         doc.content = document.getElementById('editContent').value;
         doc.lastModified = new Date().toISOString();
 
-        this.saveImportedDocuments();
-        document.querySelector('.modal-overlay').remove();
-        
-        this.showNotification('✅ Änderungen gespeichert!');
-        
-        if (typeof renderPage === 'function') {
-            renderPage('import');
+        try {
+            if (this.useIndexedDB) {
+                await IndexedDBStorage.saveDocument(doc);
+                this.importedDocuments = await IndexedDBStorage.getAllDocuments();
+            } else {
+                this.saveImportedDocuments();
+            }
+            
+            document.querySelector('.modal-overlay').remove();
+            this.showNotification('✅ Änderungen gespeichert!');
+            
+            if (typeof renderPage === 'function') {
+                renderPage('import');
+            }
+        } catch (error) {
+            console.error('Fehler beim Speichern:', error);
+            alert('Fehler beim Speichern: ' + error.message);
         }
     }
 
     /**
-     * Löscht ein Dokument
+     * Löscht ein Dokument (auch aus IndexedDB)
      */
-    deleteDocument(index) {
+    async deleteDocument(index) {
         const doc = this.importedDocuments[index];
         if (!doc) return;
 
         if (confirm(`Dokument "${doc.title}" wirklich löschen?`)) {
-            this.importedDocuments.splice(index, 1);
-            this.saveImportedDocuments();
-            
-            this.showNotification('🗑️ Dokument gelöscht');
-            
-            if (typeof renderPage === 'function') {
-                renderPage('import');
+            try {
+                if (this.useIndexedDB) {
+                    await IndexedDBStorage.deleteDocument(doc.id);
+                    this.importedDocuments = await IndexedDBStorage.getAllDocuments();
+                } else {
+                    this.importedDocuments.splice(index, 1);
+                    this.saveImportedDocuments();
+                }
+                
+                this.showNotification('🗑️ Dokument gelöscht');
+                
+                if (typeof renderPage === 'function') {
+                    renderPage('import');
+                }
+            } catch (error) {
+                console.error('Fehler beim Löschen:', error);
+                alert('Fehler beim Löschen: ' + error.message);
             }
         }
     }

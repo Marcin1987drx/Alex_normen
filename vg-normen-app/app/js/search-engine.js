@@ -9,7 +9,8 @@ const SearchEngine = {
   data: {
     karten: [],
     tabellen: [],
-    formulare: []
+    formulare: [],
+    importedDocs: [] // Zaimportowane dokumenty z IndexedDB
   },
   
   // ═══════════════════════════════════════════════════════════════════════════
@@ -27,9 +28,13 @@ const SearchEngine = {
       this.data.karten = karten || [];
       this.data.tabellen = tabellen || [];
       
+      // Zaimportowane dokumenty z IndexedDB
+      await this.loadImportedDocuments();
+      
       console.log('SearchEngine initialized:', {
         karten: this.data.karten.length,
-        tabellen: this.data.tabellen.length
+        tabellen: this.data.tabellen.length,
+        importedDocs: this.data.importedDocs.length
       });
       
       return true;
@@ -37,6 +42,30 @@ const SearchEngine = {
       console.error('SearchEngine init error:', e);
       return false;
     }
+  },
+  
+  /**
+   * Ładuje zaimportowane dokumenty z IndexedDB
+   */
+  async loadImportedDocuments() {
+    try {
+      if (typeof IndexedDBStorage !== 'undefined') {
+        this.data.importedDocs = await IndexedDBStorage.getAllDocuments();
+        console.log(`📚 SearchEngine: ${this.data.importedDocs.length} importierte Dokumente geladen`);
+      } else if (typeof documentImporter !== 'undefined') {
+        this.data.importedDocs = documentImporter.importedDocuments || [];
+      }
+    } catch (e) {
+      console.warn('Konnte importierte Dokumente nicht laden:', e);
+      this.data.importedDocs = [];
+    }
+  },
+  
+  /**
+   * Aktualizuje listę zaimportowanych dokumentów (np. po imporcie)
+   */
+  async refreshImportedDocuments() {
+    await this.loadImportedDocuments();
   },
   
   async loadJSON(path) {
@@ -88,7 +117,28 @@ const SearchEngine = {
       }
     });
     
-    // In User-Dokumenten suchen
+    // ═══════════════════════════════════════════════════════════════════════
+    // PRZESZUKAJ ZAIMPORTOWANE DOKUMENTY (IndexedDB)
+    // ═══════════════════════════════════════════════════════════════════════
+    this.data.importedDocs.forEach(doc => {
+      const score = this.calculateImportedDocScore(doc, searchTerms);
+      if (score > 0) {
+        results.push({
+          id: `imported_${doc.id}`,
+          title: doc.title,
+          description: doc.content ? doc.content.substring(0, 200) + '...' : '',
+          keywords: doc.tags || [],
+          category: doc.category,
+          icon: doc.formatIcon || '📄',
+          score,
+          type: 'imported',
+          source: 'meine_dokumente',
+          importedDoc: doc // Pełny dokument do wyświetlenia
+        });
+      }
+    });
+    
+    // In User-Dokumenten suchen (stary system - localStorage)
     const userDocs = Storage.getUserDocs();
     Object.entries(userDocs).forEach(([fileName, docInfo]) => {
       const score = this.calculateDocScore(fileName, docInfo, searchTerms);
@@ -201,6 +251,52 @@ const SearchEngine = {
     return score;
   },
   
+  /**
+   * Oblicza score dla zaimportowanych dokumentów (IndexedDB)
+   */
+  calculateImportedDocScore(doc, searchTerms) {
+    let score = 0;
+    
+    const title = this.normalizeText(doc.title || '');
+    const content = this.normalizeText(doc.content || '');
+    const tags = (doc.tags || []).map(k => this.normalizeText(k));
+    const filename = this.normalizeText(doc.filename || '');
+    const category = this.normalizeText(doc.category || '');
+    
+    searchTerms.forEach(term => {
+      // Tytuł - najwyższy priorytet
+      if (title.includes(term)) {
+        score += 15;
+        if (title.startsWith(term)) score += 5;
+      }
+      
+      // Tagi/słowa kluczowe
+      if (tags.some(t => t.includes(term))) {
+        score += 10;
+      }
+      
+      // Nazwa pliku
+      if (filename.includes(term)) {
+        score += 8;
+      }
+      
+      // Kategoria
+      if (category.includes(term)) {
+        score += 5;
+      }
+      
+      // Treść dokumentu (niższy priorytet ale ważny)
+      if (content.includes(term)) {
+        score += 4;
+        // Bonus za wielokrotne wystąpienia
+        const matches = (content.match(new RegExp(term, 'g')) || []).length;
+        if (matches > 3) score += 2;
+      }
+    });
+    
+    return score;
+  },
+  
   normalizeText(text) {
     return text.toLowerCase()
       .replace(/[äÄ]/g, 'ae')
@@ -229,6 +325,29 @@ const SearchEngine = {
   
   getAllKarten() {
     return this.data.karten;
+  },
+  
+  /**
+   * Pobiera wszystkie zaimportowane dokumenty
+   */
+  getAllImportedDocs() {
+    return this.data.importedDocs;
+  },
+  
+  /**
+   * Pobiera zaimportowany dokument po ID
+   */
+  getImportedDocById(docId) {
+    // Może być przekazany jako "imported_123" lub "123"
+    const id = String(docId).replace('imported_', '');
+    return this.data.importedDocs.find(d => String(d.id) === id);
+  },
+  
+  /**
+   * Pobiera zaimportowane dokumenty według kategorii
+   */
+  getImportedDocsByCategory(category) {
+    return this.data.importedDocs.filter(d => d.category === category);
   },
   
   // ═══════════════════════════════════════════════════════════════════════════
@@ -300,5 +419,111 @@ const SearchEngine = {
     }
     
     return relevantKeywords.join('_');
+  },
+  
+  // ═══════════════════════════════════════════════════════════════════════════
+  // AUTOCOMPLETE SUGGESTIONS
+  // ═══════════════════════════════════════════════════════════════════════════
+  
+  /**
+   * Generuje sugestie autocomplete dla wyszukiwarki
+   * @param {string} query - Częściowe zapytanie użytkownika
+   * @param {number} limit - Maksymalna liczba sugestii
+   * @returns {Array} Tablica sugestii
+   */
+  getAutocompleteSuggestions(query, limit = 8) {
+    if (!query || query.length < 2) return [];
+    
+    const queryLower = query.toLowerCase();
+    const suggestions = [];
+    const seen = new Set();
+    
+    // 1. Szukaj w kartach Wissensbasis
+    if (this.data.karten) {
+      this.data.karten.forEach(karte => {
+        if (karte.title?.toLowerCase().includes(queryLower)) {
+          if (!seen.has(karte.title)) {
+            suggestions.push({
+              title: karte.title,
+              icon: karte.icon || '📄',
+              type: 'karte',
+              score: karte.title.toLowerCase().startsWith(queryLower) ? 100 : 50
+            });
+            seen.add(karte.title);
+          }
+        }
+        // Szukaj też w keywords
+        (karte.keywords || []).forEach(kw => {
+          if (kw.toLowerCase().includes(queryLower) && !seen.has(kw)) {
+            suggestions.push({
+              title: kw,
+              icon: '🏷️',
+              type: 'keyword',
+              score: kw.toLowerCase().startsWith(queryLower) ? 80 : 40
+            });
+            seen.add(kw);
+          }
+        });
+      });
+    }
+    
+    // 2. Szukaj w MarkdownLoader jeśli dostępny
+    if (typeof MarkdownLoader !== 'undefined' && MarkdownLoader.sektionen) {
+      MarkdownLoader.sektionen.forEach(sektion => {
+        if (sektion.title?.toLowerCase().includes(queryLower) && !seen.has(sektion.title)) {
+          suggestions.push({
+            title: sektion.title,
+            icon: sektion.icon || '📖',
+            type: 'sektion',
+            score: sektion.title.toLowerCase().startsWith(queryLower) ? 95 : 45
+          });
+          seen.add(sektion.title);
+        }
+      });
+    }
+    
+    // 3. Szukaj w zaimportowanych dokumentach
+    this.data.importedDocs.forEach(doc => {
+      if (doc.title?.toLowerCase().includes(queryLower) && !seen.has(doc.title)) {
+        suggestions.push({
+          title: doc.title,
+          icon: doc.formatIcon || '📄',
+          type: 'imported',
+          score: doc.title.toLowerCase().startsWith(queryLower) ? 85 : 35
+        });
+        seen.add(doc.title);
+      }
+    });
+    
+    // 4. Dodaj popularne terminy techniczne
+    const techTerms = [
+      'Crimphöhe', 'Crimpverbindung', 'Crimpkontakt', 'Crimpzange',
+      'AWG Tabelle', 'AWG Querschnitt', 'Drahtquerschnitt',
+      'Zugtest', 'Zugkraft', 'Zugfestigkeit',
+      'Schrumpfschlauch', 'Schrumpfverhältnis', 'Wärmeschrumpf',
+      'Steckverbinder', 'Stecker', 'Kontakt', 'Pin',
+      'Isolierung', 'Abisolieren', 'Abisolierlänge',
+      'Lötverbindung', 'Löttemperatur', 'Löten',
+      'VG 95218', 'VG 96927', 'VG 95319', 'VG 95343',
+      'IPC-A-620', 'IPC-WHMA-A-620',
+      'Gut Schlecht', 'Akzeptanzkriterien', 'Qualitätsprüfung'
+    ];
+    
+    techTerms.forEach(term => {
+      if (term.toLowerCase().includes(queryLower) && !seen.has(term)) {
+        suggestions.push({
+          title: term,
+          icon: '🔧',
+          type: 'tech',
+          score: term.toLowerCase().startsWith(queryLower) ? 70 : 30
+        });
+        seen.add(term);
+      }
+    });
+    
+    // Sortuj po score i ogranicz
+    return suggestions
+      .sort((a, b) => b.score - a.score)
+      .slice(0, limit);
   }
 };
