@@ -1,0 +1,185 @@
+name: 🚀 Build Electron App (Windows EXE)
+
+on:
+  push:
+    branches: [main]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Typ buildu'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+          - installer
+          - portable
+          - both
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  build-windows:
+    name: 🪟 Build Windows EXE
+    runs-on: windows-latest
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: vg-normen-app/package-lock.json
+          
+      - name: 📦 Install dependencies
+        working-directory: vg-normen-app
+        run: npm ci || npm install
+        
+      - name: 🔧 Create build resources directory
+        working-directory: vg-normen-app
+        run: |
+          if (-not (Test-Path "build")) {
+            New-Item -ItemType Directory -Path "build"
+          }
+        shell: pwsh
+
+      - name: 🏗️ Build Electron App (Installer + Portable)
+        if: github.event.inputs.build_type == 'both' || github.event.inputs.build_type == ''
+        working-directory: vg-normen-app
+        run: npm run build-all
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🏗️ Build Electron App (Installer only)
+        if: github.event.inputs.build_type == 'installer'
+        working-directory: vg-normen-app
+        run: npm run build
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🏗️ Build Electron App (Portable only)
+        if: github.event.inputs.build_type == 'portable'
+        working-directory: vg-normen-app
+        run: npm run build-portable
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📋 List build artifacts
+        working-directory: vg-normen-app
+        run: |
+          Write-Host "=== Build Output ===" -ForegroundColor Green
+          Get-ChildItem -Path dist -Recurse | Format-Table Name, Length, LastWriteTime
+        shell: pwsh
+
+      - name: 📤 Upload Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: VG-Normen-Installer-Windows
+          path: vg-normen-app/dist/*.exe
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: 📤 Upload Portable Version
+        uses: actions/upload-artifact@v4
+        with:
+          name: VG-Normen-Portable-Windows
+          path: vg-normen-app/dist/*portable*.exe
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: 📤 Upload All Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: VG-Normen-All-Windows
+          path: |
+            vg-normen-app/dist/*.exe
+            vg-normen-app/dist/*.yml
+            vg-normen-app/dist/*.yaml
+          if-no-files-found: warn
+          retention-days: 30
+
+  # Release job - only on tags
+  release:
+    name: 🎉 Create Release
+    needs: build-windows
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+      - name: 📥 Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: VG-Normen-All-Windows
+          path: release-files
+
+      - name: 📋 List release files
+        run: ls -la release-files/
+
+      - name: 🎉 Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: VG-Normen Wissenssystem ${{ github.ref_name }}
+          body: |
+            ## 🚀 VG-Normen Wissenssystem ${{ github.ref_name }}
+            
+            ### 📥 Downloads
+            
+            | Plik | Opis |
+            |------|------|
+            | `VG-Normen-Setup-*.exe` | Installer Windows (zalecany) |
+            | `VG-Normen-Portable-*.exe` | Wersja przenośna (bez instalacji) |
+            
+            ### ✨ Funkcje
+            - Offline-Wissensdatenbank dla VG-Normen
+            - Intelligente Suche mit FlexSearch
+            - Document Intelligence (automatyczna analiza PDF)
+            - Senior Mode (uproszczony interfejs)
+            - IndexedDB für lokale Datenspeicherung
+            
+            ### 📋 Wymagania
+            - Windows 10/11 (64-bit)
+            - ~200 MB miejsca na dysku
+            
+            ---
+            *Automatycznie wygenerowane przez GitHub Actions*
+          files: release-files/*
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Build info summary
+  summary:
+    name: 📊 Build Summary
+    needs: build-windows
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: 📊 Generate Summary
+        run: |
+          echo "## 🏗️ Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Parametr | Wartość |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|---------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 📅 Data | $(date +'%Y-%m-%d %H:%M:%S') |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔀 Branch | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📝 Commit | ${{ github.sha }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 👤 Autor | ${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🎯 Build Type | ${{ github.event.inputs.build_type || 'both' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📥 Pobieranie" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Pliki EXE są dostępne w zakładce **Artifacts** tego workflow." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Aby pobrać:" >> $GITHUB_STEP_SUMMARY
+          echo "1. Kliknij **Summary** tego workflow" >> $GITHUB_STEP_SUMMARY
+          echo "2. Przewiń do sekcji **Artifacts**" >> $GITHUB_STEP_SUMMARY
+          echo "3. Pobierz **VG-Normen-Installer-Windows** lub **VG-Normen-Portable-Windows**" >> $GITHUB_STEP_SUMMARY
