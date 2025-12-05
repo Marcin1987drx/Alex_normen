@@ -113,20 +113,45 @@ const WissensbasisLoader = {
   // ═══════════════════════════════════════════════════════════════════════════════
   
   kartenAusTeil1(daten) {
+    const meta = daten.meta || {};
+    const norm = 'VG Normen';
+    
     // Hauptübersicht
     this.karten.push({
       id: 'teil1-uebersicht',
       category: 'kabel',
       type: 'overview',
-      title: daten.titel,
+      title: meta.title || daten.titel,
       icon: '📘',
-      norm: 'VG Normen',
-      description: daten.beschreibung,
+      norm: norm,
+      description: meta.geltungsbereich || daten.beschreibung,
       keywords: ['einführung', 'übersicht', 'vg-normen', 'kabelgarnituren', 'grundlagen'],
       teilDaten: daten
     });
     
-    // VG-Hierarchie
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PEŁNE RENDEROWANIE KAPITEL dla TEIL1
+    // ═══════════════════════════════════════════════════════════════════════════
+    if (daten.kapitel && Array.isArray(daten.kapitel)) {
+      daten.kapitel.forEach(kapitel => {
+        const kapitelId = kapitel.id || 'unknown';
+        const kapitelTitle = kapitel.title || 'Kapitel';
+        
+        this.karten.push({
+          id: `teil1-kapitel-${kapitelId.replace('.', '-')}`,
+          category: 'kabel',
+          type: 'detail',
+          title: `${kapitelId} ${kapitelTitle}`,
+          icon: this.kapitelIcon(kapitelTitle),
+          norm: norm,
+          description: this.kapitelBeschreibung(kapitel),
+          keywords: ['einführung', kapitelId, ...this.extrahiereKeywords(kapitel)],
+          content: this.kapitelZuVollstaendigemHtml(kapitel)
+        });
+      });
+    }
+    
+    // VG-Hierarchie (fallback)
     if (daten.vg_hierarchie) {
       this.karten.push({
         id: 'teil1-vg-hierarchie',
@@ -141,7 +166,7 @@ const WissensbasisLoader = {
       });
     }
     
-    // Temperatursysteme
+    // Temperatursysteme (fallback)
     if (daten.temperatursysteme) {
       this.karten.push({
         id: 'teil1-temperatursysteme',
@@ -156,7 +181,7 @@ const WissensbasisLoader = {
       });
     }
     
-    // Zugelassene Hersteller
+    // Zugelassene Hersteller (fallback)
     if (daten.zugelassene_hersteller) {
       this.karten.push({
         id: 'teil1-hersteller',
@@ -177,20 +202,51 @@ const WissensbasisLoader = {
   // ═══════════════════════════════════════════════════════════════════════════════
   
   kartenAusTeil2(daten) {
+    const meta = daten.meta || {};
+    const norm = meta.geltende_norm || 'VG 95218';
+    
     // Hauptübersicht
     this.karten.push({
       id: 'teil2-uebersicht',
       category: 'kabel',
       type: 'overview',
-      title: daten.titel,
+      title: meta.title || daten.titel,
       icon: '📏',
-      norm: 'VG 95218',
-      description: daten.beschreibung,
+      norm: norm,
+      description: meta.geltungsbereich || daten.beschreibung,
       keywords: ['vg 95218', 'drähte', 'leitungen', 'kabel', 'typ a', 'typ e', 'typ g', 'typ h'],
       teilDaten: daten
     });
     
-    // Für jeden Drahttyp eine Karte
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PEŁNE RENDEROWANIE KAPITEL - każdy rozdział jako osobna karta z WSZYSTKIMI danymi
+    // ═══════════════════════════════════════════════════════════════════════════
+    if (daten.kapitel && Array.isArray(daten.kapitel)) {
+      daten.kapitel.forEach(kapitel => {
+        const kapitelId = kapitel.id || 'unknown';
+        const kapitelTitle = kapitel.title || 'Kapitel';
+        
+        // Generuj pełną zawartość HTML dla kapitel
+        const vollstaendigerInhalt = this.kapitelZuVollstaendigemHtml(kapitel);
+        
+        // Generuj keywords z zawartości kapitel
+        const keywords = this.extrahiereKeywords(kapitel);
+        
+        this.karten.push({
+          id: `teil2-kapitel-${kapitelId.replace('.', '-')}`,
+          category: 'kabel',
+          type: 'detail',
+          title: `${kapitelId} ${kapitelTitle}`,
+          icon: this.kapitelIcon(kapitelTitle),
+          norm: norm,
+          description: this.kapitelBeschreibung(kapitel),
+          keywords: ['vg 95218', kapitelId, ...keywords],
+          content: vollstaendigerInhalt
+        });
+      });
+    }
+    
+    // Für jeden Drahttyp eine Karte (fallback dla starszej struktury)
     if (daten.drahttypen) {
       Object.entries(daten.drahttypen).forEach(([typKey, typDaten]) => {
         this.karten.push({
@@ -243,19 +299,44 @@ const WissensbasisLoader = {
   // ═══════════════════════════════════════════════════════════════════════════════
   
   kartenAusTeil3(daten) {
+    const meta = daten.meta || {};
+    const norm = meta.geltende_norm || 'VG 96927';
+    
     this.karten.push({
       id: 'teil3-uebersicht',
       category: 'kabel',
       type: 'overview',
-      title: daten.titel,
+      title: meta.title || daten.titel,
       icon: '🔌',
-      norm: 'VG 96927',
-      description: daten.beschreibung,
+      norm: norm,
+      description: meta.geltungsbereich || daten.beschreibung,
       keywords: ['vg 96927', 'kabelgarnitur', 'konfektionierung', 'system'],
       teilDaten: daten
     });
     
-    // Temperatursysteme Detail
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PEŁNE RENDEROWANIE KAPITEL dla TEIL3
+    // ═══════════════════════════════════════════════════════════════════════════
+    if (daten.kapitel && Array.isArray(daten.kapitel)) {
+      daten.kapitel.forEach(kapitel => {
+        const kapitelId = kapitel.id || 'unknown';
+        const kapitelTitle = kapitel.title || 'Kapitel';
+        
+        this.karten.push({
+          id: `teil3-kapitel-${kapitelId.replace('.', '-')}`,
+          category: 'kabel',
+          type: 'detail',
+          title: `${kapitelId} ${kapitelTitle}`,
+          icon: this.kapitelIcon(kapitelTitle),
+          norm: norm,
+          description: this.kapitelBeschreibung(kapitel),
+          keywords: ['vg 96927', kapitelId, ...this.extrahiereKeywords(kapitel)],
+          content: this.kapitelZuVollstaendigemHtml(kapitel)
+        });
+      });
+    }
+    
+    // Temperatursysteme Detail (fallback)
     if (daten.temperatursysteme) {
       Object.entries(daten.temperatursysteme).forEach(([sysKey, sysDaten]) => {
         this.karten.push({
@@ -305,7 +386,23 @@ const WissensbasisLoader = {
       teilDaten: daten
     });
     
-    // Baugrößen
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PEŁNE RENDEROWANIE - każda sekcja jako osobna karta
+    // ═══════════════════════════════════════════════════════════════════════════
+    this.renderAlleSekcje(daten, 'teil4', 'stecker', 'VG 95319', {
+      skip: ['teil', 'titel', 'version', 'letzte_aktualisierung', 'beschreibung'],
+      icons: {
+        'normenstruktur': '📜',
+        'milspec_kompatibilitaet': '🇺🇸',
+        'baugroessen': '📐',
+        'kontaktgroessen': '⚡',
+        'anzugsmomente': '🔧',
+        'kontaktanordnungen': '🔢',
+        'identifikation': '🏷️'
+      }
+    });
+    
+    // Baugrößen (legacy)
     if (daten.baugroessen) {
       this.karten.push({
         id: 'teil4-baugroessen',
@@ -320,7 +417,7 @@ const WissensbasisLoader = {
       });
     }
     
-    // Kontaktgrößen
+    // Kontaktgrößen (legacy)
     if (daten.kontaktgroessen) {
       this.karten.push({
         id: 'teil4-kontaktgroessen',
@@ -335,7 +432,7 @@ const WissensbasisLoader = {
       });
     }
     
-    // Anzugsmomente
+    // Anzugsmomente (legacy)
     if (daten.anzugsmomente) {
       this.karten.push({
         id: 'teil4-anzugsmomente',
@@ -366,6 +463,21 @@ const WissensbasisLoader = {
       description: daten.beschreibung,
       keywords: ['vg 96936', 'abschirmung', 'geflecht', 'emi', 'rfi', 'schirmung'],
       teilDaten: daten
+    });
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PEŁNE RENDEROWANIE - każda sekcja jako osobna karta
+    // ═══════════════════════════════════════════════════════════════════════════
+    this.renderAlleSekcje(daten, 'teil5', 'schirmung', 'VG 96936', {
+      skip: ['teil', 'titel', 'version', 'letzte_aktualisierung', 'beschreibung'],
+      icons: {
+        'normenstruktur': '📜',
+        'anwendungsbereiche': '🎯',
+        'metallgeflechte_vg96936_10': '🔩',
+        'geflechtmaterialien': '🧪',
+        'geflechtgroessen': '📏',
+        'verarbeitung': '🔧'
+      }
     });
     
     // Geflechtmaterialien
@@ -416,7 +528,22 @@ const WissensbasisLoader = {
       teilDaten: daten
     });
     
-    // Für jeden Schrumpfschlauch-Typ eine Karte
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PEŁNE RENDEROWANIE WSZYSTKICH SEKCJI
+    // ═══════════════════════════════════════════════════════════════════════════
+    this.renderAlleSekcje(daten, 'teil6', 'schrumpfen', 'VG 95343', {
+      skip: ['teil', 'titel', 'version', 'letzte_aktualisierung', 'beschreibung', 'geltende_norm'],
+      icons: {
+        'normenstruktur': '📜',
+        'anwendungsbereiche': '🎯',
+        'typen': '📋',
+        'mil_spec_vergleich': '🔄',
+        'verarbeitungshinweise': '🔧',
+        'temperaturprofile': '🌡️'
+      }
+    });
+    
+    // Für jeden Schrumpfschlauch-Typ eine Karte (legacy)
     if (daten.typen) {
       Object.entries(daten.typen).forEach(([typKey, typDaten]) => {
         this.karten.push({
@@ -433,7 +560,7 @@ const WissensbasisLoader = {
       });
     }
     
-    // MIL-SPEC Vergleich
+    // MIL-SPEC Vergleich (legacy)
     if (daten.mil_spec_vergleich) {
       this.karten.push({
         id: 'teil6-mil-spec',
@@ -466,7 +593,23 @@ const WissensbasisLoader = {
       teilDaten: daten
     });
     
-    // Crimp-Kriterien
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PEŁNE RENDEROWANIE WSZYSTKICH SEKCJI
+    // ═══════════════════════════════════════════════════════════════════════════
+    this.renderAlleSekcje(daten, 'teil7', 'crimpen', 'IPC/WHMA-A-620', {
+      skip: ['teil', 'titel', 'version', 'letzte_aktualisierung', 'beschreibung', 'geltende_norm'],
+      icons: {
+        'normuebersicht': '📜',
+        'crimpkriterien_klasse_3': '🔧',
+        'crimp_kriterien': '✅',
+        'zugkraefte': '💪',
+        'loet_kriterien': '🔥',
+        'kabelverarbeitung': '🔌',
+        'isolationsbearbeitung': '📏'
+      }
+    });
+    
+    // Crimp-Kriterien (legacy)
     if (daten.crimp_kriterien) {
       this.karten.push({
         id: 'teil7-crimp-kriterien',
@@ -481,7 +624,7 @@ const WissensbasisLoader = {
       });
     }
     
-    // Zugkräfte
+    // Zugkräfte (legacy)
     if (daten.zugkraefte) {
       this.karten.push({
         id: 'teil7-zugkraefte',
@@ -529,7 +672,23 @@ const WissensbasisLoader = {
       teilDaten: daten
     });
     
-    // Wareneingangsprüfung
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PEŁNE RENDEROWANIE WSZYSTKICH SEKCJI
+    // ═══════════════════════════════════════════════════════════════════════════
+    this.renderAlleSekcje(daten, 'teil8', 'pruefung', 'ISO 9001 / VG', {
+      skip: ['teil', 'titel', 'version', 'letzte_aktualisierung', 'beschreibung'],
+      icons: {
+        'qualitaetssystem': '✅',
+        'wareneingangspruefung': '📦',
+        'fertigungsbegleitende_pruefung': '🔍',
+        'pruefmittel': '📏',
+        'dokumentation': '📋',
+        'fehlermanagement': '🔍',
+        'schulung': '👨‍🏫'
+      }
+    });
+    
+    // Wareneingangsprüfung (legacy)
     if (daten.wareneingangspruefung) {
       this.karten.push({
         id: 'teil8-wareneingang',
@@ -544,7 +703,7 @@ const WissensbasisLoader = {
       });
     }
     
-    // Prüfmittel
+    // Prüfmittel (legacy)
     if (daten.pruefmittel) {
       this.karten.push({
         id: 'teil8-pruefmittel',
@@ -559,7 +718,7 @@ const WissensbasisLoader = {
       });
     }
     
-    // 8D-Report
+    // 8D-Report (legacy)
     if (daten.fehlermanagement) {
       this.karten.push({
         id: 'teil8-8d-report',
@@ -590,6 +749,20 @@ const WissensbasisLoader = {
       description: daten.beschreibung,
       keywords: ['aql', 'iso 2859', 'stichprobe', 'los', 'annahmezahl'],
       teilDaten: daten
+    });
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PEŁNE RENDEROWANIE WSZYSTKICH SEKCJI
+    // ═══════════════════════════════════════════════════════════════════════════
+    this.renderAlleSekcje(daten, 'teil9', 'pruefung', 'ISO 2859-1', {
+      skip: ['teil', 'titel', 'version', 'letzte_aktualisierung', 'beschreibung', 'tabellen'],
+      icons: {
+        'grundlagen': '📘',
+        'fehlerklassifizierung': '❌',
+        'aql_werte_vg96927': '📊',
+        'stichprobenplaene': '📋',
+        'schnellreferenz': '⚡'
+      }
     });
     
     // AQL-Tabellen
@@ -623,7 +796,7 @@ const WissensbasisLoader = {
       }
     }
     
-    // Schnellreferenz
+    // Schnellreferenz (legacy)
     if (daten.schnellreferenz) {
       this.karten.push({
         id: 'teil9-schnellreferenz',
@@ -1031,6 +1204,411 @@ const WissensbasisLoader = {
       'F-11': '❌', 'F-12': '⚠️', 'F-13': '📏', 'F-14': '👷', 'F-15': '🏭'
     };
     return mapping[formKey] || '📄';
+  },
+  
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // UNIWERSALNE RENDEROWANIE WSZYSTKICH SEKCJI
+  // Dla TEIL bez struktury kapitel (TEIL 4-9)
+  // ═══════════════════════════════════════════════════════════════════════════════
+  
+  /**
+   * Renderuje wszystkie sekcje z danych jako osobne karty
+   * @param {Object} daten - Dane TEIL
+   * @param {string} teilPrefix - Prefiks ID (np. 'teil4')
+   * @param {string} category - Kategoria karty
+   * @param {string} norm - Nazwa normy
+   * @param {Object} options - Opcje {skip: [], icons: {}}
+   */
+  renderAlleSekcje(daten, teilPrefix, category, norm, options = {}) {
+    const skip = options.skip || ['teil', 'titel', 'version', 'letzte_aktualisierung', 'beschreibung'];
+    const icons = options.icons || {};
+    
+    Object.entries(daten).forEach(([key, value]) => {
+      // Pomiń klucze meta
+      if (skip.includes(key)) return;
+      if (value === null || value === undefined) return;
+      
+      const formattedTitle = this.formatHeader(key);
+      const icon = icons[key] || this.sekcjaIcon(key);
+      
+      // Generuj pełną zawartość HTML
+      const content = this.sekcjaZuVollstaendigemHtml(key, value);
+      
+      // Generuj keywords
+      const keywords = this.extrahiereSekcjaKeywords(key, value);
+      
+      this.karten.push({
+        id: `${teilPrefix}-sekcja-${key.replace(/_/g, '-').toLowerCase()}`,
+        category: category,
+        type: 'detail',
+        title: formattedTitle,
+        icon: icon,
+        norm: norm,
+        description: this.sekcjaBeschreibung(value),
+        keywords: [norm.toLowerCase(), key.replace(/_/g, ' '), ...keywords],
+        content: content
+      });
+    });
+  },
+  
+  /**
+   * Renderuje sekcję do pełnego HTML
+   */
+  sekcjaZuVollstaendigemHtml(key, value) {
+    if (value === null || value === undefined) return '<p>Keine Daten</p>';
+    
+    let html = '<div class="kapitel-vollstaendig">';
+    html += this.renderKapitelElement(key, value);
+    html += '</div>';
+    return html;
+  },
+  
+  /**
+   * Wybiera ikonę dla sekcji na podstawie klucza
+   */
+  sekcjaIcon(key) {
+    const keyLower = key.toLowerCase();
+    
+    if (keyLower.includes('norm')) return '📜';
+    if (keyLower.includes('tabelle') || keyLower.includes('groesse')) return '📊';
+    if (keyLower.includes('pruef') || keyLower.includes('test')) return '🔬';
+    if (keyLower.includes('elektrisch')) return '⚡';
+    if (keyLower.includes('mechanisch')) return '🔧';
+    if (keyLower.includes('material')) return '🧪';
+    if (keyLower.includes('temp')) return '🌡️';
+    if (keyLower.includes('anwendung')) return '🎯';
+    if (keyLower.includes('fehler') || keyLower.includes('defekt')) return '❌';
+    if (keyLower.includes('qualit')) return '✅';
+    if (keyLower.includes('crimp')) return '🔧';
+    if (keyLower.includes('loet') || keyLower.includes('solder')) return '🔥';
+    if (keyLower.includes('kabel') || keyLower.includes('draht')) return '🔌';
+    if (keyLower.includes('kontakt')) return '⚡';
+    if (keyLower.includes('schirm') || keyLower.includes('abschirm')) return '🛡️';
+    if (keyLower.includes('schrumpf')) return '🔥';
+    if (keyLower.includes('formular') || keyLower.includes('dokument')) return '📋';
+    if (keyLower.includes('schnell') || keyLower.includes('referenz')) return '⚡';
+    if (keyLower.includes('grundlag')) return '📘';
+    if (keyLower.includes('aql') || keyLower.includes('stichprob')) return '📊';
+    
+    return '📄';
+  },
+  
+  /**
+   * Generuje opis sekcji
+   */
+  sekcjaBeschreibung(value) {
+    if (!value) return '';
+    
+    if (typeof value === 'string') {
+      return value.length > 150 ? value.substring(0, 150) + '...' : value;
+    }
+    
+    if (value.beschreibung) return value.beschreibung;
+    if (value.titel) return value.titel;
+    
+    if (Array.isArray(value)) {
+      if (value.length > 0) {
+        if (typeof value[0] === 'string') {
+          return value.slice(0, 2).join(', ') + (value.length > 2 ? '...' : '');
+        }
+        return `${value.length} Einträge`;
+      }
+    }
+    
+    if (typeof value === 'object') {
+      const keys = Object.keys(value).slice(0, 3);
+      return `Enthält: ${keys.map(k => this.formatHeader(k)).join(', ')}`;
+    }
+    
+    return '';
+  },
+  
+  /**
+   * Ekstrahuje keywords z sekcji
+   */
+  extrahiereSekcjaKeywords(key, value) {
+    const keywords = new Set();
+    
+    // Dodaj słowa z klucza
+    key.split('_').forEach(word => {
+      if (word.length > 2) keywords.add(word.toLowerCase());
+    });
+    
+    // Szukaj specjalnych słów w wartościach
+    const text = JSON.stringify(value).toLowerCase();
+    const specialWords = ['awg', 'mm²', 'mm2', 'ohm', '°c', 'nm', 'mpa', 'vg', 'mil', 'ipc', 'iso', 
+                          'din', 'crimp', 'hipot', 'isolation', 'widerstand', 'temperatur'];
+    specialWords.forEach(word => {
+      if (text.includes(word)) keywords.add(word);
+    });
+    
+    return Array.from(keywords).slice(0, 8);
+  },
+  
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // VOLLSTÄNDIGES KAPITEL-RENDERING - ALLE DATEN ANZEIGEN
+  // ═══════════════════════════════════════════════════════════════════════════════
+  
+  /**
+   * Renderuje kapitel do pełnego HTML ze WSZYSTKIMI danymi
+   */
+  kapitelZuVollstaendigemHtml(kapitel) {
+    if (!kapitel) return '<p>Keine Daten</p>';
+    
+    let html = '<div class="kapitel-vollstaendig">';
+    
+    // Iteruj przez wszystkie klucze kapitel i renderuj odpowiednio
+    Object.entries(kapitel).forEach(([key, value]) => {
+      if (key === 'id' || key === 'title') return; // Skip meta keys
+      
+      html += this.renderKapitelElement(key, value);
+    });
+    
+    html += '</div>';
+    return html;
+  },
+  
+  /**
+   * Renderuje pojedynczy element kapitel
+   */
+  renderKapitelElement(key, value) {
+    if (value === null || value === undefined) return '';
+    
+    let html = '';
+    const formattedKey = this.formatHeader(key);
+    
+    // Tablice
+    if (Array.isArray(value)) {
+      if (value.length === 0) return '';
+      
+      // Sprawdź czy to tablica obiektów (tabela) czy prostych wartości (lista)
+      if (typeof value[0] === 'object' && value[0] !== null) {
+        // To tabela danych
+        html += `<div class="kapitel-sektion">`;
+        html += `<h4>📊 ${formattedKey}</h4>`;
+        html += this.arrayZuTabelleHtml(value);
+        html += '</div>';
+      } else {
+        // To prosta lista
+        html += `<div class="kapitel-sektion">`;
+        html += `<h4>📋 ${formattedKey}</h4>`;
+        html += '<ul class="kapitel-liste">';
+        value.forEach(item => {
+          html += `<li>${item}</li>`;
+        });
+        html += '</ul></div>';
+      }
+    }
+    // Obiekty (zagnieżdżone dane)
+    else if (typeof value === 'object') {
+      html += `<div class="kapitel-sektion">`;
+      html += `<h4>📁 ${formattedKey}</h4>`;
+      html += this.objektZuHtml(value);
+      html += '</div>';
+    }
+    // Proste wartości
+    else {
+      html += `<p><strong>${formattedKey}:</strong> ${value}</p>`;
+    }
+    
+    return html;
+  },
+  
+  /**
+   * Konwertuje tablicę obiektów do tabeli HTML
+   */
+  arrayZuTabelleHtml(arr) {
+    if (!arr || arr.length === 0) return '<p>Keine Daten</p>';
+    
+    const headers = Object.keys(arr[0]);
+    let html = '<div class="table-scroll"><table class="data-table kapitel-tabelle"><thead><tr>';
+    headers.forEach(h => html += `<th>${this.formatHeader(h)}</th>`);
+    html += '</tr></thead><tbody>';
+    
+    arr.forEach(row => {
+      html += '<tr>';
+      headers.forEach(h => {
+        const val = row[h];
+        if (typeof val === 'object' && val !== null) {
+          html += `<td>${JSON.stringify(val)}</td>`;
+        } else {
+          html += `<td>${val ?? '-'}</td>`;
+        }
+      });
+      html += '</tr>';
+    });
+    
+    html += '</tbody></table></div>';
+    return html;
+  },
+  
+  /**
+   * Konwertuje zagnieżdżony obiekt do HTML
+   */
+  objektZuHtml(obj) {
+    if (!obj) return '';
+    
+    let html = '<div class="objekt-inhalt">';
+    
+    Object.entries(obj).forEach(([key, value]) => {
+      const formattedKey = this.formatHeader(key);
+      
+      if (Array.isArray(value)) {
+        if (value.length > 0 && typeof value[0] === 'object') {
+          // Tabela
+          html += `<div class="sub-sektion"><h5>${formattedKey}</h5>`;
+          html += this.arrayZuTabelleHtml(value);
+          html += '</div>';
+        } else {
+          // Lista
+          html += `<div class="sub-sektion"><h5>${formattedKey}</h5><ul>`;
+          value.forEach(item => html += `<li>${item}</li>`);
+          html += '</ul></div>';
+        }
+      } else if (typeof value === 'object' && value !== null) {
+        // Zagnieżdżony obiekt - specjalna obsługa dla vergleichstabelle, grenzwerte itd.
+        if (value.headers && value.rows) {
+          // To specjalna tabela z headers/rows
+          html += `<div class="sub-sektion"><h5>${formattedKey}</h5>`;
+          html += this.vergleichstabelleZuHtml(value);
+          html += '</div>';
+        } else {
+          // Zwykły zagnieżdżony obiekt
+          html += `<div class="sub-sektion"><h5>${formattedKey}</h5>`;
+          html += '<table class="data-table eigenschaften-tabelle"><tbody>';
+          Object.entries(value).forEach(([k, v]) => {
+            if (typeof v !== 'object') {
+              html += `<tr><td><strong>${this.formatHeader(k)}</strong></td><td>${v}</td></tr>`;
+            } else if (Array.isArray(v)) {
+              html += `<tr><td><strong>${this.formatHeader(k)}</strong></td><td>${v.join(', ')}</td></tr>`;
+            }
+          });
+          html += '</tbody></table></div>';
+        }
+      } else {
+        // Prosta wartość
+        html += `<p><strong>${formattedKey}:</strong> ${value}</p>`;
+      }
+    });
+    
+    html += '</div>';
+    return html;
+  },
+  
+  /**
+   * Renderuje tabelę porównawczą (vergleichstabelle) ze specjalną strukturą headers/rows
+   */
+  vergleichstabelleZuHtml(tabelle) {
+    if (!tabelle || !tabelle.headers || !tabelle.rows) return '<p>Keine Daten</p>';
+    
+    let html = '<div class="table-scroll"><table class="data-table vergleichstabelle"><thead><tr>';
+    tabelle.headers.forEach(h => html += `<th>${h}</th>`);
+    html += '</tr></thead><tbody>';
+    
+    tabelle.rows.forEach(row => {
+      html += '<tr>';
+      // Row może być obiektem z kluczami odpowiadającymi nagłówkom
+      if (row.parameter !== undefined) {
+        // Specjalny format z parameter i wartościami A, E, G, H
+        html += `<td><strong>${row.parameter}</strong></td>`;
+        tabelle.headers.slice(1).forEach(h => {
+          const key = h.replace('TYP ', '');
+          html += `<td>${row[key] ?? '-'}</td>`;
+        });
+      } else if (row.laenge !== undefined) {
+        // Format grenzwerte z laenge
+        html += `<td><strong>${row.laenge}</strong></td>`;
+        Object.entries(row).forEach(([k, v]) => {
+          if (k !== 'laenge') html += `<td>${v}</td>`;
+        });
+      } else {
+        // Generyczny format - użyj wszystkich wartości
+        Object.values(row).forEach(v => html += `<td>${v ?? '-'}</td>`);
+      }
+      html += '</tr>';
+    });
+    
+    html += '</tbody></table></div>';
+    return html;
+  },
+  
+  /**
+   * Wybiera odpowiednią ikonę dla kapitel na podstawie tytułu
+   */
+  kapitelIcon(title) {
+    const titleLower = (title || '').toLowerCase();
+    
+    if (titleLower.includes('übersicht') || titleLower.includes('einführung')) return '📘';
+    if (titleLower.includes('typ') && titleLower.includes('detail')) return '📋';
+    if (titleLower.includes('tabelle') || titleLower.includes('dimension')) return '📊';
+    if (titleLower.includes('prüfung') || titleLower.includes('test')) return '🔬';
+    if (titleLower.includes('elektrisch')) return '⚡';
+    if (titleLower.includes('mechanisch')) return '🔧';
+    if (titleLower.includes('farb') || titleLower.includes('kodierung')) return '🎨';
+    if (titleLower.includes('toleranz') || titleLower.includes('grenz')) return '📏';
+    if (titleLower.includes('lager') || titleLower.includes('handhabung')) return '📦';
+    if (titleLower.includes('norm')) return '📜';
+    if (titleLower.includes('schnell') || titleLower.includes('referenz')) return '⚡';
+    if (titleLower.includes('material')) return '🧪';
+    if (titleLower.includes('temp')) return '🌡️';
+    
+    return '📄';
+  },
+  
+  /**
+   * Generuje opis kapitel z pierwszych danych
+   */
+  kapitelBeschreibung(kapitel) {
+    if (!kapitel) return '';
+    
+    // Spróbuj znaleźć sensowny opis
+    const keys = Object.keys(kapitel).filter(k => k !== 'id' && k !== 'title');
+    
+    for (const key of keys) {
+      const val = kapitel[key];
+      if (typeof val === 'string' && val.length > 10 && val.length < 200) {
+        return val;
+      }
+      if (val && val.beschreibung) {
+        return val.beschreibung;
+      }
+    }
+    
+    // Generuj opis z kluczy
+    const beschreibung = keys.slice(0, 3).map(k => this.formatHeader(k)).join(', ');
+    return beschreibung ? `Enthält: ${beschreibung}` : '';
+  },
+  
+  /**
+   * Ekstrahuje keywords z kapitel
+   */
+  extrahiereKeywords(kapitel) {
+    if (!kapitel) return [];
+    
+    const keywords = new Set();
+    const title = (kapitel.title || '').toLowerCase();
+    
+    // Dodaj słowa z tytułu
+    title.split(/\s+/).forEach(word => {
+      if (word.length > 3) keywords.add(word);
+    });
+    
+    // Dodaj nazwy kluczy
+    Object.keys(kapitel).forEach(key => {
+      if (key !== 'id' && key !== 'title') {
+        keywords.add(key.toLowerCase().replace(/_/g, ' '));
+      }
+    });
+    
+    // Szukaj specjalnych słów w wartościach
+    const text = JSON.stringify(kapitel).toLowerCase();
+    const specialWords = ['°c', 'mm²', 'awg', 'ohm', 'typ a', 'typ e', 'typ g', 'typ h', 
+                          'silber', 'zinn', 'kupfer', 'isolation', 'widerstand', 'durchmesser'];
+    specialWords.forEach(word => {
+      if (text.includes(word)) keywords.add(word);
+    });
+    
+    return Array.from(keywords).slice(0, 10);
   }
 };
 
