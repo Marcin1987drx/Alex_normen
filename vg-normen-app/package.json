@@ -5,10 +5,14 @@
   "main": "main.js",
   "author": "Quality Team",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Marcin1987drx/Alex_normen.git"
+  },
   "scripts": {
     "start": "electron .",
     "dev": "electron . --dev",
-    "build": "electron-builder --win",
+    "build": "electron-builder --win --publish never",
     "build-portable": "electron-builder --win portable",
     "build-all": "electron-builder --win --x64"
   },
