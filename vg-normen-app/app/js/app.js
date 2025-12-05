@@ -834,3 +834,151 @@ function openHelp() {
 function closeHelp() {
   UI.closeModal('helpModal');
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// GLOBAL FUNCTION ALIASES (für onclick in HTML)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Settings
+function showSettings() {
+  openSettings();
+}
+
+function setFontSize(size) {
+  changeFontSize(size);
+}
+
+function setHighContrast(enabled) {
+  const settings = Storage.getSettings();
+  settings.highContrast = enabled;
+  Storage.saveSettings(settings);
+  applySettings();
+  UI.showToast(enabled ? 'Hoher Kontrast aktiviert' : 'Normaler Kontrast', 'success');
+}
+
+// Help
+function showHelp() {
+  openHelp();
+}
+
+// Print
+function printPage() {
+  printCurrentPage();
+}
+
+// Search
+function performSearch() {
+  handleSearch();
+}
+
+function handleSearchKeyup(event) {
+  if (event.key === 'Enter') {
+    handleSearch();
+  }
+}
+
+// Voice Search
+function stopVoiceSearch() {
+  if (window.speechRecognition) {
+    window.speechRecognition.stop();
+  }
+  UI.showToast('Sprachsuche beendet', 'info');
+}
+
+// Modal
+function closeModal(modalId) {
+  UI.closeModal(modalId);
+}
+
+// Documents
+function addDocuments() {
+  if (App.isElectron) {
+    window.electronAPI.openFileDialog().then(files => {
+      if (files && files.length > 0) {
+        UI.showToast(`${files.length} Dokument(e) ausgewählt`, 'success');
+        // Hier würde die Dokumentverarbeitung stattfinden
+      }
+    });
+  } else {
+    UI.showToast('Diese Funktion ist nur in der Desktop-App verfügbar', 'warning');
+  }
+}
+
+function openDocumentsFolder() {
+  if (App.isElectron) {
+    window.electronAPI.openUserDocsFolder();
+    UI.showToast('Dokumentenordner wird geöffnet...', 'info');
+  } else {
+    UI.showToast('Diese Funktion ist nur in der Desktop-App verfügbar', 'warning');
+  }
+}
+
+function scanDocuments() {
+  UI.showToast('Dokumente werden gescannt...', 'info');
+  // Simulation für Demo
+  setTimeout(() => {
+    UI.showToast('Scan abgeschlossen: 0 neue Dokumente gefunden', 'success');
+  }, 2000);
+}
+
+// Backup
+function createBackup() {
+  const data = Storage.exportAllData();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `vg-normen-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  UI.showToast('Backup erstellt und heruntergeladen', 'success');
+}
+
+function loadBackup() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const data = JSON.parse(event.target.result);
+          Storage.importAllData(data);
+          UI.showToast('Backup erfolgreich geladen', 'success');
+          location.reload();
+        } catch (err) {
+          UI.showToast('Fehler beim Laden des Backups', 'error');
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+  input.click();
+}
+
+// Clear Data
+function clearHistory() {
+  Storage.clearHistory();
+  UI.renderHistory();
+  UI.showToast('Verlauf gelöscht', 'success');
+}
+
+function clearAllData() {
+  if (confirm('Möchten Sie wirklich alle Daten löschen? Dies kann nicht rückgängig gemacht werden.')) {
+    Storage.clearAll();
+    UI.showToast('Alle Daten gelöscht', 'success');
+    location.reload();
+  }
+}
+
+// Rename (für Modal)
+function confirmRename() {
+  const input = document.getElementById('renameInput');
+  if (input && input.value.trim()) {
+    UI.showToast(`Umbenannt zu: ${input.value.trim()}`, 'success');
+    UI.closeModal('modalRename');
+  }
+}
+

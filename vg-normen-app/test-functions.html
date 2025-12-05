@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>VG-Normen - Funktions-Test</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #1a1a2e; color: #fff; }
+    h1 { color: #4dabf7; }
+    .test-section { background: #16213e; padding: 15px; margin: 10px 0; border-radius: 8px; }
+    .test-section h2 { color: #e94560; margin-top: 0; }
+    .test { padding: 8px; margin: 5px 0; border-radius: 4px; }
+    .test.pass { background: #2e7d32; }
+    .test.fail { background: #c62828; }
+    .test.info { background: #1565c0; }
+    button { padding: 10px 20px; margin: 5px; cursor: pointer; border: none; border-radius: 4px; font-size: 14px; }
+    button.primary { background: #4dabf7; color: #000; }
+    button.secondary { background: #555; color: #fff; }
+    #results { max-height: 500px; overflow-y: auto; }
+    .counter { font-size: 20px; margin: 20px 0; }
+    .counter span { padding: 10px 20px; border-radius: 4px; margin: 0 10px; }
+    .counter .pass { background: #2e7d32; }
+    .counter .fail { background: #c62828; }
+  </style>
+</head>
+<body>
+  <h1>🧪 VG-Normen Wissenssystem - Funktions-Tests</h1>
+  
+  <div class="counter">
+    <span class="pass">✓ Bestanden: <strong id="passCount">0</strong></span>
+    <span class="fail">✗ Fehlgeschlagen: <strong id="failCount">0</strong></span>
+  </div>
+  
+  <button class="primary" onclick="runAllTests()">🚀 Alle Tests ausführen</button>
+  <button class="secondary" onclick="clearResults()">🗑️ Ergebnisse löschen</button>
+  
+  <div id="results"></div>
+  
+  <!-- Mock Toast Container -->
+  <div id="toastContainer" style="position:fixed;bottom:20px;right:20px;"></div>
+
+  <!-- Load Scripts -->
+  <script src="app/js/config.js"></script>
+  <script src="app/js/utils.js"></script>
+  <script src="app/js/storage.js"></script>
+  <script src="app/js/search-engine.js"></script>
+  <script src="app/js/ui.js"></script>
+  <script src="app/js/app.js"></script>
+  
+  <script>
+    let passCount = 0;
+    let failCount = 0;
+    
+    function log(message, type = 'info') {
+      const results = document.getElementById('results');
+      const div = document.createElement('div');
+      div.className = `test ${type}`;
+      div.innerHTML = `${type === 'pass' ? '✓' : type === 'fail' ? '✗' : 'ℹ'} ${message}`;
+      results.appendChild(div);
+      
+      if (type === 'pass') {
+        passCount++;
+        document.getElementById('passCount').textContent = passCount;
+      } else if (type === 'fail') {
+        failCount++;
+        document.getElementById('failCount').textContent = failCount;
+      }
+    }
+    
+    function clearResults() {
+      document.getElementById('results').innerHTML = '';
+      passCount = 0;
+      failCount = 0;
+      document.getElementById('passCount').textContent = '0';
+      document.getElementById('failCount').textContent = '0';
+    }
+    
+    function testSection(name) {
+      const results = document.getElementById('results');
+      const section = document.createElement('div');
+      section.className = 'test-section';
+      section.innerHTML = `<h2>${name}</h2>`;
+      results.appendChild(section);
+    }
+    
+    async function runAllTests() {
+      clearResults();
+      
+      // ═══════════════════════════════════════════════════════════════
+      // 1. CONFIG TESTS
+      // ═══════════════════════════════════════════════════════════════
+      testSection('📋 CONFIG Tests');
+      
+      try {
+        if (typeof CONFIG !== 'undefined') log('CONFIG ist definiert', 'pass');
+        else throw new Error('CONFIG nicht definiert');
+        
+        if (CONFIG.appVersion) log(`App Version: ${CONFIG.appVersion}`, 'pass');
+        else throw new Error('appVersion fehlt');
+        
+        if (CONFIG.storageKeys) log('Storage Keys definiert', 'pass');
+        else throw new Error('storageKeys fehlt');
+        
+        if (CONFIG.categories) log(`${Object.keys(CONFIG.categories).length} Kategorien definiert`, 'pass');
+        else throw new Error('categories fehlt');
+        
+      } catch (e) {
+        log(`CONFIG Error: ${e.message}`, 'fail');
+      }
+      
+      // ═══════════════════════════════════════════════════════════════
+      // 2. UTILS TESTS
+      // ═══════════════════════════════════════════════════════════════
+      testSection('🔧 UTILS Tests');
+      
+      try {
+        if (typeof Utils !== 'undefined') log('Utils ist definiert', 'pass');
+        else throw new Error('Utils nicht definiert');
+        
+        // String functions
+        if (Utils.truncate('Hallo Welt', 5) === 'Ha...') log('truncate() funktioniert', 'pass');
+        else log('truncate() fehlerhaft', 'fail');
+        
+        if (Utils.capitalize('hallo') === 'Hallo') log('capitalize() funktioniert', 'pass');
+        else log('capitalize() fehlerhaft', 'fail');
+        
+        if (Utils.escapeHtml('<script>') === '&lt;script&gt;') log('escapeHtml() funktioniert', 'pass');
+        else log('escapeHtml() fehlerhaft', 'fail');
+        
+        // Date functions
+        const testDate = new Date('2024-01-15');
+        if (Utils.formatDate(testDate, 'short').includes('15')) log('formatDate() funktioniert', 'pass');
+        else log('formatDate() fehlerhaft', 'fail');
+        
+        // Debounce
+        if (typeof Utils.debounce === 'function') log('debounce() ist definiert', 'pass');
+        else log('debounce() fehlt', 'fail');
+        
+      } catch (e) {
+        log(`Utils Error: ${e.message}`, 'fail');
+      }
+      
+      // ═══════════════════════════════════════════════════════════════
+      // 3. STORAGE TESTS
+      // ═══════════════════════════════════════════════════════════════
+      testSection('💾 STORAGE Tests');
+      
+      try {
+        if (typeof Storage !== 'undefined') log('Storage ist definiert', 'pass');
+        else throw new Error('Storage nicht definiert');
+        
+        // Basic set/get
+        Storage.set('test_key', { foo: 'bar' });
+        const val = Storage.get('test_key');
+        if (val && val.foo === 'bar') log('set/get funktioniert', 'pass');
+        else log('set/get fehlerhaft', 'fail');
+        Storage.remove('test_key');
+        
+        // Settings
+        if (typeof Storage.getSettings === 'function') log('getSettings() definiert', 'pass');
+        else log('getSettings() fehlt', 'fail');
+        
+        if (typeof Storage.saveSettings === 'function') log('saveSettings() definiert', 'pass');
+        else log('saveSettings() fehlt', 'fail');
+        
+        // Favorites
+        if (typeof Storage.getFavorites === 'function') log('getFavorites() definiert', 'pass');
+        else log('getFavorites() fehlt', 'fail');
+        
+        if (typeof Storage.addFavorite === 'function') log('addFavorite() definiert', 'pass');
+        else log('addFavorite() fehlt', 'fail');
+        
+        if (typeof Storage.removeFavorite === 'function') log('removeFavorite() definiert', 'pass');
+        else log('removeFavorite() fehlt', 'fail');
+        
+        if (typeof Storage.isFavorite === 'function') log('isFavorite() definiert', 'pass');
+        else log('isFavorite() fehlt', 'fail');
+        
+        // History
+        if (typeof Storage.getHistory === 'function') log('getHistory() definiert', 'pass');
+        else log('getHistory() fehlt', 'fail');
+        
+        if (typeof Storage.addToHistory === 'function') log('addToHistory() definiert', 'pass');
+        else log('addToHistory() fehlt', 'fail');
+        
+        if (typeof Storage.clearHistory === 'function') log('clearHistory() definiert', 'pass');
+        else log('clearHistory() fehlt', 'fail');
+        
+        // Export/Import
+        if (typeof Storage.exportAllData === 'function') log('exportAllData() definiert', 'pass');
+        else log('exportAllData() fehlt', 'fail');
+        
+        if (typeof Storage.importAllData === 'function') log('importAllData() definiert', 'pass');
+        else log('importAllData() fehlt', 'fail');
+        
+        // Test favorites flow
+        Storage.addFavorite({ id: 'test1', title: 'Test Item', category: 'test' });
+        if (Storage.isFavorite('test1')) log('Favorit hinzufügen funktioniert', 'pass');
+        else log('Favorit hinzufügen fehlerhaft', 'fail');
+        
+        Storage.removeFavorite('test1');
+        if (!Storage.isFavorite('test1')) log('Favorit entfernen funktioniert', 'pass');
+        else log('Favorit entfernen fehlerhaft', 'fail');
+        
+      } catch (e) {
+        log(`Storage Error: ${e.message}`, 'fail');
+      }
+      
+      // ═══════════════════════════════════════════════════════════════
+      // 4. UI TESTS
+      // ═══════════════════════════════════════════════════════════════
+      testSection('🖼️ UI Tests');
+      
+      try {
+        if (typeof UI !== 'undefined') log('UI ist definiert', 'pass');
+        else throw new Error('UI nicht definiert');
+        
+        if (typeof UI.showToast === 'function') log('showToast() definiert', 'pass');
+        else log('showToast() fehlt', 'fail');
+        
+        if (typeof UI.showModal === 'function') log('showModal() definiert', 'pass');
+        else log('showModal() fehlt', 'fail');
+        
+        if (typeof UI.closeModal === 'function') log('closeModal() definiert', 'pass');
+        else log('closeModal() fehlt', 'fail');
+        
+        if (typeof UI.updateBreadcrumbs === 'function') log('updateBreadcrumbs() definiert', 'pass');
+        else log('updateBreadcrumbs() fehlt', 'fail');
+        
+        if (typeof UI.showPage === 'function') log('showPage() definiert', 'pass');
+        else log('showPage() fehlt', 'fail');
+        
+        if (typeof UI.renderFavorites === 'function') log('renderFavorites() definiert', 'pass');
+        else log('renderFavorites() fehlt', 'fail');
+        
+        if (typeof UI.renderHistory === 'function') log('renderHistory() definiert', 'pass');
+        else log('renderHistory() fehlt', 'fail');
+        
+        if (typeof UI.updateSettingsUI === 'function') log('updateSettingsUI() definiert', 'pass');
+        else log('updateSettingsUI() fehlt', 'fail');
+        
+        // Test toast
+        UI.showToast('Test Nachricht', 'info', 1000);
+        log('Toast angezeigt (visuell prüfen)', 'info');
+        
+      } catch (e) {
+        log(`UI Error: ${e.message}`, 'fail');
+      }
+      
+      // ═══════════════════════════════════════════════════════════════
+      // 5. SEARCH ENGINE TESTS
+      // ═══════════════════════════════════════════════════════════════
+      testSection('🔍 SEARCH ENGINE Tests');
+      
+      try {
+        if (typeof SearchEngine !== 'undefined') log('SearchEngine ist definiert', 'pass');
+        else throw new Error('SearchEngine nicht definiert');
+        
+        if (typeof SearchEngine.search === 'function') log('search() definiert', 'pass');
+        else log('search() fehlt', 'fail');
+        
+        if (typeof SearchEngine.buildIndex === 'function') log('buildIndex() definiert', 'pass');
+        else log('buildIndex() fehlt', 'fail');
+        
+        if (typeof SearchEngine.getSynonyms === 'function') log('getSynonyms() definiert', 'pass');
+        else log('getSynonyms() fehlt', 'fail');
+        
+        // Test synonyms
+        const synonyms = SearchEngine.getSynonyms('crimp');
+        if (synonyms && synonyms.length > 0) log(`Synonyme für 'crimp': ${synonyms.join(', ')}`, 'pass');
+        else log('Keine Synonyme gefunden', 'info');
+        
+      } catch (e) {
+        log(`SearchEngine Error: ${e.message}`, 'fail');
+      }
+      
+      // ═══════════════════════════════════════════════════════════════
+      // 6. APP GLOBAL FUNCTIONS TESTS
+      // ═══════════════════════════════════════════════════════════════
+      testSection('🚀 APP Global Functions Tests');
+      
+      try {
+        if (typeof App !== 'undefined') log('App State ist definiert', 'pass');
+        else throw new Error('App nicht definiert');
+        
+        // Navigation functions
+        if (typeof navigateTo === 'function') log('navigateTo() definiert', 'pass');
+        else log('navigateTo() fehlt', 'fail');
+        
+        if (typeof goBack === 'function') log('goBack() definiert', 'pass');
+        else log('goBack() fehlt', 'fail');
+        
+        // Settings functions
+        if (typeof showSettings === 'function') log('showSettings() definiert', 'pass');
+        else log('showSettings() fehlt', 'fail');
+        
+        if (typeof setFontSize === 'function') log('setFontSize() definiert', 'pass');
+        else log('setFontSize() fehlt', 'fail');
+        
+        if (typeof setHighContrast === 'function') log('setHighContrast() definiert', 'pass');
+        else log('setHighContrast() fehlt', 'fail');
+        
+        // Help
+        if (typeof showHelp === 'function') log('showHelp() definiert', 'pass');
+        else log('showHelp() fehlt', 'fail');
+        
+        // Search functions
+        if (typeof performSearch === 'function') log('performSearch() definiert', 'pass');
+        else log('performSearch() fehlt', 'fail');
+        
+        if (typeof handleSearch === 'function') log('handleSearch() definiert', 'pass');
+        else log('handleSearch() fehlt', 'fail');
+        
+        if (typeof handleSearchKeyup === 'function') log('handleSearchKeyup() definiert', 'pass');
+        else log('handleSearchKeyup() fehlt', 'fail');
+        
+        if (typeof startVoiceSearch === 'function') log('startVoiceSearch() definiert', 'pass');
+        else log('startVoiceSearch() fehlt', 'fail');
+        
+        if (typeof stopVoiceSearch === 'function') log('stopVoiceSearch() definiert', 'pass');
+        else log('stopVoiceSearch() fehlt', 'fail');
+        
+        // Print
+        if (typeof printPage === 'function') log('printPage() definiert', 'pass');
+        else log('printPage() fehlt', 'fail');
+        
+        // Modal
+        if (typeof closeModal === 'function') log('closeModal() definiert', 'pass');
+        else log('closeModal() fehlt', 'fail');
+        
+        // Favorites
+        if (typeof toggleFavorite === 'function') log('toggleFavorite() definiert', 'pass');
+        else log('toggleFavorite() fehlt', 'fail');
+        
+        // Documents
+        if (typeof addDocuments === 'function') log('addDocuments() definiert', 'pass');
+        else log('addDocuments() fehlt', 'fail');
+        
+        if (typeof openDocumentsFolder === 'function') log('openDocumentsFolder() definiert', 'pass');
+        else log('openDocumentsFolder() fehlt', 'fail');
+        
+        if (typeof scanDocuments === 'function') log('scanDocuments() definiert', 'pass');
+        else log('scanDocuments() fehlt', 'fail');
+        
+        // Backup
+        if (typeof createBackup === 'function') log('createBackup() definiert', 'pass');
+        else log('createBackup() fehlt', 'fail');
+        
+        if (typeof loadBackup === 'function') log('loadBackup() definiert', 'pass');
+        else log('loadBackup() fehlt', 'fail');
+        
+        // Clear
+        if (typeof clearHistory === 'function') log('clearHistory() definiert', 'pass');
+        else log('clearHistory() fehlt', 'fail');
+        
+        if (typeof clearAllData === 'function') log('clearAllData() definiert', 'pass');
+        else log('clearAllData() fehlt', 'fail');
+        
+        // Rename
+        if (typeof confirmRename === 'function') log('confirmRename() definiert', 'pass');
+        else log('confirmRename() fehlt', 'fail');
+        
+      } catch (e) {
+        log(`App Functions Error: ${e.message}`, 'fail');
+      }
+      
+      // ═══════════════════════════════════════════════════════════════
+      // 7. WISSENSBASIS LOADING TEST
+      // ═══════════════════════════════════════════════════════════════
+      testSection('📚 WISSENSBASIS Tests');
+      
+      try {
+        const response = await fetch('app/wissensbasis/karten.json');
+        if (response.ok) {
+          const data = await response.json();
+          log(`Wissensbasis geladen: ${data.length} Karten`, 'pass');
+          
+          if (data.length > 0) {
+            const firstCard = data[0];
+            if (firstCard.id) log('Karten haben ID', 'pass');
+            else log('Karten fehlt ID', 'fail');
+            
+            if (firstCard.title) log('Karten haben Titel', 'pass');
+            else log('Karten fehlt Titel', 'fail');
+            
+            if (firstCard.content) log('Karten haben Inhalt', 'pass');
+            else log('Karten fehlt Inhalt', 'fail');
+          }
+        } else {
+          log('Wissensbasis konnte nicht geladen werden', 'fail');
+        }
+      } catch (e) {
+        log(`Wissensbasis Error: ${e.message}`, 'fail');
+      }
+      
+      // ═══════════════════════════════════════════════════════════════
+      // SUMMARY
+      // ═══════════════════════════════════════════════════════════════
+      testSection('📊 ZUSAMMENFASSUNG');
+      log(`Gesamt: ${passCount + failCount} Tests`, 'info');
+      log(`Bestanden: ${passCount}`, passCount > 0 ? 'pass' : 'info');
+      log(`Fehlgeschlagen: ${failCount}`, failCount > 0 ? 'fail' : 'info');
+      
+      if (failCount === 0) {
+        log('🎉 Alle Tests bestanden!', 'pass');
+      } else {
+        log(`⚠️ ${failCount} Tests fehlgeschlagen - bitte prüfen!`, 'fail');
+      }
+    }
+    
+    // Auto-run on load
+    window.onload = () => {
+      setTimeout(runAllTests, 500);
+    };
+  </script>
+</body>
+</html>

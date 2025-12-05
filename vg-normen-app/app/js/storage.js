@@ -201,5 +201,22 @@ const Storage = {
     Object.values(CONFIG.storageKeys).forEach(key => {
       this.remove(key);
     });
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // EXPORT / IMPORT
+  // ═══════════════════════════════════════════════════════════════════════════
+  
+  exportAllData() {
+    return this.createBackupData();
+  },
+
+  importAllData(data) {
+    return this.restoreBackupData(data);
+  },
+
+  // Alias für saveUserDoc (Mehrzahl-Variante)
+  saveUserDocs(fileName, docInfo) {
+    return this.saveUserDoc(fileName, docInfo);
   }
 };

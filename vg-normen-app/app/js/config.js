@@ -5,6 +5,7 @@
 const CONFIG = {
   // App-Version
   version: '1.0.0',
+  appVersion: '1.0.0',
   
   // LocalStorage Keys
   storageKeys: {
