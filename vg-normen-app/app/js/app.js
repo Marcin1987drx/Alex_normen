@@ -205,14 +205,42 @@ function handleKeyboardShortcuts(e) {
 // NAVIGATION
 // ═══════════════════════════════════════════════════════════════════════════════
 
-function navigateTo(page) {
+function navigateTo(page, subCategory) {
   App.currentPage = page;
-  UI.showPage(page);
   
-  if (page === 'home') {
-    renderHomePage();
-    UI.updateBreadcrumbs([]);
+  switch (page) {
+    case 'home':
+      renderHomePage();
+      UI.updateBreadcrumbs([]);
+      break;
+      
+    case 'wissensbasis':
+      renderWissensbasisPage(subCategory);
+      UI.updateBreadcrumbs([{ title: '📚 Wissensbasis' }]);
+      break;
+      
+    case 'formulare':
+      renderFormularePage();
+      UI.updateBreadcrumbs([{ title: '📋 Formulare' }]);
+      break;
+      
+    case 'tabellen':
+      renderTabellenPage();
+      UI.updateBreadcrumbs([{ title: '📊 Tabellen' }]);
+      break;
+      
+    case 'bilder':
+      renderBilderPage();
+      UI.updateBreadcrumbs([{ title: '📷 Bilder' }]);
+      break;
+      
+    case 'meine-dokumente':
+      renderMeineDokumentePage();
+      UI.updateBreadcrumbs([{ title: '📁 Meine Dokumente' }]);
+      break;
   }
+  
+  UI.showPage(page);
 }
 
 function goBack() {
@@ -816,11 +844,11 @@ function openFormular(formId) {
 
 function openSettings() {
   UI.updateSettingsUI();
-  UI.showModal('settingsModal');
+  UI.showModal('modalSettings');
 }
 
 function closeSettings() {
-  UI.closeModal('settingsModal');
+  UI.closeModal('modalSettings');
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -828,11 +856,11 @@ function closeSettings() {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function openHelp() {
-  UI.showModal('helpModal');
+  UI.showModal('modalHelp');
 }
 
 function closeHelp() {
-  UI.closeModal('helpModal');
+  UI.closeModal('modalHelp');
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -982,3 +1010,257 @@ function confirmRename() {
   }
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// PAGE RENDERING FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function renderWissensbasisPage(filterCategory) {
+  const container = document.getElementById('wissensbasisContent');
+  if (!container) return;
+  
+  let cards = App.wissensbasis || [];
+  
+  // Filter by category if specified
+  if (filterCategory) {
+    cards = cards.filter(c => c.category === filterCategory);
+  }
+  
+  if (cards.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <span class="icon">📚</span>
+        <p>Keine Wissenskarten gefunden.</p>
+      </div>
+    `;
+    return;
+  }
+  
+  // Group by category
+  const grouped = {};
+  cards.forEach(card => {
+    const cat = card.category || 'sonstiges';
+    if (!grouped[cat]) grouped[cat] = [];
+    grouped[cat].push(card);
+  });
+  
+  let html = '';
+  
+  Object.keys(grouped).forEach(catKey => {
+    const catInfo = CONFIG.categories[catKey] || { title: catKey, icon: '📄' };
+    const catCards = grouped[catKey];
+    
+    html += `
+      <div class="category-section">
+        <h3 class="category-title">${catInfo.icon} ${catInfo.title}</h3>
+        <div class="cards-grid">
+    `;
+    
+    catCards.forEach(card => {
+      const isFav = Storage.isFavorite(card.id);
+      html += `
+        <div class="card" onclick="openItem('${card.id}')">
+          <div class="card-header">
+            <span class="card-icon">${card.icon || '📄'}</span>
+            <span class="card-title">${card.title}</span>
+            ${isFav ? '<span class="fav-star">⭐</span>' : ''}
+          </div>
+          ${card.description ? `<p class="card-desc">${card.description}</p>` : ''}
+          ${card.keywords ? `
+            <div class="card-tags">
+              ${card.keywords.slice(0, 3).map(k => `<span class="tag">${k}</span>`).join('')}
+            </div>
+          ` : ''}
+        </div>
+      `;
+    });
+    
+    html += '</div></div>';
+  });
+  
+  container.innerHTML = html;
+}
+
+function renderFormularePage() {
+  const container = document.getElementById('formulareContent');
+  if (!container) return;
+  
+  const formulare = [
+    { id: 'F01-Crimphoehen-Messprotokoll', title: 'Crimphöhen-Messprotokoll', icon: '📏', desc: 'Protokoll für Crimphöhen-Messungen nach VG 95319' },
+    { id: 'F02-Zugtest-Protokoll', title: 'Zugtest-Protokoll', icon: '🔧', desc: 'Protokoll für Zugprüfungen nach IPC-A-620' },
+    { id: 'F03-Wareneingang', title: 'Wareneingangs-Checkliste', icon: '📦', desc: 'Checkliste für Wareneingang Steckverbinder' },
+    { id: 'F04-Sichtkontrolle', title: 'Sichtkontrolle-Protokoll', icon: '👁️', desc: 'Visuelle Prüfung von Crimpverbindungen' },
+    { id: 'F05-Freigabe', title: 'Freigabe-Formular', icon: '✅', desc: 'Freigabedokumentation für Serienfertigung' },
+    { id: 'F06-Fehleranalyse', title: 'Fehleranalyse-Bericht', icon: '🔍', desc: '8D-Report für Crimpfehler' },
+    { id: 'F07-Werkzeugfreigabe', title: 'Werkzeug-Freigabe', icon: '🔧', desc: 'Freigabe für Crimpwerkzeuge' },
+    { id: 'F08-Schulungsnachweis', title: 'Schulungsnachweis', icon: '📋', desc: 'Nachweis für IPC-Schulungen' }
+  ];
+  
+  let html = '<div class="cards-grid">';
+  
+  formulare.forEach(form => {
+    html += `
+      <div class="card formular-card" onclick="openFormular('${form.id}')">
+        <div class="card-header">
+          <span class="card-icon">${form.icon}</span>
+          <span class="card-title">${form.title}</span>
+        </div>
+        <p class="card-desc">${form.desc}</p>
+        <div class="card-actions">
+          <button class="btn-small btn-primary" onclick="event.stopPropagation(); openFormular('${form.id}')">
+            📄 ÖFFNEN
+          </button>
+          <button class="btn-small btn-secondary" onclick="event.stopPropagation(); printFormular('${form.id}')">
+            🖨️ DRUCKEN
+          </button>
+        </div>
+      </div>
+    `;
+  });
+  
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function renderTabellenPage() {
+  const container = document.getElementById('tabellenContent');
+  if (!container) return;
+  
+  const tabellen = [
+    { id: 'tab-crimp-16', title: 'Crimphöhen Kontakt 16', icon: '📊', cat: 'Crimpen', desc: 'Sollwerte für Kontaktgröße 16 (1,0-1,5mm²)' },
+    { id: 'tab-crimp-20', title: 'Crimphöhen Kontakt 20', icon: '📊', cat: 'Crimpen', desc: 'Sollwerte für Kontaktgröße 20 (0,35-0,5mm²)' },
+    { id: 'tab-zugwerte', title: 'Zugwerte nach IPC', icon: '📊', cat: 'Prüfung', desc: 'Mindestzugkräfte nach IPC/WHMA-A-620' },
+    { id: 'tab-litzenquerschnitt', title: 'Litzenquerschnitte', icon: '📊', cat: 'Kabel', desc: 'AWG zu mm² Umrechnung' },
+    { id: 'tab-strombelastbar', title: 'Strombelastbarkeit', icon: '⚡', cat: 'Kabel', desc: 'Max. Stromstärken nach Querschnitt' },
+    { id: 'tab-temp-system', title: 'Temperatursysteme', icon: '🌡️', cat: 'Kabel', desc: 'VG 95218 Temperaturklassen' },
+    { id: 'tab-farben', title: 'Farbcodes', icon: '🎨', cat: 'Kabel', desc: 'Aderkennzeichnung nach Norm' },
+    { id: 'tab-stecker-typen', title: 'Steckverbinder-Typen', icon: '🔌', cat: 'Stecker', desc: 'Übersicht VG-Steckverbinder' }
+  ];
+  
+  let html = '<div class="cards-grid">';
+  
+  tabellen.forEach(tab => {
+    html += `
+      <div class="card tabelle-card" onclick="openTabelle('${tab.id}')">
+        <div class="card-header">
+          <span class="card-icon">${tab.icon}</span>
+          <span class="card-title">${tab.title}</span>
+        </div>
+        <span class="card-category">${tab.cat}</span>
+        <p class="card-desc">${tab.desc}</p>
+      </div>
+    `;
+  });
+  
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function renderBilderPage() {
+  const container = document.getElementById('bilderContent');
+  if (!container) return;
+  
+  const bilder = [
+    { id: 'bild-crimp-gut', title: 'Crimp GUT', icon: '✅', desc: 'Korrekte Crimpverbindung', status: 'gut' },
+    { id: 'bild-crimp-schlecht-1', title: 'Crimp SCHLECHT - Übercrimpung', icon: '❌', desc: 'Zu stark verpresst', status: 'schlecht' },
+    { id: 'bild-crimp-schlecht-2', title: 'Crimp SCHLECHT - Untercrimpung', icon: '❌', desc: 'Zu wenig verpresst', status: 'schlecht' },
+    { id: 'bild-isolation-gut', title: 'Isolationscrimp GUT', icon: '✅', desc: 'Korrekte Isolation', status: 'gut' },
+    { id: 'bild-isolation-schlecht', title: 'Isolationscrimp SCHLECHT', icon: '❌', desc: 'Beschädigte Isolation', status: 'schlecht' },
+    { id: 'bild-litzenenden-gut', title: 'Litzenenden GUT', icon: '✅', desc: 'Korrekt abgelängt', status: 'gut' },
+    { id: 'bild-litzenenden-schlecht', title: 'Litzenenden SCHLECHT', icon: '❌', desc: 'Vorstehende Litzen', status: 'schlecht' },
+    { id: 'bild-kontakt-sitz', title: 'Kontaktsitz im Stecker', icon: '🔍', desc: 'Rastung und Position', status: 'info' }
+  ];
+  
+  let html = '<div class="images-grid">';
+  
+  bilder.forEach(bild => {
+    const statusClass = bild.status === 'gut' ? 'status-good' : bild.status === 'schlecht' ? 'status-bad' : 'status-info';
+    html += `
+      <div class="image-card ${statusClass}" onclick="openBild('${bild.id}')">
+        <div class="image-placeholder">
+          <span class="icon">${bild.icon}</span>
+        </div>
+        <div class="image-info">
+          <span class="image-title">${bild.title}</span>
+          <span class="image-desc">${bild.desc}</span>
+        </div>
+      </div>
+    `;
+  });
+  
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function renderMeineDokumentePage() {
+  const container = document.getElementById('userDocumentsContent');
+  if (!container) return;
+  
+  const userDocs = Storage.getUserDocs();
+  const docKeys = Object.keys(userDocs);
+  
+  if (docKeys.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <span class="icon">📁</span>
+        <p>Noch keine Dokumente.</p>
+        <p>Klicken Sie auf <strong>"DATEIEN HINZUFÜGEN"</strong> oder kopieren Sie Dateien in den Dokumenten-Ordner.</p>
+      </div>
+    `;
+    return;
+  }
+  
+  let html = '<div class="documents-grid">';
+  
+  docKeys.forEach(fileName => {
+    const doc = userDocs[fileName];
+    const icon = getDocIcon(fileName);
+    html += `
+      <div class="document-card" onclick="openUserDoc('${fileName}')">
+        <span class="doc-icon">${icon}</span>
+        <span class="doc-name">${doc.displayName || fileName}</span>
+        <span class="doc-date">${Utils.formatDate(doc.updatedAt)}</span>
+      </div>
+    `;
+  });
+  
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function getDocIcon(fileName) {
+  const ext = fileName.split('.').pop().toLowerCase();
+  const icons = {
+    'pdf': '📕',
+    'doc': '📘',
+    'docx': '📘',
+    'xls': '📗',
+    'xlsx': '📗',
+    'jpg': '🖼️',
+    'jpeg': '🖼️',
+    'png': '🖼️',
+    'gif': '🖼️'
+  };
+  return icons[ext] || '📄';
+}
+
+// Helper functions for opening items
+function openTabelle(id) {
+  UI.showToast(`Tabelle "${id}" wird geladen...`, 'info');
+  // TODO: Implement table view
+}
+
+function openBild(id) {
+  UI.showToast(`Bild "${id}" wird geladen...`, 'info');
+  // TODO: Implement image view
+}
+
+function openUserDoc(fileName) {
+  UI.showToast(`Dokument "${fileName}" wird geöffnet...`, 'info');
+  if (App.isElectron) {
+    window.electronAPI.openUserDoc(fileName);
+  }
+}
+
+function printFormular(id) {
+  window.open(`formulare/${id}.html`, '_blank');
+}

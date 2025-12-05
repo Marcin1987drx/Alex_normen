@@ -584,6 +584,13 @@ a:hover {
   gap: var(--spacing-md);
 }
 
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-md);
+}
+
 .card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -596,6 +603,7 @@ a:hover {
 .card:hover {
   border-color: var(--color-primary);
   box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .card-header {
@@ -603,6 +611,11 @@ a:hover {
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: var(--spacing-sm);
+}
+
+.card-icon {
+  font-size: var(--font-size-2xl);
+  margin-right: var(--spacing-sm);
 }
 
 .card-title {
@@ -613,9 +626,37 @@ a:hover {
   gap: var(--spacing-sm);
 }
 
+.card-desc {
+  color: var(--color-text-secondary);
+  margin: var(--spacing-sm) 0;
+  font-size: var(--font-size-sm);
+}
+
 .card-description {
   color: var(--color-text-secondary);
   margin-bottom: var(--spacing-md);
+}
+
+.card-category {
+  display: inline-block;
+  background: var(--color-primary-bg);
+  color: var(--color-primary);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  margin: var(--spacing-xs) 0;
+}
+
+.card-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
+.fav-star {
+  color: #FFD700;
+  margin-left: var(--spacing-xs);
 }
 
 .card-tags {
@@ -630,6 +671,139 @@ a:hover {
   padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: var(--radius-sm);
   font-size: var(--font-size-xs);
+}
+
+/* Category Section */
+.category-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.category-title {
+  font-size: var(--font-size-xl);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 2px solid var(--color-primary-bg);
+}
+
+/* Images Grid */
+.images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.image-card {
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.image-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.image-card.status-good {
+  border-color: var(--color-success);
+}
+
+.image-card.status-bad {
+  border-color: var(--color-error);
+}
+
+.image-card.status-info {
+  border-color: var(--color-info);
+}
+
+.image-placeholder {
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface-dark);
+  font-size: 48px;
+}
+
+.image-info {
+  padding: var(--spacing-md);
+}
+
+.image-title {
+  font-weight: 600;
+  display: block;
+  margin-bottom: var(--spacing-xs);
+}
+
+.image-desc {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* Documents Grid */
+.documents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.document-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  cursor: pointer;
+  text-align: center;
+  transition: all var(--transition-fast);
+}
+
+.document-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.doc-icon {
+  font-size: 40px;
+  display: block;
+  margin-bottom: var(--spacing-sm);
+}
+
+.doc-name {
+  font-weight: 500;
+  display: block;
+  word-break: break-word;
+}
+
+.doc-date {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-2xl);
+  color: var(--color-text-secondary);
+}
+
+.empty-state .icon {
+  font-size: 64px;
+  display: block;
+  margin-bottom: var(--spacing-md);
+  opacity: 0.5;
+}
+
+/* Small Buttons */
+.btn-small {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════

@@ -40,7 +40,11 @@ function createWindow() {
 }
 
 // App starten
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  // Erstelle Dokumentenordner-Struktur beim ersten Start
+  initializeAppFolders();
+  createWindow();
+});
 
 // Beenden wenn alle Fenster geschlossen
 app.on('window-all-closed', () => {
@@ -60,10 +64,94 @@ app.on('activate', () => {
 // Pfad zum user_documents Ordner
 function getUserDocumentsPath() {
   if (app.isPackaged) {
-    return path.join(path.dirname(app.getPath('exe')), 'user_documents');
+    return path.join(path.dirname(app.getPath('exe')), 'VG-Normen-Dokumente');
   } else {
-    return path.join(__dirname, 'app', 'user_documents');
+    return path.join(__dirname, 'VG-Normen-Dokumente');
   }
+}
+
+// Initialisiere App-Ordnerstruktur beim ersten Start
+function initializeAppFolders() {
+  const basePath = getUserDocumentsPath();
+  
+  // Hauptordner und Unterordner erstellen
+  const folders = [
+    basePath,
+    path.join(basePath, '01_Formulare'),
+    path.join(basePath, '02_Tabellen'),
+    path.join(basePath, '03_Bilder_GutSchlecht'),
+    path.join(basePath, '04_Eigene_Dokumente'),
+    path.join(basePath, '05_PDF_Normen')
+  ];
+  
+  folders.forEach(folder => {
+    if (!fs.existsSync(folder)) {
+      fs.mkdirSync(folder, { recursive: true });
+      console.log('Ordner erstellt:', folder);
+    }
+  });
+  
+  // README erstellen
+  const readmePath = path.join(basePath, 'LIES_MICH.txt');
+  if (!fs.existsSync(readmePath)) {
+    const readmeContent = `
+═══════════════════════════════════════════════════════════════════════════════
+                    VG-NORMEN WISSENSSYSTEM - DOKUMENTENORDNER
+═══════════════════════════════════════════════════════════════════════════════
+
+Hier können Sie Ihre eigenen Dokumente ablegen:
+
+📁 01_Formulare
+   → Eigene ausgefüllte Formulare und Protokolle
+
+📁 02_Tabellen  
+   → Excel-Tabellen, eigene Berechnungen
+
+📁 03_Bilder_GutSchlecht
+   → Fotos von Crimpverbindungen für Vergleiche
+   → TIPP: Benennen Sie Dateien aussagekräftig!
+     ✅ Gut: "Crimp_Kontakt16_1mm2_GUT.jpg"
+     ❌ Schlecht: "IMG_4523.jpg"
+
+📁 04_Eigene_Dokumente
+   → Sonstige Dokumente, Notizen, Anleitungen
+
+📁 05_PDF_Normen
+   → PDF-Versionen der Normen (falls vorhanden)
+
+═══════════════════════════════════════════════════════════════════════════════
+TIPPS FÜR DIE SUCHE:
+═══════════════════════════════════════════════════════════════════════════════
+
+Die Anwendung kann Ihre Dateien durchsuchen! Damit die Suche gut funktioniert:
+
+1. Verwenden Sie deutsche Fachbegriffe in Dateinamen
+2. Trennen Sie Wörter mit Unterstrichen: Crimp_Höhe_Messung.pdf
+3. Fügen Sie relevante Normnummern hinzu: VG95319_Kontakt16.pdf
+
+═══════════════════════════════════════════════════════════════════════════════
+`;
+    fs.writeFileSync(readmePath, readmeContent, 'utf8');
+  }
+  
+  // Beispiel-Hinweise in leeren Ordnern
+  const hinweisContent = {
+    '01_Formulare': 'Legen Sie hier Ihre ausgefüllten Formulare ab.\nDie Anwendung kann diese Dateien durchsuchen.',
+    '02_Tabellen': 'Legen Sie hier Excel-Tabellen und Berechnungen ab.',
+    '03_Bilder_GutSchlecht': 'Legen Sie hier Fotos von Crimpverbindungen ab.\n\nWICHTIG: Benennen Sie die Dateien aussagekräftig!\n\nBeispiel: Crimp_GUT_Kontakt16_1mm2.jpg',
+    '04_Eigene_Dokumente': 'Legen Sie hier sonstige Dokumente ab.',
+    '05_PDF_Normen': 'Legen Sie hier PDF-Versionen der Normen ab.'
+  };
+  
+  Object.entries(hinweisContent).forEach(([folder, content]) => {
+    const hinweisPath = path.join(basePath, folder, '_HINWEIS.txt');
+    if (!fs.existsSync(hinweisPath)) {
+      fs.writeFileSync(hinweisPath, content, 'utf8');
+    }
+  });
+  
+  console.log('App-Ordner initialisiert:', basePath);
+  return basePath;
 }
 
 // Ordner erstellen falls nicht vorhanden
